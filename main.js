@@ -1,5 +1,5 @@
 // function(Juicy) {
-   Juicy.Game.init(document.getElementById('game-canvas'), 1024, 768, {
+   Juicy.Game.init(document.getElementById('game-canvas'), 160, 144, {
       LEFT: 37,
       UP: 38,
       RIGHT: 39,
@@ -11,11 +11,6 @@
       S: 83,
       D: 68,
    });
-
-   // On window resize, fill it with the game again!
-   window.onresize = function() {
-      Juicy.Game.resize();
-   };
 
    document.addEventListener('DOMContentLoaded', function() {
       Juicy.Game.setState(new GameScreen()).run();

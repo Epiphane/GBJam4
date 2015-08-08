@@ -23,28 +23,35 @@
    /* default styles for body */
    body, html {
       padding:0;
-      margin: 0;
       background: #666;
       height: 100%;
       width: 100%;
    }
-   canvas, #game-canvas {
+   canvas, #game-canvas, img {
       background: #000;
+      image-rendering: optimizeSpeed;
+      image-rendering: -moz-crisp-edges;
+      image-rendering: -webkit-optimize-contrast;
+      image-rendering: optimize-contrast;
+      image-rendering: pixelated;
+      -ms-interpolation-mode: nearest-neighbor;
+      border: 5px solid #ddd;
+      width: 640px;
+      height: 576px;
+      margin: 0 auto;
    }
    </style>
 </head>
 <body>
 
    <!-- Main stage for rendering game scenes -->
-   <canvas id="game-canvas"></canvas>
+   <canvas id="game-canvas" width="160" height="144" fixed></canvas>
 
    <!-- Libraries -->
    <script src="lib/juicy.full.js"></script>
 
    <!-- main.js loads everything it needs -->
    <script src="js/game_screen.js"></script>
-   <script src="js/dude_entity.js"></script>
-   <script src="js/custom_component.js"></script>
    <script src="main.js"></script>
 
    <script src="http://elliotfiske.com/bonald.js"></script>
