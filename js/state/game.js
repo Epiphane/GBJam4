@@ -1,20 +1,30 @@
 var GameState = Juicy.State.extend({
     constructor: function() {
-        this.tile_manager = new Juicy.Components.TileManager(16, 4);
+        this.tile_manager = new Juicy.Components.TileManager(16, 8);
         this.tiles = new Juicy.Entity(this, [ this.tile_manager ]);
 
         this.player = new Juicy.Entity(this, ['Sprite', 'Player', 'Digger', 'Physics']);
-        this.player.position = new Juicy.Point(75, -20);
+        this.player.position = new Juicy.Point(100, -40);
         this.player.getComponent('Sprite').setSheet('img/sawman-fast.png', 20, 20);
         this.player.getComponent('Sprite').last_sprite = 3;
         this.player.getComponent('Sprite').repeat = true;
 
         this.player2 = new Juicy.Entity(this, ['Sprite', 'Player', 'Digger', 'Physics']);
-        this.player2.position = new Juicy.Point(75, -20);
+        this.player2.position = new Juicy.Point(40, -40);
         this.player2.getComponent('Player').controls = ['A', 'D', 'S'];
         this.player2.getComponent('Sprite').setSheet('img/sawman-fast.png', 20, 20);
         this.player2.getComponent('Sprite').last_sprite = 3;
         this.player2.getComponent('Sprite').repeat = true;
+
+        this.tracker_image = new Image();
+        this.tracker_image.src = './img/player.png';
+
+        this.countdown = 2.99;
+        this.countdown_entity = new Juicy.Entity(this, ['Sprite']);
+        this.countdown_sprite = this.countdown_entity.getComponent('Sprite');
+        this.countdown_sprite.setSheet('img/countdown.png', 10, 10);
+        this.countdown_sprite.last_sprite = 3;
+        this.countdown_sprite.repeat = true;
 
         this.watching = this.player;
 
@@ -48,9 +58,32 @@ var GameState = Juicy.State.extend({
         }
     },
     update: function(dt, game) {
-        this.player.update(dt);
-        this.player2.update(dt);
+        if (this.countdown > -0.5) {
+            var nextCountdown = this.countdown - dt;
 
+            if (Math.floor(this.countdown) !== Math.floor(nextCountdown)) {
+                this.countdown_sprite.goNextFrame();
+            }
+
+            this.countdown = nextCountdown;
+        }
+        
+        if (this.countdown <= 0) {
+            this.player.update(dt);
+            this.player2.update(dt);
+
+            var winner = this.player;
+            if (this.player2.position.y > winner.position.y) {
+                winner = this.player2;
+            }
+            winner.getComponent('Physics').dy -= 1;
+
+            if (winner.position.y + game.height >= this.tile_manager.height * this.tile_manager.TILE_SIZE) {
+                this.tile_manager.addRow(true);
+            }
+        }
+
+        // Update Camera
         var dx = 0;
         var dy = (this.watching.position.y - game.height / 4) - this.camera.y;
 
@@ -62,18 +95,12 @@ var GameState = Juicy.State.extend({
             this.camera.dx = 0;
             this.camera.x = this.tile_manager.width - game.width / this.tilesize;
         }
-
-        var winner = this.player;
-        if (this.player2.position.y > winner.position.y) {
-            winner = this.player2;
-        }
-
-        winner.getComponent('Physics').dy -= 1;
-        if (winner.position.y + game.height >= this.tile_manager.height * this.tile_manager.TILE_SIZE) {
-            this.tile_manager.addRow(true);
-        }
     },
     render: function(context) {
+        if (this.countdown > -0.5) {
+            this.countdown_entity.render(context, this.game.width / 2 - 5, 20);
+        }
+
         context.save();
         context.translate(-this.camera.x, -this.camera.y);
 
@@ -82,5 +109,7 @@ var GameState = Juicy.State.extend({
         this.player2.render(context);
 
         context.restore();
+
+        context.drawImage(this.tracker_image, 3, 3);
     }
 });

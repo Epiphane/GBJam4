@@ -65,13 +65,13 @@ Juicy.Component.create('Digger', {
 
         this._down = this._left = this._right = false;
     },
-    render: function(context) {
-        var tile_size = this.entity.state.tile_manager.TILE_SIZE;
-        context.fillStyle = 'rgba(255, 0, 0, 0.5)';
+    // render: function(context) {
+    //     var tile_size = this.entity.state.tile_manager.TILE_SIZE;
+    //     context.fillStyle = 'rgba(255, 0, 0, 0.5)';
 
-        for (var i = 0; i < this.collisions.length; i ++) {
-            var collision = this.collisions[i].mult(tile_size).sub(this.entity.position);
-            context.fillRect(collision.x, collision.y, tile_size, tile_size)
-        }
-    }
+    //     for (var i = 0; i < this.collisions.length; i ++) {
+    //         var collision = this.collisions[i].mult(tile_size).sub(this.entity.position);
+    //         context.fillRect(collision.x, collision.y, tile_size, tile_size)
+    //     }
+    // }
 });
