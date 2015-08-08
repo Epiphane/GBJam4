@@ -31,6 +31,8 @@ Juicy.Component.create('Digger', {
             new Juicy.Point(0, this.entity.height),
             new Juicy.Point(this.entity.width / 2, this.entity.height),
             new Juicy.Point(this.entity.width - 0.2, this.entity.height),
+            new Juicy.Point(-5, this.entity.height / 2),
+            new Juicy.Point(this.entity.width, this.entity.height / 2),
         ];
 
         for (var i = 0; i < this.collisions.length; i ++) {
