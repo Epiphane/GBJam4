@@ -52,7 +52,7 @@
             if (!cell.complete) {
                 if (!blitqueue[cell.src]) {
                     blitqueue[cell.src] = [];
-                    cell.oncomplete = function() {
+                    cell.onload = function() {
                         console.log('ayy');
                         var item;
                         while (item = blitqueue[cell.src].shift()) {
