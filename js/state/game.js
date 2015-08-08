@@ -33,10 +33,10 @@ var GameState = Juicy.State.extend({
         this.player.update(dt);
 
         var dx = 0;
-        var dy = (this.player.position.y - game.height / 2) - this.camera.y;
+        var dy = (this.player.position.y - game.height / 4) - this.camera.y;
 
-        this.camera.x += dx * 4 * dt;
-        this.camera.y += dy * 4 * dt;
+        this.camera.x += dx * 8 * dt;
+        this.camera.y += dy * 8 * dt;
         if (this.camera.x < 0) 
             this.camera.dx = this.camera.x = 0;
         if (this.camera.x * this.tilesize + game.width > this.tile_manager.width * this.tilesize) {

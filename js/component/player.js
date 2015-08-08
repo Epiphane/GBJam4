@@ -34,6 +34,9 @@ Juicy.Component.create('Player', {
             pos = this.entity.position.add(this.entity.width / 2, this.entity.height).mult(1 / tile_manager.TILE_SIZE).floor();
             tile_manager.removeCell(pos.x, pos.y);
 
+            pos = this.entity.position.add(-1, this.entity.height).mult(1 / tile_manager.TILE_SIZE).floor();
+            tile_manager.removeCell(pos.x, pos.y);
+
             pos = this.entity.position.add(-1, this.entity.height / 2).mult(1 / tile_manager.TILE_SIZE).floor();
             tile_manager.removeCell(pos.x, pos.y);
 
