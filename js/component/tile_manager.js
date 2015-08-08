@@ -67,6 +67,9 @@
 
                 this.tiles[y][x] = false;
             }
+            else {
+                return;
+            }
 
             var chunk_y = Math.floor(y / this.chunk_height);
             this.chunks[chunk_y].context.clearRect(x * this.TILE_SIZE, (y - chunk_y * this.chunk_height) * this.TILE_SIZE, this.TILE_SIZE, this.TILE_SIZE);

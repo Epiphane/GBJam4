@@ -20,7 +20,7 @@ Juicy.Component.create('Physics', {
         var height       = new Juicy.Point(0, this.entity.height - 1);
 
         this.dy += this.weight * dt;
-        this.dt = dt;
+        if (this.dy > 200) this.dy = 200;
 
         var movement = (new Juicy.Point(this.dx, this.dy)).mult(dt);
 
@@ -49,31 +49,5 @@ Juicy.Component.create('Physics', {
         else {
             this.onGround = false;
         }
-    },
-    render: function(context) {
-        var tile_manager = this.entity.state.tile_manager;
-        var position     = this.entity.position;
-        var width        = new Juicy.Point(this.entity.width - 1,  0);
-        var height       = new Juicy.Point(0, this.entity.height -1 );
-
-        var movement = (new Juicy.Point(this.dx, this.dy)).mult(this.dt);
-
-        function drawcast(position) {
-            var cast = tile_manager.raycast(position, movement, true);
-
-            context.beginPath();
-            context.moveTo(position.x, position.y);
-            context.lineTo(position.x + cast.x, position.y + cast.y);
-            context.lineWidth = 1;
-
-            // set line color
-            context.strokeStyle = '#ff0000';
-            context.stroke();
-        }
-
-        drawcast(new Juicy.Point(0.1));
-        drawcast(width);
-        drawcast(height);
-        drawcast(width.add(height));
     }
 });
