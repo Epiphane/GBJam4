@@ -2,7 +2,8 @@ Juicy.Component.create('Physics', {
     constructor: function() {
         this.dx = this.dy = 0;
         this.onGround = false;
-        this.jumpPower = -60;
+        this.jumpPower = -120;
+        this.weight = 400;
     },
 
     jump: function() {
@@ -15,18 +16,19 @@ Juicy.Component.create('Physics', {
     update: function(dt, input) {
         var tile_manager = this.entity.state.tile_manager;
         var position     = this.entity.position;
-        var width        = new Juicy.Point(this.entity.width,  0);
-        var height       = new Juicy.Point(this.entity.height, 0);
+        var width        = new Juicy.Point(this.entity.width - 0.2,  0);
+        var height       = new Juicy.Point(0, this.entity.height - 0.2);
+        var width_height = width.add(height);
+
+        this.dy += this.weight * dt;
+        this.dt = dt;
 
         var movement = (new Juicy.Point(this.dx, this.dy)).mult(dt);
-        if (this.dx !== 0) {
-            console.log(this.dx, dt, movement);
-        }
 
         var tl = tile_manager.raycast(position, movement);
         var tr = tile_manager.raycast(position.add(width), movement);
         var bl = tile_manager.raycast(position.add(height), movement);
-        var br = tile_manager.raycast(position.add(width).add(height), movement);
+        var br = tile_manager.raycast(position.add(width_height), movement);
 
         var mindx = tl.x;
         var mindy = tl.y;
@@ -39,27 +41,41 @@ Juicy.Component.create('Physics', {
         if (Math.abs(bl.x) < Math.abs(mindx)) mindx = bl.x;
         if (Math.abs(bl.y) < Math.abs(mindy)) mindy = bl.y;
 
-        // Walk across all the tiles
-        this.entity.position = position.add(new Juicy.Point(mindx, mindy));
+        this.entity.position = position.sub(new Juicy.Point(mindx, mindy));
 
-        if (this.dy > 0 && Math.abs(mindy) < 0.01) {
+        if (this.dy > 0.1 && Math.abs(mindy) < 0.01) {
             this.dy = 0;
             this.onGround = true;
         }
         else {
             this.onGround = false;
         }
+    },
+    render: function(context) {
+        var tile_manager = this.entity.state.tile_manager;
+        var position     = this.entity.position;
+        var width        = new Juicy.Point(this.entity.width - 0.2,  0);
+        var height       = new Juicy.Point(0, this.entity.height - 0.2);
+        var width_height = width.add(height);
 
-        this.touchingSpike = false;
-        for (var i = 0; i < width; i ++) {
-            for (var j = 0; j < height; j ++) {
-                var x = Math.floor(position.x + i);
-                var y = Math.floor(position.y + j);
+        var movement = (new Juicy.Point(this.dx, this.dy)).mult(this.dt);
 
-                if (tileManager.getTile(x, y) === tileManager.SPIKE) {
-                    this.touchingSpike = true;
-                }
-            }
+        function drawcast(position) {
+            var tl = tile_manager.raycast(position, movement, true);
+
+            context.beginPath();
+            context.moveTo(position.x, position.y);
+            context.lineTo(position.x + tl.x, position.y + tl.y);
+            context.lineWidth = 1;
+
+            // set line color
+            context.strokeStyle = '#ff0000';
+            context.stroke();
         }
+
+        drawcast(new Juicy.Point(0.1));
+        drawcast(width);
+        drawcast(height);
+        drawcast(width_height);
     }
 });

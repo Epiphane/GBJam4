@@ -10,8 +10,8 @@ var GameState = Juicy.State.extend({
         this.player.getComponent('Sprite').last_sprite = 7;
         this.player.getComponent('Sprite').repeat = true;
         this.camera = {
-            x: 0,       //this.player.   position.x,
-            y: -104,    //this.player.   position.y,
+            x: 0,       //this.player.position.x,
+            y: -104,    //this.player.position.y,
             give_x: 4,
             give_y: 0,
             dx: 0,
