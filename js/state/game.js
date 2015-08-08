@@ -6,8 +6,8 @@ var GameState = Juicy.State.extend({
         this.player = new Juicy.Entity(this, ['Sprite', 'Player', 'Physics']);
         this.player.position = new Juicy.Point(75, -20);
 
-        this.player.getComponent('Sprite').setSheet('img/enemy.png', 25, 16);
-        this.player.getComponent('Sprite').last_sprite = 7;
+        this.player.getComponent('Sprite').setSheet('img/player.png', 10, 10);
+        this.player.getComponent('Sprite').last_sprite = 0;
         this.player.getComponent('Sprite').repeat = true;
         this.camera = {
             x: 0,       //this.player.position.x,
@@ -20,7 +20,7 @@ var GameState = Juicy.State.extend({
     },
     init: function() {
         Juicy.Sound.load('jump', 'fx_jump.mp3');
-        this.player.getComponent('Sprite').runAnimation(0, 7, 0.1, true);
+        // this.player.getComponent('Sprite').runAnimation(0, 7, 0.1, true);
     },
     key_UP: function() {
         console.log('up!');
@@ -52,7 +52,7 @@ var GameState = Juicy.State.extend({
         context.save();
         context.translate(-this.camera.x, -this.camera.y);
 
-        this.tiles.render(context);
+        this.tiles.render(context, this.camera.x, this.camera.y, this.game.width, this.game.height);
         this.player.render(context);
 
         context.restore();
