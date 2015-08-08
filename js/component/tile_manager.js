@@ -2,6 +2,8 @@
     var tile = new Image();
     tile.src = 'img/tile.png';
 
+    var blitqueue = {};
+
     Juicy.Point.prototype.floor = function() {
         return new Juicy.Point(Math.floor(this.x), Math.floor(this.y));
     };
@@ -46,6 +48,27 @@
             }
         },
         blitCell: function(x, y, cell) {
+            var self = this;
+            if (!cell.complete) {
+                if (!blitqueue[cell.src]) {
+                    blitqueue[cell.src] = [];
+                    cell.oncomplete = function() {
+                        console.log('ayy');
+                        var item;
+                        while (item = blitqueue[cell.src].shift()) {
+                            self.blitCell(item.x, item.y, cell);
+                        }
+                    }
+                }
+
+                blitqueue[cell.src].push({
+                    x: x,
+                    y: y
+                });
+
+                return;
+            }
+
             var chunk_y = Math.floor(y / this.chunk_height);
             if (!this.chunks[chunk_y]) {
                 var image    = document.createElement('canvas');
