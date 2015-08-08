@@ -6,8 +6,8 @@ var GameState = Juicy.State.extend({
         this.player = new Juicy.Entity(this, ['Sprite', 'Player', 'Physics']);
         this.player.position = new Juicy.Point(75, -20);
 
-        this.player.getComponent('Sprite').setSheet('img/player.png', 10, 10);
-        this.player.getComponent('Sprite').last_sprite = 0;
+        this.player.getComponent('Sprite').setSheet('img/sawman-fast.png', 20, 20);
+        this.player.getComponent('Sprite').last_sprite = 3;
         this.player.getComponent('Sprite').repeat = true;
         this.camera = {
             x: 0,       //this.player.position.x,
@@ -20,7 +20,7 @@ var GameState = Juicy.State.extend({
     },
     init: function() {
         Juicy.Sound.load('jump', 'fx_jump.mp3');
-        // this.player.getComponent('Sprite').runAnimation(0, 7, 0.1, true);
+//        this.player.getComponent('Sprite').runAnimation(0, 3, 0.016, true);
     },
     key_UP: function() {
         console.log('up!');
