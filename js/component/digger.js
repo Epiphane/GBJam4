@@ -8,8 +8,20 @@ Juicy.Component.create('Digger', {
     right: function() {
         this._right = true;
     },
-    down: function() {
+    dig: function() {
         this._down = true;
+    },
+    forCollisionBox: function(callback) {
+        var tile_manager = this.entity.state.tile_manager;
+        var center = new Juicy.Point(this.entity.width / 2, this.entity.height / 2);
+        var pad = 5;
+        for (var x = -pad; x <= this.entity.width + pad; x += tile_manager.TILE_SIZE) {
+            for (var y = -pad; y <= this.entity.height + pad; y += tile_manager.TILE_SIZE) {
+                if (center.sub(new Juicy.Point(x, y)).length() > 10) continue;
+
+                callback(x, y);
+            }
+        }
     },
     update: function(dt, game) {
         var physics = this.entity.getComponent('Physics');
@@ -25,53 +37,27 @@ Juicy.Component.create('Digger', {
             physics.dx = this.speed;
         }
 
-        var tile_manager = this.entity.state.tile_manager;
-        this.collisions = [
-            new Juicy.Point(-1, this.entity.height),
-            new Juicy.Point(0, this.entity.height),
-            new Juicy.Point(this.entity.width / 2, this.entity.height),
-            new Juicy.Point(this.entity.width - 0.2, this.entity.height),
-            new Juicy.Point(-5, this.entity.height / 2),
-            new Juicy.Point(this.entity.width, this.entity.height / 2),
-        ];
-
-        for (var i = 0; i < this.collisions.length; i ++) {
-            this.collisions[i] = this.entity.position.add(this.collisions[i]).mult(1 / tile_manager.TILE_SIZE).floor()
-        }
-
         if (this._down) {
             // Dig first
             var tile_manager = this.entity.state.tile_manager;
-
             var blocksRekt = 0;
-            for (var i = 0; i < this.collisions.length; i ++) {
-                blocksRekt += tile_manager.removeCell(this.collisions[i].x, this.collisions[i].y);
-            }
+            var self = this;
+            this.forCollisionBox(function(x, y) {
+                var pos = self.entity.position.add(x, y).mult(1 / tile_manager.TILE_SIZE).floor();
+                blocksRekt += tile_manager.removeCell(pos.x, pos.y);
+            });
 
             // Slow down
-            if (blocksRekt > 1) {
-                physics.dy -= (4 - blocksRekt) * 10;
-            }
-            else {
-                physics.dy -= blocksRekt * 10;
-            }
-
-            // Animate later
-            var sprite = this.entity.getComponent('Sprite');
-            if (sprite) {
-                sprite.goNextFrame()
-            }
+            physics.dy -= blocksRekt * 3;
         }
 
-        this._down = this._left = this._right = false;
+        this._left = this._right = false;
     },
-    // render: function(context) {
-    //     var tile_size = this.entity.state.tile_manager.TILE_SIZE;
-    //     context.fillStyle = 'rgba(255, 0, 0, 0.5)';
-
-    //     for (var i = 0; i < this.collisions.length; i ++) {
-    //         var collision = this.collisions[i].mult(tile_size).sub(this.entity.position);
-    //         context.fillRect(collision.x, collision.y, tile_size, tile_size)
-    //     }
-    // }
+    render: function(context) {
+        // context.fillStyle = 'rgba(255, 0, 0, 0.5)';
+        // var tile_size = this.entity.state.tile_manager.TILE_SIZE;
+        // this.forCollisionBox(function(x, y) {
+        //     context.fillRect(x, y, tile_size, tile_size);
+        // });
+    }
 });

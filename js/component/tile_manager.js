@@ -11,7 +11,7 @@
     };
 
     Juicy.Component.create('TileManager', {
-        TILE_SIZE: 10,
+        TILE_SIZE: 2,
         constructor: function(initial_width, initial_height) {
             this.width  = initial_width;
             this.height = 0;
@@ -27,7 +27,7 @@
         },
         addRow: function(immediate) {
             for (var i = 0; i < this.width; i ++) {
-                if (Math.random() > 0.05) {
+                if (Math.random() > 0.01) {
                     this.addCell(i, this.height, immediate);
                 }
             }
