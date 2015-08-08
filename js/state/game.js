@@ -28,11 +28,12 @@ var GameState = Juicy.State.extend({
         Juicy.Sound.play('jump');
     },
     update: function(dt, game) {
+        if (game.keyDown('ESC')) throw 'au';
+
         this.player.update(dt);
 
-        var dx = 0,
-            dy = 0,
-            dt = 0;
+        var dx = 0;
+        var dy = (this.player.position.y - game.height / 2) - this.camera.y;
 
         this.camera.x += dx * 4 * dt;
         this.camera.y += dy * 4 * dt;
@@ -41,6 +42,10 @@ var GameState = Juicy.State.extend({
         if (this.camera.x * this.tilesize + game.width > this.tile_manager.width * this.tilesize) {
             this.camera.dx = 0;
             this.camera.x = this.tile_manager.width - game.width / this.tilesize;
+        }
+
+        if (this.camera.y + game.height >= this.tile_manager.height * this.tile_manager.TILE_SIZE) {
+            this.tile_manager.addRow(true);
         }
     },
     render: function(context) {

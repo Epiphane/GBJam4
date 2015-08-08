@@ -18,5 +18,11 @@ Juicy.Component.create('Player', {
         if (game.keyDown('RIGHT')) {
             physics.dx = this.speed;
         }
+
+        if (game.keyDown('SPACE') && physics.onGround) {
+            var tile_manager = this.entity.state.tile_manager;
+            var pos = this.entity.position.add(this.entity.width / 2, this.entity.height + 1).mult(1 / tile_manager.TILE_SIZE).floor();
+            tile_manager.removeCell(pos.x, pos.y);
+        }
     }
 });

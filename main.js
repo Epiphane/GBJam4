@@ -4,6 +4,7 @@ Juicy.Game.init(document.getElementById('game-canvas'), 160, 144, {
     RIGHT: 39,
     DOWN: 40,
     SPACE: 32,
+    ESC: 27,
 
     W: 87,
     A: 65,
