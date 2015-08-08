@@ -1,32 +1,52 @@
-// Call this to create a "Scene". These are the main
-// states that your game can be in. Calling extend()
-var GameScreen = Juicy.State.extend({
-   constructor: function() {
-      this.tiles = [];
+var GameState = Juicy.State.extend({
+    constructor: function() {
+        this.tile_manager = new Juicy.Components.TileManager(16, 4);
+        this.tiles = new Juicy.Entity(this, [ this.tile_manager ]);
 
-      for (var i = 0; i < 16 * 14; i ++) {
-         if (Juicy.rand(10) < 8) continue;
+        this.player = new Juicy.Entity(this, ['Sprite', 'Player', 'Physics']);
+        this.player.getComponent('Sprite').setSheet('img/player.png', 10, 10);
+        this.player.position = new Juicy.Point(75, -20);
 
-         var tile = new Juicy.Entity(this, ['Tile']);
-         tile.position.x = (i % 16) * 10;
-         tile.position.y = Math.floor(i / 16) * 10;
-         this.tiles.push(tile);
-      }
-   },
-   init: function() {
-      Juicy.Sound.load('jump', 'fx_jump.mp3');
-   },
-   key_UP: function() {
-      console.log('up!');
+        this.camera = {
+            x: 0,       //this.player.   position.x,
+            y: -104,    //this.player.   position.y,
+            give_x: 4,
+            give_y: 0,
+            dx: 0,
+            dy: 0
+        };
+    },
+    init: function() {
+        Juicy.Sound.load('jump', 'fx_jump.mp3');
+    },
+    key_UP: function() {
+        console.log('up!');
 
-      Juicy.Sound.play('jump');
-   },
-   update: function(dt, input) {
+        Juicy.Sound.play('jump');
+    },
+    update: function(dt, game) {
+        this.player.update(dt);
 
-   },
-   render: function(context) {
-      for (var i = 0; i < this.tiles.length; i ++) {
-         this.tiles[i].render(context);         
-      }
-   }
+        var dx = 0,
+            dy = 0,
+            dt = 0;
+
+        this.camera.x += dx * 4 * dt;
+        this.camera.y += dy * 4 * dt;
+        if (this.camera.x < 0) 
+            this.camera.dx = this.camera.x = 0;
+        if (this.camera.x * this.tilesize + game.width > this.tile_manager.width * this.tilesize) {
+            this.camera.dx = 0;
+            this.camera.x = this.tile_manager.width - game.width / this.tilesize;
+        }
+    },
+    render: function(context) {
+        context.save();
+        context.translate(-this.camera.x, -this.camera.y);
+
+        this.tiles.render(context);
+        this.player.render(context);
+
+        context.restore();
+    }
 });
