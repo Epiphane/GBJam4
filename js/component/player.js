@@ -1,32 +1,20 @@
 Juicy.Component.create('Player', {
     constructor: function() {
         this.speed = 50;
+    
+        this.controls = ['LEFT', 'RIGHT', 'DOWN'];
     },
     update: function(dt, game) {
-        var physics = this.entity.getComponent('Physics');
-        if (!physics)
-            return;
+        var digger = this.entity.getComponent('Digger');
 
-        physics.dx = 0;
-
-        if (game.keyDown('UP')) {
-            physics.jump();
+        if (game.keyDown(this.controls[0])) {
+            digger.left();
         }
-        if (game.keyDown('LEFT')) {
-            physics.dx = -this.speed;
+        if (game.keyDown(this.controls[1])) {
+            digger.right();
         }
-        if (game.keyDown('RIGHT')) {
-            physics.dx = this.speed;
-        }
-
-        if (game.keyDown('SPACE')) {
-            this.entity.getComponent('Sprite').goNextFrame();    
-        }
-
-        if (game.keyDown('SPACE') && physics.onGround) {
-            var tile_manager = this.entity.state.tile_manager;
-            var pos = this.entity.position.add(this.entity.width / 2, this.entity.height + 1).mult(1 / tile_manager.TILE_SIZE).floor();
-            tile_manager.removeCell(pos.x, pos.y);
+        if (game.keyDown(this.controls[2])) {
+            digger.down();
         }
     }
 });
