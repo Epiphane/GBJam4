@@ -5,9 +5,6 @@ var GameState = Juicy.State.extend({
 
         this.player = new Juicy.Entity(this, ['Sprite', 'Player', 'Digger', 'Physics']);
         this.player.position = new Juicy.Point(100, -40);
-        this.player.getComponent('Sprite').setSheet('img/sawman-fast.png', 20, 20);
-        this.player.getComponent('Sprite').last_sprite = 3;
-        this.player.getComponent('Sprite').repeat = true;
 
         this.tracker_image = new Image();
         this.tracker_image.src = './img/player.png';
@@ -32,6 +29,7 @@ var GameState = Juicy.State.extend({
     },
     init: function() {
         Juicy.Sound.load('jump', 'fx_jump.mp3');
+        this.player.getComponent('Player').startIdleAnim();
     },
     key_UP: function() {
         console.log('up!');
@@ -53,11 +51,7 @@ var GameState = Juicy.State.extend({
             }
 
             this.countdown = nextCountdown;
-        }
-
-        // Animate players
-        if (this.countdown < 2) {
-            this.player.getComponent('Sprite').goNextFrame();
+            this.player.getComponent('Sprite').update(dt);
         }
         
         if (this.countdown <= 0) {
