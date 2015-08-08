@@ -23,14 +23,12 @@ Juicy.Component.create('Player', {
             this.entity.getComponent('Sprite').goNextFrame();    
         }
 
-        var pad = 0;
-        var xpad = 0;
         var tile_manager = this.entity.state.tile_manager;
         this.collisions = [
-            new Juicy.Point(xpad - 2, this.entity.height - pad),
-            new Juicy.Point(xpad, this.entity.height),
-            new Juicy.Point(this.entity.width / 2 + xpad, this.entity.height),
-            new Juicy.Point(this.entity.width + xpad, this.entity.height - pad),
+            new Juicy.Point(-1, this.entity.height),
+            new Juicy.Point(0, this.entity.height),
+            new Juicy.Point(this.entity.width / 2, this.entity.height),
+            new Juicy.Point(this.entity.width - 0.2, this.entity.height),
         ];
 
         for (var i = 0; i < this.collisions.length; i ++) {
@@ -46,8 +44,11 @@ Juicy.Component.create('Player', {
                 blocksRekt += tile_manager.removeCell(pos.x, pos.y);
             }
 
-            if (blocksRekt > 0) {
+            if (blocksRekt > 1) {
                 physics.dy -= (4 - blocksRekt) * 10;
+            }
+            else {
+                physics.dy -= blocksRekt * 10;
             }
         }
     },
