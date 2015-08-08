@@ -20,7 +20,7 @@ var GameState = Juicy.State.extend({
     },
     init: function() {
         Juicy.Sound.load('jump', 'fx_jump.mp3');
-        this.player.getComponent('Sprite').runAnimation(0, 3, 0.016, true);
+//        this.player.getComponent('Sprite').runAnimation(0, 3, 0.016, true);
     },
     key_UP: function() {
         console.log('up!');

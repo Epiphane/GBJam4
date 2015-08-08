@@ -19,6 +19,10 @@ Juicy.Component.create('Player', {
             physics.dx = this.speed;
         }
 
+        if (game.keyDown('SPACE')) {
+            this.entity.getComponent('Sprite').goNextFrame();    
+        }
+
         if (game.keyDown('SPACE') && physics.onGround) {
             var tile_manager = this.entity.state.tile_manager;
             var pos = this.entity.position.add(this.entity.width / 2, this.entity.height + 1).mult(1 / tile_manager.TILE_SIZE).floor();
