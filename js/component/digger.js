@@ -8,7 +8,7 @@ Juicy.Component.create('Digger', {
     right: function() {
         this._right = true;
     },
-    dig: function() {
+    down: function() {
         this._down = true;
     },
     forCollisionBox: function(callback) {
@@ -28,30 +28,37 @@ Juicy.Component.create('Digger', {
         if (!physics)
             return;
 
-        physics.dx = 0;
-
         if (this._left) {
             physics.dx = -this.speed;
         }
         if (this._right) {
             physics.dx = this.speed;
         }
-
         if (this._down) {
-            // Dig first
-            var tile_manager = this.entity.state.tile_manager;
-            var blocksRekt = 0;
-            var self = this;
-            this.forCollisionBox(function(x, y) {
-                var pos = self.entity.position.add(x, y).mult(1 / tile_manager.TILE_SIZE).floor();
-                blocksRekt += tile_manager.removeCell(pos.x, pos.y);
-            });
-
-            // Slow down
-            physics.dy -= blocksRekt * 3;
+            physics.weight_modifier = 4;
         }
 
-        this._left = this._right = false;
+        // Dig first
+        var tile_manager = this.entity.state.tile_manager;
+        var blocksRekt = 0;
+        var self = this;
+        this.forCollisionBox(function(x, y) {
+            var pos = self.entity.position.add(x, y).mult(1 / tile_manager.TILE_SIZE).floor();
+            blocksRekt += tile_manager.removeCell(pos.x, pos.y);
+        });
+
+        // Slow down
+        physics.dy -= blocksRekt * 3;
+
+        if (blocksRekt > 0) {
+            physics.dx *= (blocksRekt + 20) / 20;
+        }
+        
+        if (!this._left && !this._right) {
+            physics.dx *= 0.4;
+        }
+
+        this._down = this._left = this._right = false;
     },
     render: function(context) {
         // context.fillStyle = 'rgba(255, 0, 0, 0.5)';

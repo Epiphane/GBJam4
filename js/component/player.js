@@ -13,5 +13,8 @@ Juicy.Component.create('Player', {
         if (game.keyDown(this.controls[1])) {
             digger.right();
         }
+        if (game.keyDown(this.controls[2])) {
+            digger.down();
+        }
     }
 });

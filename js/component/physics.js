@@ -3,6 +3,7 @@ Juicy.Component.create('Physics', {
         this.dx = this.dy = 0;
         this.jumpPower = -120;
         this.weight = 300;
+        this.weight_modifier = 1;
     },
 
     update: function(dt, input) {
@@ -13,6 +14,7 @@ Juicy.Component.create('Physics', {
 
         var weight = this.weight;
         if (this.dx === 0) weight *= 2;
+        weight *= this.weight_modifier;
 
         this.dy += weight * dt;
         if (this.dy > 200) this.dy = 200;
@@ -21,5 +23,7 @@ Juicy.Component.create('Physics', {
         var movement = (new Juicy.Point(this.dx, this.dy)).mult(dt);
 
         this.entity.position = position.add(movement);
+
+        this.weight_modifier = 1;
     }
 });

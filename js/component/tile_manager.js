@@ -53,7 +53,6 @@
                 if (!blitqueue[cell.src]) {
                     blitqueue[cell.src] = [];
                     cell.onload = function() {
-                        console.log('ayy');
                         var item;
                         while (item = blitqueue[cell.src].shift()) {
                             self.blitCell(item.x, item.y, cell);

@@ -50,10 +50,6 @@ var GameState = Juicy.State.extend({
 
             if (Math.floor(this.countdown) !== Math.floor(nextCountdown)) {
                 this.countdown_sprite.goNextFrame();
-
-                if (Math.floor(nextCountdown) === 1) {
-                    this.player.getComponent('Digger').dig();
-                }
             }
 
             this.countdown = nextCountdown;
@@ -66,6 +62,11 @@ var GameState = Juicy.State.extend({
         
         if (this.countdown <= 0) {
             this.player.update(dt);
+
+            if (this.player.position.x < 0) this.player.position.x = 0;
+            if (this.player.position.x + this.player.width > this.tile_manager.width * this.tile_manager.TILE_SIZE) {
+                this.player.position.x = this.tile_manager.width * this.tile_manager.TILE_SIZE - this.player.width;
+            }
         }
 
         // Update Camera
@@ -76,8 +77,8 @@ var GameState = Juicy.State.extend({
         this.camera.y += dy * 20 * dt;
         if (this.camera.x < 0) 
             this.camera.x = 0;
-        if (this.camera.x * this.tilesize + game.width > this.tile_manager.width * this.tile_manager.TILE_SIZE) {
-            this.camera.x = this.tile_manager.width - game.width / this.tilesize;
+        if (this.camera.x + game.width > this.tile_manager.width * this.tile_manager.TILE_SIZE) {
+            this.camera.x = this.tile_manager.width * this.tile_manager.TILE_SIZE - game.width;
         }
     },
     render: function(context) {
