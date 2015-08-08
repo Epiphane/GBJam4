@@ -27,9 +27,10 @@ var GameState = Juicy.State.extend({
 
         Juicy.Sound.play('jump');
     },
+    key_ESC: function() {
+        this.game.setState(new PauseState(this));
+    },
     update: function(dt, game) {
-        if (game.keyDown('ESC')) throw 'au';
-
         this.player.update(dt);
 
         var dx = 0;

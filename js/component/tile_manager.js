@@ -27,7 +27,7 @@
         },
         addRow: function(immediate) {
             for (var i = 0; i < this.width; i ++) {
-                if (Math.random() > 0.3) {
+                if (Math.random() > 0.05 && (i < 4 || i > 7)) {
                     this.addCell(i, this.height, immediate);
                 }
             }
@@ -63,16 +63,18 @@
         },
         removeCell: function(x, y) {
             if (this.tiles[y]) {
-                if (!this.tiles[y][x]) return;
+                if (!this.tiles[y][x]) return 0;
 
                 this.tiles[y][x] = false;
             }
             else {
-                return;
+                return 0;
             }
 
             var chunk_y = Math.floor(y / this.chunk_height);
             this.chunks[chunk_y].context.clearRect(x * this.TILE_SIZE, (y - chunk_y * this.chunk_height) * this.TILE_SIZE, this.TILE_SIZE, this.TILE_SIZE);
+        
+            return 1;
         },
         getTile: function(point) {
             point = point.mult(1 / this.TILE_SIZE).floor();
