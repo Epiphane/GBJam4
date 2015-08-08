@@ -25,18 +25,21 @@ var GameState = Juicy.State.extend({
             x: 0,       //this.player.position.x,
             y: -104,    //this.player.position.y,
             give_x: 4,
-            give_y: 0,
-            dx: 0,
-            dy: 0
+            give_y: 0
         };
+
+        this.target = new Juicy.Entity(this, ['Sprite']);
+        this.target.getComponent('Sprite').setSheet('img/goal.png', 10, 10);
+        this.moveGoal();
+    },
+    moveGoal: function() {
+        this.target.position = new Juicy.Point(Juicy.rand(this.tile_manager.width * this.tile_manager.TILE_SIZE), -Juicy.rand(10, 80));
     },
     init: function() {
-        Juicy.Sound.load('jump', 'fx_jump.mp3');
-    },
-    key_UP: function() {
-        console.log('up!');
+        Juicy.Sound.load('goal', 'fx_jump.mp3');
 
-        Juicy.Sound.play('jump');
+        var self = this;
+        this.game.getPlayer = function() { return self.player; };
     },
     key_ESC: function() {
         this.game.setState(new PauseState(this));
@@ -80,6 +83,10 @@ var GameState = Juicy.State.extend({
         if (this.camera.x + game.width > this.tile_manager.width * this.tile_manager.TILE_SIZE) {
             this.camera.x = this.tile_manager.width * this.tile_manager.TILE_SIZE - game.width;
         }
+
+        while (this.camera.y + game.height > this.tile_manager.height * this.tile_manager.TILE_SIZE) {
+            this.tile_manager.addRow(true);
+        }
     },
     render: function(context) {
         if (this.countdown > -0.5) {
@@ -89,6 +96,7 @@ var GameState = Juicy.State.extend({
         context.save();
         context.translate(-this.camera.x, -this.camera.y);
 
+        this.target.render(context);
         this.tiles.render(context, this.camera.x, this.camera.y, this.game.width, this.game.height);
         this.player.render(context);
 
