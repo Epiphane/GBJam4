@@ -1,5 +1,3 @@
-var glob = null;
-
 (function() {
     var tile = new Image();
     tile.src = 'img/tile.png';
@@ -15,8 +13,6 @@ var glob = null;
     Juicy.Component.create('TileManager', {
         TILE_SIZE: 10,
         constructor: function(initial_width, initial_height) {
-            glob = this;
-            console.log(this.TILE_SIZE);
             this.width  = initial_width;
             this.height = initial_height;
             this.tiles  = [];
