@@ -18,19 +18,5 @@ Juicy.Component.create('Player', {
         if (game.keyDown('RIGHT')) {
             physics.dx = this.speed;
         }
-
-
-        if (game.keyDown('UP')) {
-            this.entity.position.y -= this.speed * dt;
-        }
-        if (game.keyDown('DOWN')) {
-            this.entity.position.y += this.speed * dt;
-        }
-        if (game.keyDown('LEFT')) {
-            this.entity.position.x -= this.speed * dt;
-        }
-        if (game.keyDown('RIGHT')) {
-            this.entity.position.x += this.speed * dt;
-        }
     }
 });
