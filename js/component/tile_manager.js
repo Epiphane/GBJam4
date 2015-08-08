@@ -74,6 +74,8 @@
                 image.width  = this.chunk_width * this.TILE_SIZE;
                 image.height = this.chunk_height * this.TILE_SIZE;
 
+                console.log('Chunk', chunk_y);
+
                 this.chunks[chunk_y] = {
                     image: image, 
                     context: image.getContext('2d')
