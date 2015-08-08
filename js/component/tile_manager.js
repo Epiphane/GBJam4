@@ -27,7 +27,7 @@
         },
         addRow: function(immediate) {
             for (var i = 0; i < this.width; i ++) {
-                if (Math.random() > 0.05 && (i < 4 || i > 7)) {
+                if (Math.random() > 0.05 && (i < 4 || i > 7 || this.height > 30)) {
                     this.addCell(i, this.height, immediate);
                 }
             }
