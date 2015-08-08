@@ -1,7 +1,6 @@
 var glob = null;
 
 (function() {
-    var TILE_SIZE = 10;
     var tile = new Image();
     tile.src = 'img/tile.png';
 
@@ -14,20 +13,22 @@ var glob = null;
     };
 
     Juicy.Component.create('TileManager', {
+        TILE_SIZE: 10,
         constructor: function(initial_width, initial_height) {
             glob = this;
+            console.log(this.TILE_SIZE);
             this.width  = initial_width;
             this.height = initial_height;
             this.tiles  = [];
 
             this.image = document.createElement('canvas');
             this.ctx   = this.image.getContext('2d');
-            this.image.width  = initial_width  * TILE_SIZE;
-            this.image.height = initial_height * TILE_SIZE;
+            this.image.width  = initial_width  * this.TILE_SIZE;
+            this.image.height = initial_height * this.TILE_SIZE;
 
             for (var i = 0; i < this.width; i ++) {
                 for (var j = 0; j < this.height; j ++) {
-                    if (Math.random() > 0.3) {
+                    if (Math.random() > 0.8) {
                         this.addCell(i, j, true);
                     }
                 }
@@ -45,17 +46,17 @@ var glob = null;
             }
         },
         blitCell: function(x, y, cell) {
-            if ((x + 1) * TILE_SIZE > this.image.width) {
-                this.image.width = (x + 1) * TILE_SIZE;
+            if ((x + 1) * this.TILE_SIZE > this.image.width) {
+                this.image.width = (x + 1) * this.TILE_SIZE;
             }
-            if ((y + 1) * TILE_SIZE > this.image.height) {
-                this.image.height = (y + 1) * TILE_SIZE;
+            if ((y + 1) * this.TILE_SIZE > this.image.height) {
+                this.image.height = (y + 1) * this.TILE_SIZE;
             }
 
-            this.ctx.drawImage(cell, x * TILE_SIZE, y * TILE_SIZE);
+            this.ctx.drawImage(cell, x * this.TILE_SIZE, y * this.TILE_SIZE);
         },
         getTile: function(point) {
-            point = point.mult(1 / TILE_SIZE).floor();
+            point = point.mult(1 / this.TILE_SIZE).floor();
 
             if (!this.tiles[point.y]) {
                 return false;

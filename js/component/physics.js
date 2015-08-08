@@ -16,30 +16,29 @@ Juicy.Component.create('Physics', {
     update: function(dt, input) {
         var tile_manager = this.entity.state.tile_manager;
         var position     = this.entity.position;
-        var width        = new Juicy.Point(this.entity.width - 0.2,  0);
-        var height       = new Juicy.Point(0, this.entity.height - 0.2);
-        var width_height = width.add(height);
+        var width        = new Juicy.Point(this.entity.width - 1,  0);
+        var height       = new Juicy.Point(0, this.entity.height - 1);
 
         this.dy += this.weight * dt;
         this.dt = dt;
 
         var movement = (new Juicy.Point(this.dx, this.dy)).mult(dt);
 
-        var tl = tile_manager.raycast(position, movement);
-        var tr = tile_manager.raycast(position.add(width), movement);
-        var bl = tile_manager.raycast(position.add(height), movement);
-        var br = tile_manager.raycast(position.add(width_height), movement);
+        // TODO Add dynamic feet counting
 
-        var mindx = tl.x;
-        var mindy = tl.y;
-        if (this.dx > 0) {
-            if (Math.abs(tr.x) < Math.abs(mindx)) mindx = tr.x;
-            if (Math.abs(tr.y) < Math.abs(mindy)) mindy = tr.y;
+        var feet = [];
+        feet.push(tile_manager.raycast(position, movement));
+        feet.push(tile_manager.raycast(position.add(width), movement));
+        feet.push(tile_manager.raycast(position.add(height), movement));
+        feet.push(tile_manager.raycast(position.add(width.mult(0.5)).add(height), movement));
+        feet.push(tile_manager.raycast(position.add(width).add(height), movement));
+
+        var mindx = feet[0].x;
+        var mindy = feet[0].y;
+        for (var i = 1; i < feet.length; i ++) {
+            if (Math.abs(feet[i].x) < Math.abs(mindx)) mindx = feet[i].x;
+            if (Math.abs(feet[i].y) < Math.abs(mindy)) mindy = feet[i].y;
         }
-        if (Math.abs(br.x) < Math.abs(mindx)) mindx = br.x;
-        if (Math.abs(br.y) < Math.abs(mindy)) mindy = br.y;
-        if (Math.abs(bl.x) < Math.abs(mindx)) mindx = bl.x;
-        if (Math.abs(bl.y) < Math.abs(mindy)) mindy = bl.y;
 
         this.entity.position = position.sub(new Juicy.Point(mindx, mindy));
 
@@ -54,18 +53,17 @@ Juicy.Component.create('Physics', {
     render: function(context) {
         var tile_manager = this.entity.state.tile_manager;
         var position     = this.entity.position;
-        var width        = new Juicy.Point(this.entity.width - 0.2,  0);
-        var height       = new Juicy.Point(0, this.entity.height - 0.2);
-        var width_height = width.add(height);
+        var width        = new Juicy.Point(this.entity.width - 1,  0);
+        var height       = new Juicy.Point(0, this.entity.height -1 );
 
         var movement = (new Juicy.Point(this.dx, this.dy)).mult(this.dt);
 
         function drawcast(position) {
-            var tl = tile_manager.raycast(position, movement, true);
+            var cast = tile_manager.raycast(position, movement, true);
 
             context.beginPath();
             context.moveTo(position.x, position.y);
-            context.lineTo(position.x + tl.x, position.y + tl.y);
+            context.lineTo(position.x + cast.x, position.y + cast.y);
             context.lineWidth = 1;
 
             // set line color
@@ -76,6 +74,6 @@ Juicy.Component.create('Physics', {
         drawcast(new Juicy.Point(0.1));
         drawcast(width);
         drawcast(height);
-        drawcast(width_height);
+        drawcast(width.add(height));
     }
 });
