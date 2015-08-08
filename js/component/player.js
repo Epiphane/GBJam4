@@ -1,22 +1,20 @@
 Juicy.Component.create('Player', {
     constructor: function() {
         this.speed = 50;
+    
+        this.controls = ['LEFT', 'RIGHT', 'DOWN'];
     },
     update: function(dt, game) {
-        var physics = this.entity.getComponent('Physics');
-        if (!physics)
-            return;
+        var digger = this.entity.getComponent('Digger');
 
-        physics.dx = 0;
-
-        if (game.keyDown('UP')) {
-            physics.jump();
+        if (game.keyDown(this.controls[0])) {
+            digger.left();
         }
-        if (game.keyDown('LEFT')) {
-            physics.dx = -this.speed;
+        if (game.keyDown(this.controls[1])) {
+            digger.right();
         }
-        if (game.keyDown('RIGHT')) {
-            physics.dx = this.speed;
+        if (game.keyDown(this.controls[2])) {
+            digger.down();
         }
     }
 });

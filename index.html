@@ -52,6 +52,8 @@
    <div class="container">
       <!-- Main stage for rendering game scenes -->
       <canvas id="game-canvas" width="160" height="144" fixed></canvas>
+
+      <p>Left, right - move</p>
    </div>
 
    <!-- Libraries -->
@@ -60,8 +62,10 @@
    <!-- main.js loads everything it needs -->
    <script src="js/component/sprite.js"></script>
    <script src="js/component/player.js"></script>
+   <script src="js/component/digger.js"></script>
    <script src="js/component/physics.js"></script>
    <script src="js/component/tile_manager.js"></script>
+   <script src="js/state/pause.js"></script>
    <script src="js/state/game.js"></script>
    <script src="main.js"></script>
 
