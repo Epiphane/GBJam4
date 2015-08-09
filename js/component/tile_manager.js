@@ -128,8 +128,8 @@
                 return 0;
             },
             function(particle) {
-                particle.x = x * 2;
-                particle.y = y * 2;
+                particle.x = x;
+                particle.y = y;
                 var dx = self.entity.state.player.getComponent('Physics').dx;
                 var dy = self.entity.state.player.getComponent('Physics').dy;
                 var dist = Math.sqrt(dx*dx + dy*dy) * 10;
