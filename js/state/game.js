@@ -1,23 +1,26 @@
+Juicy.Sound.load('goal', 'audio/fx_jump.mp3');
+Juicy.Sound.load('ost', 'audio/music_particles.mp3', true);
+
 var GameState = Juicy.State.extend({
     constructor: function() {
-        this.tile_manager = new Juicy.Components.TileManager(240);
+        this.tile_manager = new Juicy.Components.TileManager(480);
         this.tiles = new Juicy.Entity(this, [ this.tile_manager ]);
 
         this.player = new Juicy.Entity(this, ['ColoredSprite', 'Player', 'Digger', 'Physics', 'Animations']);
-        this.player.position = new Juicy.Point(100, -40);
+        this.player.position = new Juicy.Point(40, -40);
         
-        this.player.getComponent('ColoredSprite').setSheet('http://cors.io/?u=http://epiphane.github.io/GBJam4/img/sawman-all.png', 20, 20);
+        this.player.getComponent('ColoredSprite').setSheet('img/sawman-all.png', 20, 20);
         this.player.getComponent('Player').startIdleAnim();
 
         this.tracker_image = new Image();
-        this.tracker_image.src = 'http://cors.io/?u=http://epiphane.github.io/GBJam4/img/player.png';
+        this.tracker_image.src = 'img/player.png';
 
         this.particles = new Juicy.Entity(this, ['ParticleManager']);
 
         this.countdown = 2.99;
         this.countdown_entity = new Juicy.Entity(this, ['ColoredSprite']);
         this.countdown_sprite = this.countdown_entity.getComponent('ColoredSprite');
-        this.countdown_sprite.setSheet('http://cors.io/?u=http://epiphane.github.io/GBJam4/img/countdown.png', 10, 10);
+        this.countdown_sprite.setSheet('img/countdown.png', 10, 10);
         this.countdown_sprite.last_sprite = 3;
         this.countdown_sprite.repeat = true;
 
@@ -31,24 +34,22 @@ var GameState = Juicy.State.extend({
         };
 
         this.target = new Juicy.Entity(this, ['ColoredSprite']);
-        this.target.getComponent('ColoredSprite').setSheet('http://cors.io/?u=http://epiphane.github.io/GBJam4/img/goal.png', 10, 10);
+        this.target.getComponent('ColoredSprite').setSheet('img/goal.png', 10, 10);
         this.moveGoal();
 
         this.dramaticPauseTime = 0.0;
 
-        Palette.set(4);
+        Palette.set(Juicy.rand(5));
     },
     moveGoal: function() {
         this.target.position = new Juicy.Point(Juicy.rand(this.tile_manager.width), -Juicy.rand(10, 80));
     },
 
     dramaticPause: function() {
-         this.dramaticPauseTime = 1.0;
+         this.dramaticPauseTime = 0.2;
     },
 
     init: function() {
-        Juicy.Sound.load('goal', 'audio/fx_jump.mp3');
-        Juicy.Sound.load('ost', 'audio/music_particles.mp3', true);
         Juicy.Sound.play('ost');
 
         var self = this;
@@ -84,8 +85,8 @@ var GameState = Juicy.State.extend({
                 this.player.update(dt);
 
                 if (this.player.position.x < 0) this.player.position.x = 0;
-                if (this.player.position.x + this.player.width > this.tile_manager.width * this.tile_manager.TILE_SIZE) {
-                    this.player.position.x = this.tile_manager.width * this.tile_manager.TILE_SIZE - this.player.width;
+                if (this.player.position.x + this.player.width > this.tile_manager.width) {
+                    this.player.position.x = this.tile_manager.width - this.player.width;
                 }
             }
 
@@ -100,10 +101,6 @@ var GameState = Juicy.State.extend({
             if (this.camera.x + game.width > this.tile_manager.width) {
                 this.camera.x = this.tile_manager.width - game.width;
             }
-
-            while (this.camera.y + game.height > this.tile_manager.height) {
-                this.tile_manager.addRow(true);
-            }
         }
     },
     render: function(context) {
@@ -112,7 +109,7 @@ var GameState = Juicy.State.extend({
         }
 
         context.save();
-        context.translate(-this.camera.x, -this.camera.y);
+        context.translate(-Math.round(this.camera.x), -Math.round(this.camera.y));
 
         this.target.render(context);
         this.tiles.render(context, this.camera.x, this.camera.y, this.game.width, this.game.height);

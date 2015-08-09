@@ -14,7 +14,6 @@ Juicy.Game.init(document.getElementById('game-canvas'), 160, 144, {
 
 Palette.onchange.push(function(palette) {
     var canvas = document.getElementById('game-canvas');
-    console.log(palette);
     canvas.style.background = 'rgba(' + palette[3].join(',') +')';
 })
 

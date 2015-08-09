@@ -5,16 +5,14 @@
     var DARK = 0;
 
     var NO_PALETTE = (location.href.indexOf('file://') >= 0);
-
-    var palettes   = [];
-    if (NO_PALETTE) {
-        palettes[0] = [[255, 255, 255, 255], [MID, MID, MID, 255], [LOW, LOW, LOW, 255], [DARK, DARK, DARK, 255]];
-    }
-    else {
+    var palettes   = [[[255, 255, 255, 255], [MID, MID, MID, 255], [LOW, LOW, LOW, 255], [DARK, DARK, DARK, 255]]];
+    if (!NO_PALETTE) {
         var palette    = new Image();
         palette.src    = 'img/palette.png';
         palette.crossOrigin = 'Anonymous';
         palette.onload = function() {
+            palettes = [];
+
             var tempcanvas = document.createElement('canvas');
             tempcanvas.width = palette.width;
             tempcanvas.height = palette.height;
@@ -44,13 +42,20 @@
     var Palette = window.Palette = { current: 0 };
 
     Palette.onchange = [];
+    Palette.templates = [];
 
     Palette.set = function(palette_id) {
         if (NO_PALETTE) palette_id = 0;
 
-        this.current = palette_id;
+        Palette.current = palette_id;
 
         if (!palettes[palette_id]) return;
+
+        // Update all existing templates
+        for (var i = 0; i < Palette.templates.length; i ++) {
+            var item = Palette.templates[i];
+            Palette.applyPalette(item.template, item.destination);
+        }
 
         for (var i = 0; i < Palette.onchange.length; i ++) {
             Palette.onchange[i](palettes[palette_id]);
@@ -58,7 +63,12 @@
     };
 
     Palette.get = function(type) {
-        var palette = palettes[this.current];
+        var ndx = Palette.current;
+        if (ndx >= palettes.length) {
+            ndx = 0;
+        }
+
+        var palette = palettes[ndx];
         switch(type) {
             case 'LIGHT': return palette[0];
             case 'MID': return palette[1];
@@ -68,7 +78,23 @@
     }
 
     Palette.applyPalette = function(template, destination) {
-        var palette = palettes[this.current];
+        if (destination.getAttribute('palette-dest')) {
+            Palette.templates[destination.getAttribute('palette-dest')].template = template;
+        }
+        else {
+            destination.setAttribute('palette-dest', Palette.templates.length);
+
+            Palette.templates.push({
+                template: template,
+                destination: destination
+            });
+        }
+
+        var ndx = Palette.current;
+        if (ndx >= palettes.length) {
+            ndx = 0;
+        }
+        var palette = palettes[ndx];
 
         destination.width  = template.width ;
         destination.height = template.height;
