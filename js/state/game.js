@@ -12,6 +12,8 @@ var GameState = Juicy.State.extend({
         this.tracker_image = new Image();
         this.tracker_image.src = './img/player.png';
 
+        this.particles = new Juicy.Entity(this, ['ParticleManager']);
+
         this.countdown = 2.99;
         this.countdown_entity = new Juicy.Entity(this, ['ColoredSprite']);
         this.countdown_sprite = this.countdown_entity.getComponent('ColoredSprite');
@@ -52,6 +54,8 @@ var GameState = Juicy.State.extend({
         this.watching = this.player;
     },
     update: function(dt, game) {
+        this.particles.getComponent('ParticleManager').update(dt);
+            
         if (this.countdown > -0.5) {
             var nextCountdown = this.countdown - dt;
 
@@ -99,6 +103,7 @@ var GameState = Juicy.State.extend({
         this.target.render(context);
         this.tiles.render(context, this.camera.x, this.camera.y, this.game.width, this.game.height);
         this.player.render(context);
+        this.particles.render(context);
 
         context.restore();
     }

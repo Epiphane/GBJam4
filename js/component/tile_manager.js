@@ -122,7 +122,31 @@
             else {
                 return 0;
             }
-            
+
+            var chunk_y = Math.floor(y / this.chunk_height);
+            this.chunks[chunk_y].context.clearRect(x * this.TILE_SIZE, (y - chunk_y * this.chunk_height) * this.TILE_SIZE, this.TILE_SIZE, this.TILE_SIZE);
+
+            var self = this;
+            this.entity.state.particles.getComponent('ParticleManager').spawnParticles("255, 255, 255, ", 3, 1, function(particle, ndx) {
+                return 0;
+            },
+            function(particle) {
+                particle.x = x * 2;
+                particle.y = y * 2;
+                var dx = self.entity.state.player.getComponent('Physics').dx;
+                var dy = self.entity.state.player.getComponent('Physics').dy;
+                var dist = Math.sqrt(dx*dx + dy*dy) * 10;
+                particle.dx = -dx / dist + Math.random()*2;
+                particle.dy = -dy / dist + Math.random()*2;
+                particle.startLife = 5;
+                particle.life = particle.startLife;
+            },
+            function(particle) {
+                particle.x += particle.dx;
+                particle.y += particle.dy;
+                particle.alpha = 1.0;
+            });
+
             return 1;
         },
         getTile: function(point) {
