@@ -6,18 +6,18 @@ var GameState = Juicy.State.extend({
         this.player = new Juicy.Entity(this, ['ColoredSprite', 'Player', 'Digger', 'Physics', 'Animations']);
         this.player.position = new Juicy.Point(100, -40);
         
-        this.player.getComponent('ColoredSprite').setSheet('img/sawman-all.png', 20, 20);
+        this.player.getComponent('ColoredSprite').setSheet('http://cors.io/?u=http://epiphane.github.io/GBJam4/img/sawman-all.png', 20, 20);
         this.player.getComponent('Player').startIdleAnim();
 
         this.tracker_image = new Image();
-        this.tracker_image.src = './img/player.png';
+        this.tracker_image.src = 'http://cors.io/?u=http://epiphane.github.io/GBJam4/img/player.png';
 
         this.particles = new Juicy.Entity(this, ['ParticleManager']);
 
         this.countdown = 2.99;
         this.countdown_entity = new Juicy.Entity(this, ['ColoredSprite']);
         this.countdown_sprite = this.countdown_entity.getComponent('ColoredSprite');
-        this.countdown_sprite.setSheet('img/countdown.png', 10, 10);
+        this.countdown_sprite.setSheet('http://cors.io/?u=http://epiphane.github.io/GBJam4/img/countdown.png', 10, 10);
         this.countdown_sprite.last_sprite = 3;
         this.countdown_sprite.repeat = true;
 
@@ -31,7 +31,7 @@ var GameState = Juicy.State.extend({
         };
 
         this.target = new Juicy.Entity(this, ['ColoredSprite']);
-        this.target.getComponent('ColoredSprite').setSheet('img/goal.png', 10, 10);
+        this.target.getComponent('ColoredSprite').setSheet('http://cors.io/?u=http://epiphane.github.io/GBJam4/img/goal.png', 10, 10);
         this.moveGoal();
 
         Palette.set(4);
