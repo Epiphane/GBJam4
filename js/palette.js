@@ -32,10 +32,16 @@
         }
     };
 
-    var Palette = window.Palette = {};
+    var Palette = window.Palette = { current: 0 };
+
+    Palette.onchange = [];
 
     Palette.set = function(palette_id) {
         this.current = palette_id;
+
+        for (var i = 0; i < Palette.onchange.length; i ++) {
+            Palette.onchange[i](palettes[palette_id]);
+        }
     };
 
     Palette.get = function(type) {
