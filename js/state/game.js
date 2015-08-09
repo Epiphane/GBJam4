@@ -5,6 +5,9 @@ var GameState = Juicy.State.extend({
 
         this.player = new Juicy.Entity(this, ['Sprite', 'Player', 'Digger', 'Physics']);
         this.player.position = new Juicy.Point(100, -40);
+        
+        this.player.getComponent('Sprite').setSheet('img/sawman-all.png', 20, 20);
+        this.player.getComponent('Player').startIdleAnim();
 
         this.tracker_image = new Image();
         this.tracker_image.src = './img/player.png';
@@ -32,7 +35,6 @@ var GameState = Juicy.State.extend({
 
     init: function() {
         Juicy.Sound.load('jump', 'fx_jump.mp3');
-        this.player.getComponent('Player').startIdleAnim();
     },
     
     moveGoal: function() {

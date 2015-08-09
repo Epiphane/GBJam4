@@ -1,5 +1,5 @@
 Juicy.Component.create('Player', {
-    constructor: function() {
+    constructor: function(myEntity) {
         this.speed = 50;
     
         this.controls = ['LEFT', 'RIGHT', 'DOWN'];
@@ -16,10 +16,7 @@ Juicy.Component.create('Player', {
     },
 
     startIdleAnim: function() {
-        this.entity.getComponent('Sprite').setSheet('img/sawman-idle.png', 20, 20);
-        this.entity.getComponent('Sprite').last_sprite = 11;
-        this.entity.getComponent('Sprite').repeat = true;
-        this.entity.getComponent('Sprite').frametime = 0.16;
+        this.entity.getComponent('Sprite').runAnimation(0, 11, 0.16, true);
     },
 
     updateAnim: function(newDirection) {
@@ -33,19 +30,13 @@ Juicy.Component.create('Player', {
             this.startIdleAnim();
         }
         else if (this.direction == 'LEFT') {
-            this.entity.getComponent('Sprite').setSheet('img/sawman-fast.png', 20, 20);
-            this.entity.getComponent('Sprite').last_sprite = 3;
-            this.entity.getComponent('Sprite').repeat = true;
-            this.entity.getComponent('Sprite').frametime = 0.016;
+            this.entity.getComponent('Sprite').runAnimation(12, 15, 0.016, true);
         }
         else if (this.direction == 'RIGHT') {
-
+            this.entity.getComponent('Sprite').runAnimation(16, 19, 0.016, true);
         }
         else if (this.direction == 'DOWN') {
-            this.entity.getComponent('Sprite').setSheet('img/sawman-fast.png', 20, 20);
-            this.entity.getComponent('Sprite').last_sprite = 3;
-            this.entity.getComponent('Sprite').repeat = true;
-            this.entity.getComponent('Sprite').frametime = 0.016;
+            this.entity.getComponent('Sprite').runAnimation(12, 15, 0.016, true);
         }
     },
 
