@@ -52,6 +52,8 @@ var GameState = Juicy.State.extend({
         this.watching = this.player;
     },
     update: function(dt, game) {
+        this.particles.getComponent('ParticleManager').update(dt);
+            
         if (this.countdown > -0.5) {
             var nextCountdown = this.countdown - dt;
 
@@ -99,6 +101,7 @@ var GameState = Juicy.State.extend({
         this.target.render(context);
         this.tiles.render(context, this.camera.x, this.camera.y, this.game.width, this.game.height);
         this.player.render(context);
+        this.particles.render(context);
 
         context.restore();
     }

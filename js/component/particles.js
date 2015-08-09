@@ -46,7 +46,7 @@ Juicy.Component.create('ParticleManager', {
          */
         for (var i = this.particles.length - 1; i >= 0; i--) {
             if (this.particles[i]) {
-                this.particles[i].updateFuncarino(this.particles[i], i, realDT);
+                this.particles[i].updateFuncarino(this.particles[i], i, dt);
                 this.particles[i].life--;
 
                 if (this.particles[i].life < 0) {
@@ -57,9 +57,11 @@ Juicy.Component.create('ParticleManager', {
     },
 
     render: function(context) {
+         context.mozImageSmoothingEnabled = false;
+         context.imageSmoothingEnabled = false;
         for (var i = 0; i < this.particles.length; i++) {
             context.beginPath();
-            context.rect(this.particles[i].x, this.particles[i].y, this.particles[i].size, this.particles[i].size);
+             context.rect(this.particles[i].x, this.particles[i].y, this.particles[i].size, this.particles[i].size);
             context.fillStyle = "rgba(" + this.particles[i].image + this.particles[i].alpha + 1 + ")"; 
             context.fill();
         }
