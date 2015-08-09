@@ -68,10 +68,17 @@
                 }
             }
         },
-        renderChunk: function(x, y, debug) {
-            var context = this.chunks[y][x].context;
+        renderChunk: function(x, y) {
+            var self = this;
+            if (!tile_template.complete) {
+                tile_queue.push(function() {
+                    self.renderChunk(x, y);
+                });
 
-            window.glob = this;
+                return;
+            }
+
+            var context = this.chunks[y][x].context;
 
             x *= this.chunk_width;
             y *= this.chunk_height;
@@ -115,20 +122,6 @@
             }
 
             return this.chunks[y][x];
-        },
-        blitCell: function(x, y, cell) {
-            var self = this;
-            if (!tile_template.complete) {
-                tile_queue.push(function() {
-                    self.blitCell(x, y, cell);
-                });
-
-                return;
-            }
-
-            var chunk = this.getChunk(x, y);
-
-            chunk.context.drawImage(cell, (x % this.chunk_width) * TILE_SIZE, (y % this.chunk_height) * TILE_SIZE);
         },
         removeCell: function(x, y) {
             x -= x % TILE_SIZE;
