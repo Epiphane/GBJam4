@@ -5,16 +5,14 @@
     var DARK = 0;
 
     var NO_PALETTE = (location.href.indexOf('file://') >= 0);
-
-    var palettes   = [];
-    if (NO_PALETTE) {
-        palettes[0] = [[255, 255, 255, 255], [MID, MID, MID, 255], [LOW, LOW, LOW, 255], [DARK, DARK, DARK, 255]];
-    }
-    else {
+    var palettes   = [[[255, 255, 255, 255], [MID, MID, MID, 255], [LOW, LOW, LOW, 255], [DARK, DARK, DARK, 255]]];
+    if (!NO_PALETTE) {
         var palette    = new Image();
         palette.src    = 'img/palette.png';
         palette.crossOrigin = 'Anonymous';
         palette.onload = function() {
+            palettes = [];
+
             var tempcanvas = document.createElement('canvas');
             tempcanvas.width = palette.width;
             tempcanvas.height = palette.height;
@@ -58,7 +56,12 @@
     };
 
     Palette.get = function(type) {
-        var palette = palettes[Palette.current];
+        var ndx = Palette.current;
+        if (ndx >= palettes.length) {
+            ndx = 0;
+        }
+
+        var palette = palettes[ndx];
         switch(type) {
             case 'LIGHT': return palette[0];
             case 'MID': return palette[1];
