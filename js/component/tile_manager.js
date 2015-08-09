@@ -124,7 +124,7 @@
             }
 
             var self = this;
-            this.entity.state.particles.getComponent('ParticleManager').spawnParticles("255, 255, 255, ", 3, 1, function(particle, ndx) {
+            this.entity.state.particles.getComponent('ParticleManager').spawnParticles("255, 255, 255", 2, 1, function(particle, ndx) {
                 return 0;
             },
             function(particle) {
@@ -137,21 +137,23 @@
                 if (dy < 0) {
                     particle.y -= 10;
                 }
+                else {
+                    particle.y += 7;
+                }
 
                 if (dx < -6) {
                     particle.x -= 8;
                 }
 
                 var dist = Math.sqrt(dx*dx + dy*dy) * 10;
-                particle.dx = -dx / dist + Math.random()*2;
-                particle.dy = -dy / dist + Math.random()*2;
+                particle.dx = -dx / dist + Math.random()*2 - 1;
+                particle.dy = -dy / dist + Math.random()*2 - 1;
                 particle.startLife = 9;
                 particle.life = particle.startLife;
             },
             function(particle) {
                 particle.x += particle.dx;
                 particle.y += particle.dy;
-                particle.alpha = 1.0;
             });
 
             return 1;

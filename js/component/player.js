@@ -1,5 +1,5 @@
 Juicy.Component.create('Player', {
-    constructor: function() {
+    constructor: function(myEntity) {
         this.speed = 200;
     
         this.controls = ['LEFT', 'RIGHT', 'DOWN'];
@@ -16,6 +16,7 @@ Juicy.Component.create('Player', {
 
     score: function() {
         this.entity.state.moveGoal();
+        this.entity.state.dramaticPause();
     },
 
     startIdleAnim: function() {
@@ -50,6 +51,26 @@ Juicy.Component.create('Player', {
     update: function(dt, game) {
         var digger = this.entity.getComponent('Digger');
         var newDirection = 'IDLE';
+
+        var self = this;
+
+        this.entity.state.particles.getComponent('ParticleManager').spawnParticles("255, 255, 0", 1, 1, function(particle, ndx) {
+            return 0;
+        },
+        function(particle) {
+            particle.x = self.entity.position.x + self.entity.width*Math.random()*0.6 + 4;
+            particle.y = self.entity.position.y + self.entity.height/2;
+            
+            particle.dx = -self.entity.getComponent('Physics').dx / 70;
+            particle.dy = -self.entity.getComponent('Physics').dy / 70;
+
+            particle.startLife = 20;
+            particle.life = particle.startLife;
+        },
+        function(particle) {
+            particle.x += particle.dx;
+            particle.y += particle.dy;
+        });
 
         if (game.keyDown(this.controls[0])) {
             digger.left();
