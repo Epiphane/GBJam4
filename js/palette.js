@@ -42,6 +42,7 @@
     var Palette = window.Palette = { current: 0 };
 
     Palette.onchange = [];
+    Palette.templates = [];
 
     Palette.set = function(palette_id) {
         if (NO_PALETTE) palette_id = 0;

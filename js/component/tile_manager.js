@@ -68,8 +68,10 @@
                 }
             }
         },
-        renderChunk: function(x, y) {
+        renderChunk: function(x, y, debug) {
             var context = this.chunks[y][x].context;
+
+            window.glob = this;
 
             x *= this.chunk_width;
             y *= this.chunk_height;
@@ -105,6 +107,11 @@
 
                 this.generateChunk(x, y);
                 this.renderChunk(x, y);
+
+                var self = this;
+                Palette.onchange.push(function() {
+                    self.renderChunk(x, y);
+                });
             }
 
             return this.chunks[y][x];

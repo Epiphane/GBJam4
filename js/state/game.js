@@ -1,3 +1,6 @@
+Juicy.Sound.load('goal', 'audio/fx_jump.mp3');
+Juicy.Sound.load('ost', 'audio/music_particles.mp3', true);
+
 var GameState = Juicy.State.extend({
     constructor: function() {
         this.tile_manager = new Juicy.Components.TileManager(480);
@@ -47,8 +50,6 @@ var GameState = Juicy.State.extend({
     },
 
     init: function() {
-        Juicy.Sound.load('goal', 'audio/fx_jump.mp3');
-        Juicy.Sound.load('ost', 'audio/music_particles.mp3', true);
         Juicy.Sound.play('ost');
 
         var self = this;
