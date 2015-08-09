@@ -4,20 +4,21 @@ Juicy.Component.create('ParticleManager', {
         this.particles = Array();
     },
 
-    spawnParticles: function(image, size, howMany, timeToLive, initThisParticle, updateParticle) {
-        this.howMany = howMany;
-        this.updateFunction = updateParticle;
+    /* Required: color, size, howMany, timeToLive, initThisParticle, updateParticle */
+    spawnParticles: function(config) {
+        this.howMany = config.howMany;
+        this.updateFunction = config.updateParticle;
 
         for (var i = 0; i < this.howMany; i++) {
             var newParticle = {
                 life: 30,
-                init: initThisParticle,
-                updateFuncarino: updateParticle,
+                init: config.initParticle,
+                updateFuncarino: config.updateParticle,
             };
             this.pendingParticles.push(newParticle);
-            newParticle.timeToLive = timeToLive(newParticle, i);
-            newParticle.image = image;
-            newParticle.size = size;
+            newParticle.timeToLive = config.timeToLive(newParticle, i);
+            newParticle.color = config.color;
+            newParticle.size = config.size;
         }
     },
 
@@ -28,6 +29,10 @@ Juicy.Component.create('ParticleManager', {
 
     update: function(dt, input) {
 
+        /**
+         * Go through the particles that haven't spawned yet and check
+         *  if they're ready to go.
+         */
         for (var i = this.pendingParticles.length - 1; i >= 0; i--) {
             var currParticle = this.pendingParticles[i];
             if (currParticle.timeToLive < 0) {
@@ -37,9 +42,12 @@ Juicy.Component.create('ParticleManager', {
             currParticle.timeToLive--;
         }
 
+        /**
+         * Loop through the existing particles and call their update function
+         */
         for (var i = this.particles.length - 1; i >= 0; i--) {
             if (this.particles[i]) {
-                this.particles[i].updateFuncarino(this.particles[i], i, realDT);
+                this.particles[i].updateFuncarino(this.particles[i], i, dt);
                 this.particles[i].life--;
 
                 if (this.particles[i].life < 0) {
@@ -50,11 +58,11 @@ Juicy.Component.create('ParticleManager', {
     },
 
     render: function(context) {
+        context.mozImageSmoothingEnabled = false;
+        context.imageSmoothingEnabled = false;
         for (var i = 0; i < this.particles.length; i++) {
-            context.beginPath();
-            context.rect(this.particles[i].x, this.particles[i].y, this.particles[i].size, this.particles[i].size);
-            context.fillStyle = "rgba(" + this.particles[i].image + this.particles[i].alpha + 1 + ")"; 
-            context.fill();
+            context.fillStyle = "rgba(" + Palette.get(this.particles[i].color).join(',') + ")"; 
+            context.fillRect(Math.round(this.particles[i].x), Math.round(this.particles[i].y), this.particles[i].size, this.particles[i].size);
         }
     },
 });

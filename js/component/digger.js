@@ -43,7 +43,7 @@ Juicy.Component.create('Digger', {
         var blocksRekt = 0;
         var self = this;
         this.forCollisionBox(function(x, y) {
-            var pos = self.entity.position.add(x, y).mult(1 / tile_manager.TILE_SIZE).floor();
+            var pos = self.entity.position.add(x, y).floor();
             blocksRekt += tile_manager.removeCell(pos.x, pos.y);
         });
 
@@ -60,11 +60,10 @@ Juicy.Component.create('Digger', {
 
         this._down = this._left = this._right = false;
     },
-    render: function(context) {
-        // context.fillStyle = 'rgba(255, 0, 0, 0.5)';
-        // var tile_size = this.entity.state.tile_manager.TILE_SIZE;
-        // this.forCollisionBox(function(x, y) {
-        //     context.fillRect(x, y, tile_size, tile_size);
-        // });
-    }
+    // render: function(context) {
+    //     context.fillStyle = 'rgba(255, 0, 0, 0.5)';
+    //     this.forCollisionBox(function(x, y) {
+    //         context.fillRect(x, y, 2, 2);
+    //     });
+    // }
 });
