@@ -10,7 +10,7 @@ var GameState = Juicy.State.extend({
         this.player.getComponent('Player').startIdleAnim();
 
         this.tracker_image = new Image();
-        this.tracker_image.src = './img/player.png';
+        this.tracker_image.src = 'img/player.png';
 
         this.particles = new Juicy.Entity(this, ['ParticleManager']);
 
@@ -34,11 +34,18 @@ var GameState = Juicy.State.extend({
         this.target.getComponent('ColoredSprite').setSheet('img/goal.png', 10, 10);
         this.moveGoal();
 
+        this.dramaticPauseTime = 0.0;
+
         Palette.set(4);
     },
     moveGoal: function() {
         this.target.position = new Juicy.Point(Juicy.rand(this.tile_manager.width), -Juicy.rand(10, 80));
     },
+
+    dramaticPause: function() {
+         this.dramaticPauseTime = 0.2;
+    },
+
     init: function() {
         Juicy.Sound.load('goal', 'audio/fx_jump.mp3');
         Juicy.Sound.load('ost', 'audio/music_particles.mp3', true);
@@ -54,38 +61,45 @@ var GameState = Juicy.State.extend({
         this.watching = this.player;
     },
     update: function(dt, game) {
-        this.particles.getComponent('ParticleManager').update(dt);
-            
-        if (this.countdown > -0.5) {
-            var nextCountdown = this.countdown - dt;
+        if (this.dramaticPauseTime > 0) {
+            this.dramaticPauseTime -= dt;
 
-            if (Math.floor(this.countdown) !== Math.floor(nextCountdown)) {
-                this.countdown_sprite.goNextFrame();
+            // update whatever cool effects can still happen when we're dramatically paused
+        }
+        else {
+            this.particles.getComponent('ParticleManager').update(dt);
+
+            if (this.countdown > -0.5) {
+                var nextCountdown = this.countdown - dt;
+
+                if (Math.floor(this.countdown) !== Math.floor(nextCountdown)) {
+                    this.countdown_sprite.goNextFrame();
+                }
+
+                this.countdown = nextCountdown;
+                this.player.getComponent('ColoredSprite').update(dt);
             }
 
-            this.countdown = nextCountdown;
-            this.player.getComponent('ColoredSprite').update(dt);
-        }
-        
-        if (this.countdown <= 0) {
-            this.player.update(dt);
+            if (this.countdown <= 0) {
+                this.player.update(dt);
 
-            if (this.player.position.x < 0) this.player.position.x = 0;
-            if (this.player.position.x + this.player.width > this.tile_manager.width) {
-                this.player.position.x = this.tile_manager.width - this.player.width;
+                if (this.player.position.x < 0) this.player.position.x = 0;
+                if (this.player.position.x + this.player.width > this.tile_manager.width) {
+                    this.player.position.x = this.tile_manager.width - this.player.width;
+                }
             }
-        }
 
-        // Update Camera
-        var dx = (this.watching.position.x - game.width / 2) - this.camera.x;
-        var dy = (this.watching.position.y - game.height / 4) - this.camera.y;
+            // Update Camera
+            var dx = (this.watching.position.x - game.width / 2) - this.camera.x;
+            var dy = (this.watching.position.y - game.height / 4) - this.camera.y;
 
-        this.camera.x += dx * 8 * dt;
-        this.camera.y += dy * 20 * dt;
-        if (this.camera.x < 0) 
-            this.camera.x = 0;
-        if (this.camera.x + game.width > this.tile_manager.width) {
-            this.camera.x = this.tile_manager.width - game.width;
+            this.camera.x += dx * 8 * dt;
+            this.camera.y += dy * 20 * dt;
+            if (this.camera.x < 0) 
+                this.camera.x = 0;
+            if (this.camera.x + game.width > this.tile_manager.width) {
+                this.camera.x = this.tile_manager.width - game.width;
+            }
         }
     },
     render: function(context) {
@@ -98,8 +112,8 @@ var GameState = Juicy.State.extend({
 
         this.target.render(context);
         this.tiles.render(context, this.camera.x, this.camera.y, this.game.width, this.game.height);
-        this.player.render(context);
         this.particles.render(context);
+        this.player.render(context);
 
         context.restore();
     }

@@ -61,8 +61,8 @@ Juicy.Component.create('ParticleManager', {
          context.imageSmoothingEnabled = false;
         for (var i = 0; i < this.particles.length; i++) {
             context.beginPath();
-             context.rect(this.particles[i].x, this.particles[i].y, this.particles[i].size, this.particles[i].size);
-            context.fillStyle = "rgba(" + this.particles[i].image + this.particles[i].alpha + 1 + ")"; 
+             context.rect(Math.round(this.particles[i].x), Math.round(this.particles[i].y), this.particles[i].size, this.particles[i].size);
+            context.fillStyle = "rgb(" + this.particles[i].image + ")"; 
             context.fill();
         }
     },
