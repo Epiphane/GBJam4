@@ -12,6 +12,8 @@ var GameState = Juicy.State.extend({
         this.tracker_image = new Image();
         this.tracker_image.src = './img/player.png';
 
+        this.particles = new Juicy.Entity(this, ['ParticleManager']);
+
         this.countdown = 2.99;
         this.countdown_entity = new Juicy.Entity(this, ['Sprite']);
         this.countdown_sprite = this.countdown_entity.getComponent('Sprite');

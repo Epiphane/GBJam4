@@ -28,6 +28,10 @@ Juicy.Component.create('ParticleManager', {
 
     update: function(dt, input) {
 
+        /**
+         * Go through the particles that haven't spawned yet and check
+         *  if they're ready to go.
+         */
         for (var i = this.pendingParticles.length - 1; i >= 0; i--) {
             var currParticle = this.pendingParticles[i];
             if (currParticle.timeToLive < 0) {
@@ -37,6 +41,9 @@ Juicy.Component.create('ParticleManager', {
             currParticle.timeToLive--;
         }
 
+        /**
+         * Loop through the existing particles and call their update function
+         */
         for (var i = this.particles.length - 1; i >= 0; i--) {
             if (this.particles[i]) {
                 this.particles[i].updateFuncarino(this.particles[i], i, realDT);
