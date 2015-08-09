@@ -51,6 +51,12 @@
 
         if (!palettes[palette_id]) return;
 
+        // Update all existing templates
+        for (var i = 0; i < Palette.templates.length; i ++) {
+            var item = Palette.templates[i];
+            Palette.applyPalette(item.template, item.destination);
+        }
+
         for (var i = 0; i < Palette.onchange.length; i ++) {
             Palette.onchange[i](palettes[palette_id]);
         }
@@ -72,7 +78,23 @@
     }
 
     Palette.applyPalette = function(template, destination) {
-        var palette = palettes[Palette.current];
+        if (destination.getAttribute('palette-dest')) {
+            Palette.templates[destination.getAttribute('palette-dest')].template = template;
+        }
+        else {
+            destination.setAttribute('palette-dest', Palette.templates.length);
+
+            Palette.templates.push({
+                template: template,
+                destination: destination
+            });
+        }
+
+        var ndx = Palette.current;
+        if (ndx >= palettes.length) {
+            ndx = 0;
+        }
+        var palette = palettes[ndx];
 
         destination.width  = template.width ;
         destination.height = template.height;

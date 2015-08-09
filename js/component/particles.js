@@ -4,20 +4,21 @@ Juicy.Component.create('ParticleManager', {
         this.particles = Array();
     },
 
-    spawnParticles: function(image, size, howMany, timeToLive, initThisParticle, updateParticle) {
-        this.howMany = howMany;
-        this.updateFunction = updateParticle;
+    /* Required: color, size, howMany, timeToLive, initThisParticle, updateParticle */
+    spawnParticles: function(config) {
+        this.howMany = config.howMany;
+        this.updateFunction = config.updateParticle;
 
         for (var i = 0; i < this.howMany; i++) {
             var newParticle = {
                 life: 30,
-                init: initThisParticle,
-                updateFuncarino: updateParticle,
+                init: config.initParticle,
+                updateFuncarino: config.updateParticle,
             };
             this.pendingParticles.push(newParticle);
-            newParticle.timeToLive = timeToLive(newParticle, i);
-            newParticle.image = image;
-            newParticle.size = size;
+            newParticle.timeToLive = config.timeToLive(newParticle, i);
+            newParticle.color = config.color;
+            newParticle.size = config.size;
         }
     },
 
@@ -61,8 +62,8 @@ Juicy.Component.create('ParticleManager', {
          context.imageSmoothingEnabled = false;
         for (var i = 0; i < this.particles.length; i++) {
             context.beginPath();
-             context.rect(Math.round(this.particles[i].x), Math.round(this.particles[i].y), this.particles[i].size, this.particles[i].size);
-            context.fillStyle = "rgb(" + this.particles[i].image + ")"; 
+            context.rect(Math.round(this.particles[i].x), Math.round(this.particles[i].y), this.particles[i].size, this.particles[i].size);
+            context.fillStyle = "rgba(" + Palette.get(this.particles[i].color).join(',') + ")"; 
             context.fill();
         }
     },

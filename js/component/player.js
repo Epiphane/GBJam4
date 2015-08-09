@@ -54,22 +54,27 @@ Juicy.Component.create('Player', {
 
         var self = this;
 
-        this.entity.state.particles.getComponent('ParticleManager').spawnParticles("255, 255, 0", 1, 1, function(particle, ndx) {
-            return 0;
-        },
-        function(particle) {
-            particle.x = self.entity.position.x + self.entity.width*Math.random()*0.6 + 4;
-            particle.y = self.entity.position.y + self.entity.height/2;
-            
-            particle.dx = -self.entity.getComponent('Physics').dx / 70;
-            particle.dy = -self.entity.getComponent('Physics').dy / 70;
+        this.entity.state.particles.getComponent('ParticleManager').spawnParticles({
+            color: "LIGHT", 
+            size: 1, 
+            howMany: 1, 
+            timeToLive: function(particle, ndx) {
+                return 0;
+            },
+            initParticle: function(particle) {
+                particle.x = self.entity.position.x + self.entity.width*Math.random()*0.6 + 4;
+                particle.y = self.entity.position.y + self.entity.height/2;
+                
+                particle.dx = -self.entity.getComponent('Physics').dx / 70;
+                particle.dy = -self.entity.getComponent('Physics').dy / 70;
 
-            particle.startLife = 20;
-            particle.life = particle.startLife;
-        },
-        function(particle) {
-            particle.x += particle.dx;
-            particle.y += particle.dy;
+                particle.startLife = 20;
+                particle.life = particle.startLife;
+            },
+            updateParticle: function(particle) {
+                particle.x += particle.dx;
+                particle.y += particle.dy;
+            }
         });
 
         if (game.keyDown(this.controls[0])) {
