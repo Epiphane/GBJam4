@@ -98,7 +98,7 @@ Juicy.Component.create('Animations', {
         myEntity.visualTransform = {
             translate: new Juicy.Point(0, 0),
             
-            scale: new Juicy.Point(-1, 1),
+            scale: new Juicy.Point(1, 1),
             scaleAnchor: new Juicy.Point(0.5, 0.5),
         
             rotate: 0,
