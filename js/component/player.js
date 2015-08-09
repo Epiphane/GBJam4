@@ -1,27 +1,66 @@
 Juicy.Component.create('Player', {
     constructor: function() {
-        this.speed = 100;
+        this.speed = 200;
     
         this.controls = ['LEFT', 'RIGHT', 'DOWN'];
+
+        this.arrow = new Image();
+        this.arrow.src = 'img/arrow.png';
+
+        /** Lets us keep track of what spritesheet direction we're using */
+        this.direction = 'IDLE';
 
         this.arrow = document.createElement('canvas');
         this.arrow_context = this.arrow.getContext('2d');
     },
+
     score: function() {
         this.entity.state.moveGoal();
     },
+
+    startIdleAnim: function() {
+        this.entity.getComponent('Sprite').runAnimation(0, 11, 0.16, true);
+    },
+
+    updateAnim: function(newDirection) {
+        if (this.direction == newDirection) {
+            return;
+        }
+
+        this.direction = newDirection;
+
+        if (this.direction == 'IDLE') {
+            this.startIdleAnim();
+        }
+        else if (this.direction == 'LEFT') {
+            this.entity.getComponent('Sprite').runAnimation(12, 15, 0.016, true);
+        }
+        else if (this.direction == 'RIGHT') {
+            this.entity.getComponent('Sprite').runAnimation(16, 19, 0.016, true);
+        }
+        else if (this.direction == 'DOWN') {
+            this.entity.getComponent('Sprite').runAnimation(12, 15, 0.016, true);
+        }
+    },
+
     update: function(dt, game) {
         var digger = this.entity.getComponent('Digger');
+        var newDirection = 'IDLE';
 
         if (game.keyDown(this.controls[0])) {
             digger.left();
+            newDirection = 'LEFT';
         }
         if (game.keyDown(this.controls[1])) {
             digger.right();
+            newDirection = 'RIGHT';
         }
         if (game.keyDown(this.controls[2])) {
             digger.down();
+            newDirection = 'DOWN';
         }
+
+        this.updateAnim(newDirection);
 
         if (this.entity.state.target.testCollision(this.entity)) {
             this.score();
