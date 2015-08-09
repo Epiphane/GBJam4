@@ -14,20 +14,23 @@
 
     Juicy.Component.create('TileManager', {
         TILE_SIZE: 2,
-        constructor: function(initial_width, initial_height) {
-            this.width  = initial_width;
-            this.height = 0;
+        constructor: function(width) {
             this.tiles  = [];
-
             this.chunks = [];
-            this.chunk_width  = initial_width;
-            this.chunk_height = initial_height * 2;
 
-            for (var j = 0; j < initial_height; j ++) {
-                this.addRow(true);
-            }
+            this.width = width * this.TILE_SIZE;
+            this.height = 0;
+
+            // For ultimate performance gainz
+            this.chunk_width  = 160;
+            this.chunk_height = 144;
+        },
+        getWidth: function() {
+            return this.chunks.length * this.chunk_height * this.TILE_SIZE;
         },
         addRow: function(immediate) {
+            var newRow = this.tiles[this.height] = [];
+
             for (var i = 0; i < this.width; i ++) {
                 if (Math.random() > 0.01) {
                     this.addCell(i, this.height, immediate);
@@ -35,6 +38,13 @@
             }
 
             this.height ++;
+        },
+        getCell: function(x, y) {
+            if (!this.tiles[y]) {
+                this.tiles[y] = [];
+            }
+
+            return this.tiles[y][x];
         },
         addCell: function(x, y, immediate) {
             if (!this.tiles[y]) {
@@ -46,6 +56,31 @@
             if (immediate) {
                 this.blitCell(x, y, tile);
             }
+        },
+        getChunk: function(x, y) {
+            var x = Math.floor(x / this.chunk_width);
+            var y = Math.floor(y / this.chunk_height);
+
+            if (!this.chunks[y]) {
+                this.chunks[y] = [];
+            }
+
+            if (!this.chunks[y][x]) {
+                var image    = document.createElement('canvas');
+                image.width  = this.chunk_width ;
+                image.height = this.chunk_height;
+
+                console.log('Creating Chunk', x, y);
+
+                this.chunks[y][x] = {
+                    image: image, 
+                    context: image.getContext('2d'),
+                    x: x,
+                    y: y
+                };
+            }
+
+            return this.chunks[y][x];
         },
         blitCell: function(x, y, cell) {
             var self = this;
@@ -68,24 +103,17 @@
                 return;
             }
 
-            var chunk_y = Math.floor(y / this.chunk_height);
-            if (!this.chunks[chunk_y]) {
-                var image    = document.createElement('canvas');
-                image.width  = this.chunk_width * this.TILE_SIZE;
-                image.height = this.chunk_height * this.TILE_SIZE;
+            var chunk = this.getChunk(x, y);
 
-                console.log('Chunk', chunk_y);
-
-                this.chunks[chunk_y] = {
-                    image: image, 
-                    context: image.getContext('2d')
-                };
-            }
-            var chunk = this.chunks[chunk_y].context;
-
-            chunk.drawImage(cell, x * this.TILE_SIZE, (y - chunk_y * this.chunk_height) * this.TILE_SIZE);
+            chunk.context.drawImage(cell, (x % this.chunk_width) * this.TILE_SIZE, (y % this.chunk_height) * this.TILE_SIZE);
         },
         removeCell: function(x, y) {
+            x -= (x % this.TILE_SIZE);
+            y -= (y % this.TILE_SIZE);
+            
+            var chunk = this.getChunk(x, y);
+            chunk.context.clearRect(x - chunk.x * this.chunk_width, y - chunk.y * this.chunk_height, this.TILE_SIZE, this.TILE_SIZE);
+        
             if (this.tiles[y]) {
                 if (!this.tiles[y][x]) return 0;
 
@@ -118,7 +146,7 @@
                 particle.y += particle.dy;
                 particle.alpha = 1.0;
             });
-        
+
             return 1;
         },
         getTile: function(point) {
@@ -192,16 +220,20 @@
 
             return origin.sub(pos);
         },
-        update: function(dt, game) {
-
-        },
         render: function(context, x, y, w, h) {
-            var min_chunk_y = Math.floor(y / this.chunk_height / this.TILE_SIZE);
-            if (min_chunk_y < 0) min_chunk_y = 0;
-            var max_chunk_y = Math.ceil((y + h) / this.chunk_height / this.TILE_SIZE);
+            window.rendering = [];
+            var chunk_x = Math.floor(x / this.chunk_width);
+            var chunk_y = Math.floor(y / this.chunk_height);
 
-            for (var i = min_chunk_y; i < this.chunks.length && i <= max_chunk_y; i ++) {
-                context.drawImage(this.chunks[i].image, 0, i * this.chunk_height * this.TILE_SIZE);
+            for (var i = chunk_x * this.chunk_width; i < x + w; i += this.chunk_width) {
+                for (var j = chunk_y * this.chunk_height; j <= y + h; j += this.chunk_height) {
+                    if (j < 0) continue;
+
+                    var chunk = this.getChunk(i, j);
+                    window.rendering.push(j, chunk);
+
+                    context.drawImage(chunk.image, i, j);
+                }
             }
         }
     });

@@ -43,12 +43,12 @@ Juicy.Component.create('Digger', {
         var blocksRekt = 0;
         var self = this;
         this.forCollisionBox(function(x, y) {
-            var pos = self.entity.position.add(x, y).mult(1 / tile_manager.TILE_SIZE).floor();
+            var pos = self.entity.position.add(x, y).floor();
             blocksRekt += tile_manager.removeCell(pos.x, pos.y);
         });
 
         // Slow down
-        physics.dy -= blocksRekt * 3;
+        physics.dy -= blocksRekt * 2;
 
         if (blocksRekt > 0) {
             physics.dx *= (blocksRekt + 20) / 20;
@@ -59,12 +59,5 @@ Juicy.Component.create('Digger', {
         }
 
         this._down = this._left = this._right = false;
-    },
-    render: function(context) {
-        // context.fillStyle = 'rgba(255, 0, 0, 0.5)';
-        // var tile_size = this.entity.state.tile_manager.TILE_SIZE;
-        // this.forCollisionBox(function(x, y) {
-        //     context.fillRect(x, y, tile_size, tile_size);
-        // });
     }
 });
