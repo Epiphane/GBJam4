@@ -31,8 +31,13 @@ Juicy.Component.create('Sprite', {
             }
         }
     },
-    setSheet: function(url, swidth, sheight) {
+
+    setImageSrc: function(url) {
         this.image.src = url;
+    },
+
+    setSheet: function(url, swidth, sheight) {
+        this.setImageSrc(url);
 
         this.frametime = -1; // Don't animate yet
         this.steptime = 0;

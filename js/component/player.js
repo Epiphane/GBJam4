@@ -19,7 +19,7 @@ Juicy.Component.create('Player', {
     },
 
     startIdleAnim: function() {
-        this.entity.getComponent('Sprite').runAnimation(0, 11, 0.16, true);
+        this.entity.getComponent('ColoredSprite').runAnimation(0, 11, 0.16, true);
     },
 
     updateAnim: function(newDirection) {
@@ -29,17 +29,18 @@ Juicy.Component.create('Player', {
 
         this.direction = newDirection;
 
+        var sprite = this.entity.getComponent('ColoredSprite');
         if (this.direction == 'IDLE') {
-            this.startIdleAnim();
+            sprite.runAnimation(0, 11, 0.16, true);
         }
         else if (this.direction == 'LEFT') {
-            this.entity.getComponent('Sprite').runAnimation(12, 15, 0.016, true);
+            sprite.runAnimation(12, 15, 0.016, true);
         }
         else if (this.direction == 'RIGHT') {
-            this.entity.getComponent('Sprite').runAnimation(16, 19, 0.016, true);
+            sprite.runAnimation(16, 19, 0.016, true);
         }
         else if (this.direction == 'DOWN') {
-            this.entity.getComponent('Sprite').runAnimation(12, 15, 0.016, true);
+            sprite.runAnimation(12, 15, 0.016, true);
         }
     },
 
@@ -84,28 +85,28 @@ Juicy.Component.create('Player', {
         var arrowData = context.createImageData(this.arrow.width, this.arrow.height);
         var data = arrowData.data;
 
-        function setPixel(point, r, g, b, a) {
+        function setPixel(point, color) {
             if (point.x < 0 || point.x >= self.arrow.width || point.y < 0 || point.y >= self.arrow.height)
                 return;
 
             var i = 4 * (point.x + point.y * self.arrow.width);
-            data[i+0]=r;
-            data[i+1]=g;
-            data[i+2]=b;
-            data[i+3]=a;
+            data[i+0]=color[0];
+            data[i+1]=color[1];
+            data[i+2]=color[2];
+            data[i+3]=color[3];
         }
 
         var self = this;
         var center = new Juicy.Point(this.arrow.width / 2, this.arrow.height / 2);
         var step = distanceToTarget.mult(-1 / distanceToTarget.length());
-        function castPixels(position) {
+        function castPixels(position, color) {
             var pos = position;
             while (position.sub(pos).length() < arrow_length) {
                 var p = pos.floor();
 
                 // Gotta be far away from center
                 if (center.sub(p).length() > 10) {
-                    setPixel(p, 255, 0, 0, 255);
+                    setPixel(p, color);
                 }
 
                 pos = pos.add(step);
@@ -114,18 +115,16 @@ Juicy.Component.create('Player', {
             // We're at the end of the arrow. Draw lines back to make the L shape
             var horiz = step.rotate(Math.PI * 3 / 4);
             var vert  = step.rotate(-Math.PI * 3 / 4);
-            // if (distanceToTarget.x < 0) horiz = horiz.mult(-1);
-            // if (distanceToTarget.y < 0) vert  = vert .mult(-1);
 
             for (var dist = 0; dist < 10; dist ++) {
-                setPixel(pos.add(horiz.mult(dist)).floor(), 255, 0, 0, 255);
-                setPixel(pos.add(vert .mult(dist)).floor(), 255, 0, 0, 255);
+                setPixel(pos.add(horiz.mult(dist)).floor(), color);
+                setPixel(pos.add(vert .mult(dist)).floor(), color);
             }
         }
 
         for (var i = -arrow_width; i <= arrow_width; i ++) {
             for (var j = -arrow_width; j <= arrow_width; j ++) {
-                castPixels(center.add(i, j));
+                castPixels(center.add(i, j), Palette.get('MID'));
             }
         }
 
