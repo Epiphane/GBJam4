@@ -48,7 +48,7 @@ Juicy.Component.create('Digger', {
         });
 
         // Slow down
-        physics.dy -= blocksRekt * 2;
+        physics.dy -= blocksRekt * 3;
 
         if (blocksRekt > 0) {
             physics.dx *= (blocksRekt + 20) / 20;
@@ -59,5 +59,11 @@ Juicy.Component.create('Digger', {
         }
 
         this._down = this._left = this._right = false;
+    },
+    render: function(context) {
+        context.fillStyle = 'rgba(255, 0, 0, 0.5)';
+        this.forCollisionBox(function(x, y) {
+            context.fillRect(x, y, 2, 2);
+        });
     }
 });

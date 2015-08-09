@@ -1,8 +1,24 @@
 (function() {
-    var tile = new Image();
-    tile.src = 'img/tile.png';
+    var TILE_SIZE = 2;
 
-    var blitqueue = {};
+    var tiles = {
+        EMPTY: 0,
+        DIRT: 1
+    };
+
+    var tile = document.createElement('canvas');
+    var tile_queue = [];
+    var tile_template = new Image();
+        tile_template.src = 'img/tiles.png';
+        tile_template.onload = function() {
+            Palette.applyPalette(tile_template, tile);
+
+            var cb;
+            while (cb = tile_queue.shift()) {
+                cb();
+            }
+        };
+
 
     Juicy.Point.prototype.floor = function() {
         return new Juicy.Point(Math.floor(this.x), Math.floor(this.y));
@@ -13,31 +29,17 @@
     };
 
     Juicy.Component.create('TileManager', {
-        TILE_SIZE: 2,
+        TILE_SIZE: TILE_SIZE,
         constructor: function(width) {
             this.tiles  = [];
             this.chunks = [];
 
-            this.width = width * this.TILE_SIZE;
+            this.width = width;
             this.height = 0;
 
             // For ultimate performance gainz
             this.chunk_width  = 160;
             this.chunk_height = 144;
-        },
-        getWidth: function() {
-            return this.chunks.length * this.chunk_height * this.TILE_SIZE;
-        },
-        addRow: function(immediate) {
-            var newRow = this.tiles[this.height] = [];
-
-            for (var i = 0; i < this.width; i ++) {
-                if (Math.random() > 0.01) {
-                    this.addCell(i, this.height, immediate);
-                }
-            }
-
-            this.height ++;
         },
         getCell: function(x, y) {
             if (!this.tiles[y]) {
@@ -46,15 +48,37 @@
 
             return this.tiles[y][x];
         },
-        addCell: function(x, y, immediate) {
-            if (!this.tiles[y]) {
-                this.tiles[y] = [];
+        generateChunk: function(x, y) {
+            x *= this.chunk_width  / TILE_SIZE;
+            y *= this.chunk_height / TILE_SIZE;
+
+            for (var i = 0; i < this.chunk_width / TILE_SIZE; i ++) {
+                for (var j = 0; j < this.chunk_height / TILE_SIZE; j ++) {
+
+                    if (!this.tiles[y + j]) {
+                        this.tiles[y + j] = [];
+                    }
+
+                    var tile = 'DIRT';
+                    if (Math.random() < 0.01) {
+                        tile = 'EMPTY';
+                    }
+                    
+                    this.tiles[y + j][x + i] = tile;
+                }
             }
+        },
+        renderChunk: function(x, y) {
+            var context = this.chunks[y][x].context;
 
-            this.tiles[y][x] = true;
+            x *= this.chunk_width;
+            y *= this.chunk_height;
+            for (var i = 0; i < this.chunk_width; i += TILE_SIZE) {
+                for (var j = 0; j < this.chunk_height; j += TILE_SIZE) {
+                    var cell = tiles[this.tiles[(y + j) / TILE_SIZE][(x + i) / TILE_SIZE]];
 
-            if (immediate) {
-                this.blitCell(x, y, tile);
+                    context.drawImage(tile, cell * TILE_SIZE, 0, TILE_SIZE, TILE_SIZE, i, j, TILE_SIZE, TILE_SIZE);
+                }
             }
         },
         getChunk: function(x, y) {
@@ -78,26 +102,18 @@
                     x: x,
                     y: y
                 };
+
+                this.generateChunk(x, y);
+                this.renderChunk(x, y);
             }
 
             return this.chunks[y][x];
         },
         blitCell: function(x, y, cell) {
             var self = this;
-            if (!cell.complete) {
-                if (!blitqueue[cell.src]) {
-                    blitqueue[cell.src] = [];
-                    cell.onload = function() {
-                        var item;
-                        while (item = blitqueue[cell.src].shift()) {
-                            self.blitCell(item.x, item.y, cell);
-                        }
-                    }
-                }
-
-                blitqueue[cell.src].push({
-                    x: x,
-                    y: y
+            if (!tile_template.complete) {
+                tile_queue.push(function() {
+                    self.blitCell(x, y, cell);
                 });
 
                 return;
@@ -105,49 +121,52 @@
 
             var chunk = this.getChunk(x, y);
 
-            chunk.context.drawImage(cell, (x % this.chunk_width) * this.TILE_SIZE, (y % this.chunk_height) * this.TILE_SIZE);
+            chunk.context.drawImage(cell, (x % this.chunk_width) * TILE_SIZE, (y % this.chunk_height) * TILE_SIZE);
         },
         removeCell: function(x, y) {
-            x -= (x % this.TILE_SIZE);
-            y -= (y % this.TILE_SIZE);
+            x -= x % TILE_SIZE;
+            y -= y % TILE_SIZE;
+
+            if (y < 0) return 0; // No tiles above ground
             
             var chunk = this.getChunk(x, y);
-            chunk.context.clearRect(x - chunk.x * this.chunk_width, y - chunk.y * this.chunk_height, this.TILE_SIZE, this.TILE_SIZE);
-        
-            if (this.tiles[y]) {
-                if (!this.tiles[y][x]) return 0;
+            // debugger;
+            chunk.context.clearRect(x - chunk.x * this.chunk_width, y - chunk.y * this.chunk_height, TILE_SIZE, TILE_SIZE);
+            
+            x /= TILE_SIZE;
+            y /= TILE_SIZE;
 
-                this.tiles[y][x] = false;
-            }
-            else {
+            if (!this.tiles[y]) { console.log(chunk); debugger; throw x + ', ' + y; return 0; }// No tiles in this row
+            if (this.tiles[y][x] === 'EMPTY') {
                 return 0;
             }
+            this.tiles[y][x] = 'EMPTY';
 
             var self = this;
             this.entity.state.particles.getComponent('ParticleManager').spawnParticles("255, 255, 255, ", 3, 1, function(particle, ndx) {
-                return 0;
-            },
-            function(particle) {
-                particle.x = x * 2;
-                particle.y = y * 2;
-                var dx = self.entity.state.player.getComponent('Physics').dx;
-                var dy = self.entity.state.player.getComponent('Physics').dy;
-                var dist = Math.sqrt(dx*dx + dy*dy) * 10;
-                particle.dx = -dx / dist + Math.random()*2;
-                particle.dy = -dy / dist + Math.random()*2;
-                particle.startLife = 5;
-                particle.life = particle.startLife;
-            },
-            function(particle) {
-                particle.x += particle.dx;
-                particle.y += particle.dy;
-                particle.alpha = 1.0;
-            });
+                    return 0;
+                },
+                function(particle) {
+                    particle.x = x * 2;
+                    particle.y = y * 2;
+                    var dx = self.entity.state.player.getComponent('Physics').dx;
+                    var dy = self.entity.state.player.getComponent('Physics').dy;
+                    var dist = Math.sqrt(dx*dx + dy*dy) * 10;
+                    particle.dx = -dx / dist + Math.random()*2;
+                    particle.dy = -dy / dist + Math.random()*2;
+                    particle.startLife = 5;
+                    particle.life = particle.startLife;
+                },
+                function(particle) {
+                    particle.x += particle.dx;
+                    particle.y += particle.dy;
+                    particle.alpha = 1.0;
+                });
 
             return 1;
         },
         getTile: function(point) {
-            point = point.mult(1 / this.TILE_SIZE).floor();
+            point = point.mult(1 / TILE_SIZE).floor();
 
             if (!this.tiles[point.y]) {
                 return false;
@@ -218,16 +237,17 @@
             return origin.sub(pos);
         },
         render: function(context, x, y, w, h) {
-            window.rendering = [];
             var chunk_x = Math.floor(x / this.chunk_width);
             var chunk_y = Math.floor(y / this.chunk_height);
+
+            window.rendering = [];
 
             for (var i = chunk_x * this.chunk_width; i < x + w; i += this.chunk_width) {
                 for (var j = chunk_y * this.chunk_height; j <= y + h; j += this.chunk_height) {
                     if (j < 0) continue;
 
                     var chunk = this.getChunk(i, j);
-                    window.rendering.push(j, chunk);
+                    rendering.push(j);
 
                     context.drawImage(chunk.image, i, j);
                 }

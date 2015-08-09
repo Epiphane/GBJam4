@@ -48,7 +48,7 @@
     Palette.set = function(palette_id) {
         if (NO_PALETTE) palette_id = 0;
 
-        this.current = palette_id;
+        Palette.current = palette_id;
 
         if (!palettes[palette_id]) return;
 
@@ -58,7 +58,7 @@
     };
 
     Palette.get = function(type) {
-        var palette = palettes[this.current];
+        var palette = palettes[Palette.current];
         switch(type) {
             case 'LIGHT': return palette[0];
             case 'MID': return palette[1];
@@ -68,7 +68,7 @@
     }
 
     Palette.applyPalette = function(template, destination) {
-        var palette = palettes[this.current];
+        var palette = palettes[Palette.current];
 
         destination.width  = template.width ;
         destination.height = template.height;

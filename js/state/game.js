@@ -4,7 +4,7 @@ var GameState = Juicy.State.extend({
         this.tiles = new Juicy.Entity(this, [ this.tile_manager ]);
 
         this.player = new Juicy.Entity(this, ['ColoredSprite', 'Player', 'Digger', 'Physics', 'Animations']);
-        this.player.position = new Juicy.Point(100, -40);
+        this.player.position = new Juicy.Point(40, 140);
         
         this.player.getComponent('ColoredSprite').setSheet('img/sawman-all.png', 20, 20);
         this.player.getComponent('Player').startIdleAnim();
@@ -71,8 +71,8 @@ var GameState = Juicy.State.extend({
             this.player.update(dt);
 
             if (this.player.position.x < 0) this.player.position.x = 0;
-            if (this.player.position.x + this.player.width > this.tile_manager.width * this.tile_manager.TILE_SIZE) {
-                this.player.position.x = this.tile_manager.width * this.tile_manager.TILE_SIZE - this.player.width;
+            if (this.player.position.x + this.player.width > this.tile_manager.width) {
+                this.player.position.x = this.tile_manager.width - this.player.width;
             }
         }
 
@@ -86,10 +86,6 @@ var GameState = Juicy.State.extend({
             this.camera.x = 0;
         if (this.camera.x + game.width > this.tile_manager.width) {
             this.camera.x = this.tile_manager.width - game.width;
-        }
-
-        while (this.camera.y + game.height > this.tile_manager.height) {
-            this.tile_manager.addRow(true);
         }
     },
     render: function(context) {
