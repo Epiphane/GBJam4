@@ -39,7 +39,7 @@ var GameState = Juicy.State.extend({
 
         this.dramaticPauseTime = 0.0;
 
-        Palette.set(4);
+        Palette.set(Juicy.rand(5));
     },
     moveGoal: function() {
         this.target.position = new Juicy.Point(Juicy.rand(this.tile_manager.width), -Juicy.rand(10, 80));
