@@ -32,16 +32,13 @@ var GameState = Juicy.State.extend({
         this.target.getComponent('Sprite').setSheet('img/goal.png', 10, 10);
         this.moveGoal();
     },
-
-    init: function() {
-        Juicy.Sound.load('jump', 'fx_jump.mp3');
-    },
-    
     moveGoal: function() {
         this.target.position = new Juicy.Point(Juicy.rand(this.tile_manager.width * this.tile_manager.TILE_SIZE), -Juicy.rand(10, 80));
     },
     init: function() {
-        Juicy.Sound.load('goal', 'fx_jump.mp3');
+        Juicy.Sound.load('goal', 'audio/fx_jump.mp3');
+        Juicy.Sound.load('ost', 'audio/music_particles.mp3', true);
+        Juicy.Sound.play('ost');
 
         var self = this;
         this.game.getPlayer = function() { return self.player; };
