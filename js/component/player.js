@@ -19,7 +19,7 @@ Juicy.Component.create('Player', {
     },
 
     startIdleAnim: function() {
-        this.entity.getComponent('ColoredSprite').runAnimation(0, 11, 0.16, true);
+        this.entity.getComponent('ColoredSprite').runAnimation(8, 19, 0.16, true);
     },
 
     updateAnim: function(newDirection) {
@@ -30,17 +30,20 @@ Juicy.Component.create('Player', {
         this.direction = newDirection;
 
         var sprite = this.entity.getComponent('ColoredSprite');
+        sprite.flipped = false;
         if (this.direction == 'IDLE') {
-            sprite.runAnimation(0, 11, 0.16, true);
+            this.entity.visualTransform.scale.x = 1;
+            sprite.runAnimation(8, 19, 0.16, true);
         }
         else if (this.direction == 'LEFT') {
-            sprite.runAnimation(12, 15, 0.016, true);
+            sprite.runAnimation(4, 7, 0.016, true);
+            sprite.flipped = true;
         }
         else if (this.direction == 'RIGHT') {
-            sprite.runAnimation(16, 19, 0.016, true);
+            sprite.runAnimation(4, 7, 0.016, true);
         }
         else if (this.direction == 'DOWN') {
-            sprite.runAnimation(12, 15, 0.016, true);
+            sprite.runAnimation(0, 3, 0.016, true);
         }
     },
 

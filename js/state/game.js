@@ -3,7 +3,7 @@ var GameState = Juicy.State.extend({
         this.tile_manager = new Juicy.Components.TileManager(240);
         this.tiles = new Juicy.Entity(this, [ this.tile_manager ]);
 
-        this.player = new Juicy.Entity(this, ['ColoredSprite', 'Player', 'Digger', 'Physics']);
+        this.player = new Juicy.Entity(this, ['ColoredSprite', 'Player', 'Digger', 'Physics', 'Animations']);
         this.player.position = new Juicy.Point(100, -40);
         
         this.player.getComponent('ColoredSprite').setSheet('img/sawman-all.png', 20, 20);
