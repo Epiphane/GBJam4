@@ -30,6 +30,8 @@
             }
             palettes.push(new_palette);
         }
+
+        Palette.set(Palette.current);
     };
 
     var Palette = window.Palette = { current: 0 };
@@ -38,6 +40,8 @@
 
     Palette.set = function(palette_id) {
         this.current = palette_id;
+
+        if (!palettes[palette_id]) return;
 
         for (var i = 0; i < Palette.onchange.length; i ++) {
             Palette.onchange[i](palettes[palette_id]);

@@ -123,9 +123,6 @@
                 return 0;
             }
 
-            var chunk_y = Math.floor(y / this.chunk_height);
-            this.chunks[chunk_y].context.clearRect(x * this.TILE_SIZE, (y - chunk_y * this.chunk_height) * this.TILE_SIZE, this.TILE_SIZE, this.TILE_SIZE);
-
             var self = this;
             this.entity.state.particles.getComponent('ParticleManager').spawnParticles("255, 255, 255, ", 3, 1, function(particle, ndx) {
                 return 0;
