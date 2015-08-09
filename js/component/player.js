@@ -19,7 +19,7 @@ Juicy.Component.create('Player', {
     },
 
     startIdleAnim: function() {
-        this.entity.getComponent('Sprite').runAnimation(0, 11, 0.16, true);
+        this.entity.getComponent('Sprite').runAnimation(8, 19, 0.16, true);
     },
 
     updateAnim: function(newDirection) {
@@ -30,16 +30,24 @@ Juicy.Component.create('Player', {
         this.direction = newDirection;
 
         if (this.direction == 'IDLE') {
+            this.entity.visualTransform.scale.x = 1;
             this.startIdleAnim();
+            this.entity.getComponent('Sprite').flipped = false;
         }
         else if (this.direction == 'LEFT') {
-            this.entity.getComponent('Sprite').runAnimation(12, 15, 0.016, true);
+//            this.entity.visualTransform.scale.x = -1;
+            this.entity.getComponent('Sprite').runAnimation(4, 7, 0.016, true);
+            this.entity.getComponent('Sprite').flipped = true;
         }
         else if (this.direction == 'RIGHT') {
-            this.entity.getComponent('Sprite').runAnimation(16, 19, 0.016, true);
+            this.entity.visualTransform.scale.x = 1;
+            this.entity.getComponent('Sprite').runAnimation(4, 7, 0.016, true);
+            this.entity.getComponent('Sprite').flipped = false;
         }
         else if (this.direction == 'DOWN') {
-            this.entity.getComponent('Sprite').runAnimation(12, 15, 0.016, true);
+            this.entity.visualTransform.scale.x = 1;
+            this.entity.getComponent('Sprite').runAnimation(0, 3, 0.016, true);
+            this.entity.getComponent('Sprite').flipped = false;
         }
     },
 

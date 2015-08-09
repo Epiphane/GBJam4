@@ -103,7 +103,7 @@ Juicy.Component.create('Sprite', {
     render: function(context) {
         context.save();
         if (this.flipped) {
-            context.translate(this.entity.   width, 0);
+            context.translate(this.entity.width, 0);
             context.scale(-1, 1);
         }
 
