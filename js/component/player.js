@@ -2,7 +2,7 @@ Juicy.Component.create('Player', {
     constructor: function(myEntity) {
         this.speed = 200;
     
-        this.controls = ['LEFT', 'RIGHT', 'DOWN'];
+        this.controls = ['LEFT', 'RIGHT', 'DOWN', 'UP'];
 
         this.arrow = new Image();
         this.arrow.src = 'img/arrow.png';
@@ -34,17 +34,20 @@ Juicy.Component.create('Player', {
         sprite.flipped = false;
         if (this.direction == 'IDLE') {
             this.entity.visualTransform.scale.x = 1;
-            sprite.runAnimation(8, 19, 0.16, true);
+            sprite.runAnimation(12, 23, 0.16, true);
         }
         else if (this.direction == 'LEFT') {
-            sprite.runAnimation(4, 7, 0.016, true);
+            sprite.runAnimation(8, 11, 0.016, true);
             sprite.flipped = true;
         }
         else if (this.direction == 'RIGHT') {
-            sprite.runAnimation(4, 7, 0.016, true);
+            sprite.runAnimation(8, 11, 0.016, true);
         }
         else if (this.direction == 'DOWN') {
             sprite.runAnimation(0, 3, 0.016, true);
+        }
+        else if (this.direction == 'UP') {
+            sprite.runAnimation(4, 7, 0.016, true);
         }
     },
 
@@ -88,6 +91,9 @@ Juicy.Component.create('Player', {
         if (game.keyDown(this.controls[2])) {
             digger.down();
             newDirection = 'DOWN';
+        }
+        if (game.keyDown(this.controls[3])) {
+            newDirection = 'UP';
         }
 
         this.updateAnim(newDirection);
