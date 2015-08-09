@@ -1,5 +1,5 @@
-Juicy.Sound.load('goal', 'audio/fx_jump.mp3');
-Juicy.Sound.load('ost', 'audio/music_particles.mp3', true);
+var music = new Juicy.Music();
+music.load('lvl1', 'audio/music_particles.mp3');
 
 var GameState = Juicy.State.extend({
     constructor: function() {
@@ -50,12 +50,13 @@ var GameState = Juicy.State.extend({
     },
 
     init: function() {
-        Juicy.Sound.play('ost');
+        music.play('lvl1');
 
         var self = this;
         this.game.getPlayer = function() { return self.player; };
     },
     key_ESC: function() {
+        music.pause('lvl1');
         this.game.setState(new PauseState(this));
     },
     key_SPACE: function() {

@@ -1,3 +1,6 @@
+var sfx = new Juicy.SFX();
+sfx.load('goal', 'audio/fx_jump.mp3');
+
 Juicy.Component.create('Player', {
     constructor: function(myEntity) {
         this.speed = 200;
@@ -94,8 +97,7 @@ Juicy.Component.create('Player', {
 
         if (this.entity.state.target.testCollision(this.entity)) {
             this.score();
-
-            Juicy.Sound.play('goal');
+            sfx.play('goal');
         }
     },
     render: function(context) {

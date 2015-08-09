@@ -20,7 +20,6 @@ var PauseState = Juicy.State.extend({
         this.game.setState(this.prevState);
     },
     init: function() {
-        // this.prevState.music.setVolume(15);
     },
     render: function(context) {
         this.prevState.render(context);
