@@ -1,33 +1,34 @@
 Juicy.Component.create('Sprite', {
     constructor: function(entity) {
-    var self = this;
+        var self = this;
 
-    this.sheet_width   = 0;
-    this.sheet_height  = 0;
-    this.sprite_width  = 0;
-    this.sprite_height = 0;
+        this.sheet_width   = 0;
+        this.sheet_height  = 0;
+        this.sprite_width  = 0;
+        this.sprite_height = 0;
 
-    this.frametime = -1; // Don't animate yet
-    this.timeleft = 0;
-    this.repeat = false;
-    this.sprite = 0;
-    this.first_sprite = 0;
-    this.last_sprite = 0;
+        this.frametime = -1; // Don't animate yet
+        this.timeleft = 0;
+        this.repeat = false;
+        this.sprite = 0;
+        this.first_sprite = 0;
+        this.last_sprite = 0;
 
-    this.scale = 1;
-    this.flipped = false;
-    this.nextFrame = 100;
-    this.maxNextFrame = 100;
+        this.scale = 1;
+        this.flipped = false;
+        this.nextFrame = 100;
+        this.maxNextFrame = 100;
 
-    this.image = new Image();
-    this.image.onload = function() {
-        self.sheet_width   = this.width / self.sprite_width;
-        self.sheet_height  = this.height / self.sprite_height;
+        this.image = new Image();
+        this.image.onload = function() {
+            self.sheet_width   = this.width / self.sprite_width;
+            self.sheet_height  = this.height / self.sprite_height;
 
-        entity.state.updated = true;
+            entity.state.updated = true;
 
-        if (self.onload)
-            self.onload(this);
+            if (self.onload) {
+                self.onload(this);
+            }
         }
     },
     setSheet: function(url, swidth, sheight) {
@@ -41,9 +42,9 @@ Juicy.Component.create('Sprite', {
 
         this.sprite_width  = swidth;
         this.sprite_height = sheight;
-        if (!this.entity.   width || !this.entity.   height) {
-            this.entity.   width  = swidth;
-            this.entity.   height = sheight;
+        if (!this.entity.width || !this.entity.height) {
+            this.entity.width  = swidth;
+            this.entity.height = sheight;
         }
 
         return this;
