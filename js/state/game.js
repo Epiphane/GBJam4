@@ -110,7 +110,7 @@ var GameState = Juicy.State.extend({
         }
 
         context.save();
-        context.translate(-this.camera.x, -this.camera.y);
+        context.translate(-Math.round(this.camera.x), -Math.round(this.camera.y));
 
         this.target.render(context);
         this.tiles.render(context, this.camera.x, this.camera.y, this.game.width, this.game.height);
