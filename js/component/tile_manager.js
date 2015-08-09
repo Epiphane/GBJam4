@@ -128,14 +128,24 @@
                 return 0;
             },
             function(particle) {
-                particle.x = x;
-                particle.y = y;
                 var dx = self.entity.state.player.getComponent('Physics').dx;
                 var dy = self.entity.state.player.getComponent('Physics').dy;
+
+                particle.x = x;
+                particle.y = y - 1.8;
+
+                if (dy < 0) {
+                    particle.y -= 10;
+                }
+
+                if (dx < -6) {
+                    particle.x -= 8;
+                }
+
                 var dist = Math.sqrt(dx*dx + dy*dy) * 10;
                 particle.dx = -dx / dist + Math.random()*2;
                 particle.dy = -dy / dist + Math.random()*2;
-                particle.startLife = 5;
+                particle.startLife = 9;
                 particle.life = particle.startLife;
             },
             function(particle) {
