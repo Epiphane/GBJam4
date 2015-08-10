@@ -1,9 +1,73 @@
 (function() {
     var TILE_SIZE = 2;
+    var PRESET_PAD = 3;
 
     var tiles = {
-        EMPTY: 0,
-        DIRT: 1
+        EMPTY: [0, 0],
+        DIRT: [1, 0]
+    };
+
+    var presets = {
+        EMPTY: {
+            start: [0, 0], 
+            width: 1,
+            height: 1,
+            rarity: 1
+        },
+        DIRT: {
+            start: [1, 0], 
+            width: 1,
+            height: 1,
+            rarity: 1
+        },
+        BLOCK: {
+            start: [0, 1], 
+            width: 4,
+            height: 4,
+            rarity: 100
+        },
+        FOSSIL: {
+            start: [4, 0], 
+            width: 7,
+            height: 7,
+            rarity: 150
+        }
+    };
+    var preset_names = Object.keys(presets);
+    var preset_probabilities = [];
+    (function() {
+        var total_points = 0;
+        var max = 0;
+        for (var i = 0; i < preset_names.length; i ++) {
+            if (max < presets[preset_names[i]].rarity + 1)
+                max = presets[preset_names[i]].rarity + 1;
+        }
+
+        // Ignore EMPTY
+        for (var i = 1; i < preset_names.length; i ++) {
+            presets[preset_names[i]].rarity = max - presets[preset_names[i]].rarity;
+        }
+
+        for (var i = 0; i < preset_names.length; i ++) {
+            total_points += presets[preset_names[i]].rarity;
+        }
+
+        for (var i = 0; i < preset_names.length; i ++) {
+            // Everyone gets evenly spaces between 0 and 1
+            preset_probabilities.push(presets[preset_names[i]].rarity / total_points);
+        }
+    })();
+
+    var getRandomPreset = function() {
+        var type = Math.random();
+        var ndx  = 0;
+        while (type >= preset_probabilities[ndx]) {
+            type -= preset_probabilities[ndx];
+
+            ndx ++;
+        }
+
+        return presets[preset_names[ndx]];
     };
 
     var tile = document.createElement('canvas');
@@ -18,7 +82,6 @@
                 cb();
             }
         };
-
 
     Juicy.Point.prototype.floor = function() {
         return new Juicy.Point(Math.floor(this.x), Math.floor(this.y));
@@ -42,71 +105,67 @@
             this.chunk_width  = 160;
             this.chunk_height = 144;
         },
-        getCell: function(x, y) {
-            if (!this.tiles[y]) {
-                this.tiles[y] = [];
-            }
-
-            return this.tiles[y][x];
-        },
         generateChunk: function(x, y) {
             var chunk = this.chunks[y][x];
 
             x *= this.chunk_width  / TILE_SIZE;
             y *= this.chunk_height / TILE_SIZE;
 
-            for (var i = 0; i < this.chunk_width / TILE_SIZE; i ++) {
-                for (var j = 0; j < this.chunk_height / TILE_SIZE; j ++) {
+            for (var i = x; i < x + this.chunk_width / TILE_SIZE; i ++) {
+                for (var j = y; j < y + this.chunk_height / TILE_SIZE; j ++) {
 
-                    if (!this.tiles[y + j]) {
-                        this.tiles[y + j] = [];
-                    }
-                    if (!this.transitions[x + i]) {
-                        this.transitions[x + i] = [];
+                    // Make sure the proper rows exist
+                    if (!this.transitions[i]) {
+                        this.transitions[i] = [];
                     }
 
-                    var tile = 'DIRT';
-                    if (Math.random() < 0.01) {
-                        tile = 'EMPTY';
+                    // Figure out whether we need to continue a pattern
+                    if (!this.tiles[j] || typeof(this.tiles[j][i]) === 'undefined') {
+                        var preset = getRandomPreset();
+                        
+                        var presetApproved = true;
+                        for (var p_i = 0; presetApproved && p_i < preset.width + PRESET_PAD * 2; p_i ++) {
+                            for (var p_j = 0; presetApproved && p_j < preset.height + PRESET_PAD * 2; p_j ++) {
+                                if (this.tiles[p_j + j] && this.tiles[p_j + j][p_i + i]) {
+                                    presetApproved = false;
+
+                                    if (!this.tiles[j]) { this.tiles[j] = []; }
+                                    this.tiles[j][i] = presets.DIRT.start;
+                                }
+                            }
+                        }
+
+                        if (presetApproved) {
+                            for (var p_i = 0; p_i < preset.width + PRESET_PAD * 2; p_i ++) {
+                                for (var p_j = 0; p_j < preset.height + PRESET_PAD * 2; p_j ++) {
+                                    if (!this.tiles[p_j + j]) {
+                                        this.tiles[p_j + j] = [];
+                                    }
+
+                                    if (p_i >= PRESET_PAD && p_i < preset.width + PRESET_PAD &&
+                                        p_j >= PRESET_PAD && p_j < preset.height + PRESET_PAD) {
+                                        this.tiles[p_j + j][p_i + i] = [
+                                            preset.start[0] + p_i - PRESET_PAD,
+                                            preset.start[1] + p_j - PRESET_PAD
+                                        ];
+                                    }
+                                    else {
+                                        this.tiles[p_j + j][p_i + i] = [1, 0];
+                                    }
+                                }
+                            }
+                        }
                     }
-                    
-                    this.tiles[y + j][x + i] = tile;
-                    this.transitions[x + i].push({
-                        x: i * TILE_SIZE,
-                        y: j * TILE_SIZE,
+
+                    this.transitions[i].push({
+                        x: (i - x) * TILE_SIZE,
+                        y: (j - y) * TILE_SIZE,
                         chunk: chunk,
-                        cell: tiles[tile],
+                        cell: this.tiles[j][i],
                         t: 8 + Juicy.rand(2),
                         dx: Juicy.rand(-1, 1),
                         dy: 1
                     });
-                }
-            }
-        },
-        renderChunk: function(x, y) {
-            var self = this;
-            if (!tile_template.complete) {
-                tile_queue.push(function() {
-                    self.renderChunk(x, y);
-                });
-
-                return;
-            }
-
-            var chunk = this.chunks[y][x];
-
-            x *= this.chunk_width;
-            y *= this.chunk_height;
-            for (var i = 0; i < this.chunk_width; i += TILE_SIZE) {
-                for (var j = 0; j < this.chunk_height; j += TILE_SIZE) {
-                    var cell = tiles[this.tiles[(chunk.y * this.chunk_height + j) / TILE_SIZE][(chunk.x * this.chunk_height + i) / TILE_SIZE]]
-
-                    // this.transitioning.push({
-                    //     cell: cell,
-                    //     chunk: chunk,
-                    //     x: i,
-                    //     y: j,
-                    // });
                 }
             }
         },
@@ -123,7 +182,7 @@
                 image.width  = this.chunk_width ;
                 image.height = this.chunk_height;
 
-                console.log('Creating Chunk', x, y);
+                // console.log('Creating Chunk', x, y);
 
                 this.chunks[y][x] = {
                     image: image, 
@@ -133,11 +192,6 @@
                 };
 
                 this.generateChunk(x, y);
-
-                var self = this;
-                Palette.onchange.push(function() {
-                    self.renderChunk(x, y);
-                });
 
                 for (var i = 0; i < this.width * TILE_SIZE; i += this.chunk_width) {
                     this.getChunk(i, y * this.chunk_height);
@@ -158,11 +212,10 @@
             x /= TILE_SIZE;
             y /= TILE_SIZE;
 
-            if (!this.tiles[y]) { console.log(chunk); debugger; throw x + ', ' + y; return 0; }// No tiles in this row
-            if (this.tiles[y][x] === 'EMPTY') {
+            if (this.tiles[y][x] === 0) {
                 return 0;
             }
-            this.tiles[y][x] = 'EMPTY';
+            this.tiles[y][x] = 0;
 
             var self = this;
             this.entity.state.particles.getComponent('ParticleManager').spawnParticles({
@@ -191,77 +244,6 @@
             });
 
             return 1;
-        },
-        getTile: function(point) {
-            point = point.mult(1 / TILE_SIZE).floor();
-
-            if (!this.tiles[point.y]) {
-                return false;
-            }
-
-            return this.tiles[point.y][point.x];
-        },
-        isTileBlocking: function(point) {
-            var tile = this.getTile(point);
-            return (tile === true /* || something else that blocks */);
-        },
-        canMove: function(point, movement) {
-            return !this.isTileBlocking(point.add(movement));
-        },
-        raycast: function(origin, movement, nodebug) {
-            var dy = movement.y;
-            var dx = movement.x;
-
-            var hit_y = false, hit_x = false;
-
-            var pos = origin;
-            if (dy !== 0) { // Vertical
-                var dist = Math.abs(dy);
-                var step = new Juicy.Point(0, dy / dist); // +1 or -1
-                while (dist > 0 && this.canMove(pos, step)) {
-                    pos = pos.add(step);
-                    dist --;
-                }
-
-                if (dist < 0) {
-                    // Went too far. Backtrack!
-                    pos = pos.add(step.mult(dist));
-                }
-                else {
-                    // Hit a block oh no...
-                    if (step.y > 0) 
-                        pos.y = Math.ceil(pos.y) - 0.1;
-                    else
-                        pos.y = Math.floor(pos.y) + 0.1;
-
-                    hit_y = true;
-                }
-            }
-
-            if (dx !== 0) { // Horizontal
-                var dist = Math.abs(dx);
-                var step = new Juicy.Point(dx / dist, 0); // +1 or -1
-                while (dist > 0 && this.canMove(pos, step)) {
-                    pos = pos.add(step);
-                    dist --;
-                }
-
-                if (dist < 0) {
-                    // Went too far. Backtrack!
-                    pos = pos.add(step.mult(dist));
-                }
-                else {
-                    // Hit a block oh no...
-                    if (step.x > 0)
-                        pos.x = Math.ceil(pos.x) - 0.1;
-                    else
-                        pos.x = Math.floor(pos.x) + 0.1;
-
-                    hit_x = true;
-                }
-            }
-
-            return origin.sub(pos);
         },
         render: function(context, x, y, w, h) {
             var chunk_x = Math.floor(x / this.chunk_width);
@@ -304,7 +286,7 @@
                             break;
                         }
                         else if (transition.t <= 0 || piece_y < (y + h) / 2) {
-                            transition.chunk.context.drawImage(tile, transition.cell * TILE_SIZE, 0, TILE_SIZE, TILE_SIZE, 
+                            transition.chunk.context.drawImage(tile, transition.cell[0] * TILE_SIZE, transition.cell[1] * TILE_SIZE, TILE_SIZE, TILE_SIZE, 
                                                                 transition.x, transition.y, TILE_SIZE, TILE_SIZE);
 
                             transitions.splice(t, 1);
@@ -315,7 +297,7 @@
                             var dy = piece_y + transition.dy * transition.t;
 
                             // Draw transitioning piece
-                            context.drawImage(tile, transition.cell * TILE_SIZE, 0, TILE_SIZE, TILE_SIZE,
+                            context.drawImage(tile, transition.cell[0] * TILE_SIZE, transition.cell[1] * TILE_SIZE, TILE_SIZE, TILE_SIZE,
                                                     dx, dy, TILE_SIZE, TILE_SIZE);
                         }
                     }
