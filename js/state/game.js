@@ -34,7 +34,8 @@ var GameState = Juicy.State.extend({
         };
 
         this.target = new Juicy.Entity(this, ['ColoredSprite']);
-        this.target.getComponent('ColoredSprite').setSheet('img/goal.png', 10, 10);
+        this.target.getComponent('ColoredSprite').setSheet('img/doge-coin.png', 32, 32);
+        this.target.getComponent('ColoredSprite').runAnimation(0, 7, 0.2, true);
         this.moveGoal();
 
         this.dramaticPauseTime = 0.0;
@@ -70,6 +71,7 @@ var GameState = Juicy.State.extend({
         }
         else {
             this.particles.getComponent('ParticleManager').update(dt);
+            this.target.getComponent('ColoredSprite').update(dt);
 
             if (this.countdown > -0.5) {
                 var nextCountdown = this.countdown - dt;
