@@ -12,9 +12,6 @@ var GameState = Juicy.State.extend({
         this.player.getComponent('ColoredSprite').setSheet('img/sawman-all.png', 20, 20);
         this.player.getComponent('Player').startIdleAnim();
 
-        this.tracker_image = new Image();
-        this.tracker_image.src = 'img/player.png';
-
         this.particles = new Juicy.Entity(this, ['ParticleManager']);
 
         this.countdown = 2.99;
