@@ -3,7 +3,10 @@ music.load('lvl1', 'audio/music_cave_in.mp3');
 
 var GameState = Juicy.State.extend({
     constructor: function() {
-        this.tile_manager = new Juicy.Components.TileManager(480);
+        var self = this;
+        var game_width = 480;
+
+        this.tile_manager = new Juicy.Components.TileManager(game_width);
         this.tiles = new Juicy.Entity(this, [ this.tile_manager ]);
 
         this.player = new Juicy.Entity(this, ['ColoredSprite', 'Player', 'Digger', 'Physics', 'Animations']);
@@ -11,6 +14,20 @@ var GameState = Juicy.State.extend({
         
         this.player.getComponent('ColoredSprite').setSheet('img/sawman-all.png', 20, 20);
         this.player.getComponent('Player').startIdleAnim();
+
+        this.gate = new Juicy.Entity(this, ['ColoredSprite']);
+        var gateSprite = this.gate.getComponent('ColoredSprite');
+        gateSprite.setSheet('img/gate.png', 52, 48);
+        gateSprite.runAnimation(0, 7, 0, false);
+        gateSprite.oncompleteanimation = function() {
+                self.gateOpen = true;
+
+                gateSprite.runAnimation(8, 10, 0.2, true);
+                gateSprite.oncompleteanimation = null;
+            };
+        this.gate.position = new Juicy.Point((game_width - 52) / 2, -48);
+
+        this.gateOpen = false;
 
         this.particles = new Juicy.Entity(this, ['ParticleManager']);
 
@@ -43,6 +60,12 @@ var GameState = Juicy.State.extend({
         this.target.position = new Juicy.Point(Juicy.rand(this.tile_manager.width), -Juicy.rand(10, 80));
     },
 
+    score: function() {
+        if (!this.gateOpen) {
+            this.gate.getComponent('ColoredSprite').goNextFrame();
+        }
+    },
+
     dramaticPause: function() {
          this.dramaticPauseTime = 0.2;
     },
@@ -69,6 +92,10 @@ var GameState = Juicy.State.extend({
         else {
             this.particles.getComponent('ParticleManager').update(dt);
             this.target.getComponent('ColoredSprite').update(dt);
+
+            if (this.gateOpen) {
+                this.gate.getComponent('ColoredSprite').update(dt);
+            }
 
             if (this.countdown > -0.5) {
                 var nextCountdown = this.countdown - dt;
@@ -111,8 +138,9 @@ var GameState = Juicy.State.extend({
         context.save();
         context.translate(-Math.round(this.camera.x), -Math.round(this.camera.y));
 
-        this.target.render(context);
         this.tiles.render(context, this.camera.x, this.camera.y, this.game.width, this.game.height);
+        this.gate.render(context);
+        this.target.render(context);
         this.particles.render(context);
         this.player.render(context);
 
