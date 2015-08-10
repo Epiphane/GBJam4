@@ -1,5 +1,5 @@
 var music = new Juicy.Music();
-music.load('lvl1', 'audio/music_particles.mp3');
+music.load('lvl1', 'audio/music_cave_in.mp3');
 
 var GameState = Juicy.State.extend({
     constructor: function() {
