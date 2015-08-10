@@ -15,8 +15,6 @@ Juicy.Component.create('Player', {
     },
 
     score: function() {
-        this.entity.state.moveGoal();
-
         this.entity.state.score();
     },
 

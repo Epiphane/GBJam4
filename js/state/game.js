@@ -23,6 +23,8 @@ var GameState = Juicy.State.extend({
                 self.gateOpen = true;
                 self.panningToGate = true;
 
+                self.target = self.gate;
+
                 gateSprite.runAnimation(8, 10, 0.2, true);
                 gateSprite.oncompleteanimation = null;
 
@@ -62,12 +64,15 @@ var GameState = Juicy.State.extend({
 
         Palette.set(Juicy.rand(5));
     },
+
     moveGoal: function() {
         this.target.position = new Juicy.Point(Juicy.rand(this.tile_manager.width), -Juicy.rand(10, 80));
     },
 
     score: function() {
         if (!this.gateOpen) {
+            this.moveGoal();
+
             this.gate.getComponent('ColoredSprite').goNextFrame();
         }
     },
@@ -143,8 +148,10 @@ var GameState = Juicy.State.extend({
             this.watching = this.player;
 
             this.particles.getComponent('ParticleManager').update(dt);
-            this.target.getComponent('ColoredSprite').update(dt);
-
+            
+            if (!this.gateOpen) {
+                this.target.getComponent('ColoredSprite').update(dt);
+            }
 
             if (this.countdown > -0.5) {
                 var nextCountdown = this.countdown - dt;
@@ -198,7 +205,9 @@ var GameState = Juicy.State.extend({
 
         this.tiles.render(context, this.camera.x, this.camera.y, this.game.width, this.game.height);
         this.gate.render(context);
-        this.target.render(context);
+        if (this.target !== this.gate) {
+            this.target.render(context);
+        }
         this.particles.render(context);
         this.player.render(context);
 
