@@ -56,23 +56,24 @@ Juicy.Component.create('Goal', {
             size: 3, 
             howMany: 60, 
             timeToLive: function(particle, ndx) {
-                return Math.random() * 5;
+                return Math.random() * 10;
             },
             initParticle: function(particle) {
                 particle.x = startLoc.x;
                 particle.y = startLoc.y;
 
-                particle.dx = Math.random() * 3 - 1.5;
-                particle.dy = Math.random() * 10 - 8;
+                particle.dx = Math.random() * 6 - 3;
+                particle.dy = Math.random() * 5 - 4;
 
-                particle.startLife = 10 + Math.random() * 60;
+                particle.startLife = Math.random() * 46;
                 particle.life = particle.startLife;
             },
             updateParticle: function(particle) {
                 particle.x += particle.dx;
                 particle.y += particle.dy;
-
-                particle.dy += 0.21;
+                
+                particle.dx *= 0.99;
+                particle.dy += 0.14;
             }
         });  
     },
