@@ -33,7 +33,7 @@ var GameState = Juicy.State.extend({
             give_y: 0
         };
 
-        this.target = new Juicy.Entity(this, ['ColoredSprite']);
+        this.target = new Juicy.Entity(this, ['ColoredSprite', 'Goal']);
         this.target.getComponent('ColoredSprite').setSheet('img/doge-coin.png', 32, 32);
         this.target.getComponent('ColoredSprite').runAnimation(0, 7, 0.2, true);
         this.moveGoal();
@@ -43,6 +43,7 @@ var GameState = Juicy.State.extend({
         Palette.set(Juicy.rand(5));
     },
     moveGoal: function() {
+        this.target.getComponent('Goal').asplode();
         this.target.position = new Juicy.Point(Juicy.rand(this.tile_manager.width), -Juicy.rand(10, 80));
     },
 
@@ -68,8 +69,11 @@ var GameState = Juicy.State.extend({
             this.dramaticPauseTime -= dt;
 
             // update whatever cool effects can still happen when we're dramatically paused
+            this.particles.getComponent('ParticleManager').update(dt);
         }
         else {
+            this.target.getComponent('Goal').update(dt);
+
             this.particles.getComponent('ParticleManager').update(dt);
             this.target.getComponent('ColoredSprite').update(dt);
 
@@ -114,9 +118,9 @@ var GameState = Juicy.State.extend({
         context.save();
         context.translate(-Math.round(this.camera.x), -Math.round(this.camera.y));
 
-        this.target.render(context);
         this.tiles.render(context, this.camera.x, this.camera.y, this.game.width, this.game.height);
         this.particles.render(context);
+        this.target.render(context);
         this.player.render(context);
 
         context.restore();
