@@ -9,6 +9,8 @@ var GameState = Juicy.State.extend({
         this.tile_manager = new Juicy.Components.TileManager(game_width);
         this.tiles = new Juicy.Entity(this, [ this.tile_manager ]);
 
+        this.loaded = false;
+
         this.player = new Juicy.Entity(this, ['ColoredSprite', 'Player', 'Digger', 'Physics', 'Animations']);
         this.player.position = new Juicy.Point(40, -40);
         
@@ -65,6 +67,27 @@ var GameState = Juicy.State.extend({
         Palette.set(Juicy.rand(5));
     },
 
+    init: function() {
+        var self = this;
+        if (!this.loaded) {
+            var chunk_row = 0;
+            this.game.setState(new LoadingState(this, {
+                // Build chunks down to 100!!
+                load: function(piece) {
+                    for (var i = 0; i < self.tile_manager.width * self.tile_manager.TILE_SIZE / self.tile_manager.chunk_width; i ++) {
+                        self.tile_manager.buildChunk(i, chunk_row);
+                    }
+
+                    return (++chunk_row / 100);
+                }
+            }));
+        }
+
+        music.play('lvl1');
+
+        this.game.getPlayer = function() { return self.player; };
+    },
+
     moveGoal: function() {
         this.target.position = new Juicy.Point(Juicy.rand(this.tile_manager.width), -Juicy.rand(10, 80));
     },
@@ -87,13 +110,6 @@ var GameState = Juicy.State.extend({
 
     dramaticPause: function() {
         this.dramaticPauseTime = 0.2;
-    },
-
-    init: function() {
-        music.play('lvl1');
-
-        var self = this;
-        this.game.getPlayer = function() { return self.player; };
     },
     key_ESC: function() {
         music.pause('lvl1');
