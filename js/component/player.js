@@ -8,7 +8,7 @@ Juicy.Component.create('Player', {
         this.controls = ['LEFT', 'RIGHT', 'DOWN', 'UP'];
 
         /** Lets us keep track of what spritesheet direction we're using */
-        this.direction = 'IDLE';
+        this.direction = 'POOP';
 
         this.arrow = document.createElement('canvas');
         this.arrow_context = this.arrow.getContext('2d');
@@ -21,7 +21,7 @@ Juicy.Component.create('Player', {
     score: function() {
         this.entity.state.score();
     },
-
+    
     loseLife: function() {
         this.lives -= 1;
         // Call death animation + sound?
@@ -39,7 +39,6 @@ Juicy.Component.create('Player', {
     startIdleAnim: function() {
         this.entity.getComponent('ColoredSprite').runAnimation(8, 19, 0.16, true);
     },
-
     updateAnim: function(newDirection) {
         if (this.direction == newDirection) {
             return;

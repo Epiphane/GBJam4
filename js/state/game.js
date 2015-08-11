@@ -13,7 +13,7 @@ var GameState = Juicy.State.extend({
         this.player.position = new Juicy.Point(40, -40);
         
         this.player.getComponent('ColoredSprite').setSheet('img/sawman-all.png', 20, 20);
-        this.player.getComponent('Player').startIdleAnim();
+        this.player.getComponent('Player').updateAnim('IDLE');
 
         this.gate = new Juicy.Entity(this, ['ColoredSprite']);
         var gateSprite = this.gate.getComponent('ColoredSprite');
@@ -54,7 +54,7 @@ var GameState = Juicy.State.extend({
             dy: 20
         };
 
-        this.target = new Juicy.Entity(this, ['ColoredSprite']);
+        this.target = new Juicy.Entity(this, ['ColoredSprite', 'Goal']);
         this.target.getComponent('ColoredSprite').setSheet('img/doge-coin.png', 32, 32);
         this.target.getComponent('ColoredSprite').runAnimation(0, 7, 0.2, true);
         this.moveGoal();
@@ -71,6 +71,7 @@ var GameState = Juicy.State.extend({
 
     score: function() {
         if (!this.gateOpen) {
+            this.target.getComponent('Goal').asplode();
             this.moveGoal();
 
             this.gate.getComponent('ColoredSprite').goNextFrame();
@@ -114,6 +115,7 @@ var GameState = Juicy.State.extend({
         if (this.dramaticPauseTime > 0) {
             this.dramaticPauseTime -= dt;
             // update whatever cool effects can still happen when we're dramatically paused
+            this.particles.getComponent('ParticleManager').update(dt);
         }
         else if (this.panningToGate) {
             var gateCenter = this.gate.center();
@@ -145,6 +147,9 @@ var GameState = Juicy.State.extend({
             game.setState(new GameState());
         }
         else {
+            if (this.target.getComponent('Goal')) {
+                this.target.getComponent('Goal').update(dt);
+            }
             this.watching = this.player;
 
             this.particles.getComponent('ParticleManager').update(dt);
@@ -209,6 +214,7 @@ var GameState = Juicy.State.extend({
             this.target.render(context);
         }
         this.particles.render(context);
+        this.target.render(context);
         this.player.render(context);
 
         context.restore();
