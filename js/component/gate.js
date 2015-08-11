@@ -1,0 +1,3 @@
+Juicy.Component.create('Goal', {
+   
+});

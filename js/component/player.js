@@ -7,9 +7,6 @@ Juicy.Component.create('Player', {
     
         this.controls = ['LEFT', 'RIGHT', 'DOWN', 'UP'];
 
-        this.arrow = new Image();
-        this.arrow.src = 'img/arrow.png';
-
         /** Lets us keep track of what spritesheet direction we're using */
         this.direction = 'IDLE';
 
@@ -18,8 +15,7 @@ Juicy.Component.create('Player', {
     },
 
     score: function() {
-        this.entity.state.moveGoal();
-        this.entity.state.dramaticPause();
+        this.entity.state.score();
     },
 
     startIdleAnim: function() {

@@ -21,16 +21,16 @@
             rarity: 1
         },
         BLOCK: {
-            start: [0, 4], 
+            start: [0, 1], 
             width: 4,
             height: 4,
             rarity: 100
         },
-        SMILE: {
-            start: [2, 0], 
-            width: 4,
-            height: 4,
-            rarity: 100
+        FOSSIL: {
+            start: [4, 0], 
+            width: 7,
+            height: 7,
+            rarity: 150
         }
     };
     var preset_names = Object.keys(presets);
@@ -128,26 +128,30 @@
                             for (var p_j = 0; presetApproved && p_j < preset.height + PRESET_PAD * 2; p_j ++) {
                                 if (this.tiles[p_j + j] && this.tiles[p_j + j][p_i + i]) {
                                     presetApproved = false;
-                                    preset = presets.DIRT;
+
+                                    if (!this.tiles[j]) { this.tiles[j] = []; }
+                                    this.tiles[j][i] = presets.DIRT.start;
                                 }
                             }
                         }
 
-                        for (var p_i = 0; p_i < preset.width + PRESET_PAD * 2; p_i ++) {
-                            for (var p_j = 0; p_j < preset.height + PRESET_PAD * 2; p_j ++) {
-                                if (!this.tiles[p_j + j]) {
-                                    this.tiles[p_j + j] = [];
-                                }
+                        if (presetApproved) {
+                            for (var p_i = 0; p_i < preset.width + PRESET_PAD * 2; p_i ++) {
+                                for (var p_j = 0; p_j < preset.height + PRESET_PAD * 2; p_j ++) {
+                                    if (!this.tiles[p_j + j]) {
+                                        this.tiles[p_j + j] = [];
+                                    }
 
-                                if (p_i >= PRESET_PAD && p_i < preset.width + PRESET_PAD &&
-                                    p_j >= PRESET_PAD && p_j < preset.height + PRESET_PAD) {
-                                    this.tiles[p_j + j][p_i + i] = [
-                                        preset.start[0] + p_i - PRESET_PAD,
-                                        preset.start[1] + p_j - PRESET_PAD
-                                    ];
-                                }
-                                else {
-                                    this.tiles[p_j + j][p_i + i] = [1, 0];
+                                    if (p_i >= PRESET_PAD && p_i < preset.width + PRESET_PAD &&
+                                        p_j >= PRESET_PAD && p_j < preset.height + PRESET_PAD) {
+                                        this.tiles[p_j + j][p_i + i] = [
+                                            preset.start[0] + p_i - PRESET_PAD,
+                                            preset.start[1] + p_j - PRESET_PAD
+                                        ];
+                                    }
+                                    else {
+                                        this.tiles[p_j + j][p_i + i] = [1, 0];
+                                    }
                                 }
                             }
                         }
