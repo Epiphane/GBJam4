@@ -109,6 +109,7 @@ Juicy.Component.create('Player', {
             newDirection = 'DOWN';
         }
         if (game.keyDown(this.controls[3])) {
+            digger.up();
             newDirection = 'UP';
         }
 
