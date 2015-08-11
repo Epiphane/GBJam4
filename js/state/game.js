@@ -13,7 +13,7 @@ var GameState = Juicy.State.extend({
         this.player.position = new Juicy.Point(40, -40);
         
         this.player.getComponent('ColoredSprite').setSheet('img/sawman-all.png', 20, 20);
-        this.player.getComponent('Player').startIdleAnim();
+        this.player.getComponent('Player').updateAnim('IDLE');
 
         this.gate = new Juicy.Entity(this, ['ColoredSprite']);
         var gateSprite = this.gate.getComponent('ColoredSprite');
