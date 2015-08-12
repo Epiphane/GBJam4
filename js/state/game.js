@@ -9,11 +9,13 @@ var GameState = Juicy.State.extend({
         this.tile_manager = new Juicy.Components.TileManager(game_width);
         this.tiles = new Juicy.Entity(this, [ this.tile_manager ]);
 
+        this.loaded = false;
+
         this.player = new Juicy.Entity(this, ['ColoredSprite', 'Player', 'Digger', 'Physics', 'Animations']);
         this.player.position = new Juicy.Point(40, -40);
         
         this.player.getComponent('ColoredSprite').setSheet('img/sawman-all.png', 20, 20);
-        this.player.getComponent('Player').startIdleAnim();
+        this.player.getComponent('Player').updateAnim('IDLE');
 
         this.gate = new Juicy.Entity(this, ['ColoredSprite']);
         var gateSprite = this.gate.getComponent('ColoredSprite');
@@ -22,6 +24,8 @@ var GameState = Juicy.State.extend({
         gateSprite.oncompleteanimation = function() {
                 self.gateOpen = true;
                 self.panningToGate = true;
+
+                self.target = self.gate;
 
                 gateSprite.runAnimation(8, 10, 0.2, true);
                 gateSprite.oncompleteanimation = null;
@@ -52,7 +56,7 @@ var GameState = Juicy.State.extend({
             dy: 20
         };
 
-        this.target = new Juicy.Entity(this, ['ColoredSprite']);
+        this.target = new Juicy.Entity(this, ['ColoredSprite', 'Goal']);
         this.target.getComponent('ColoredSprite').setSheet('img/doge-coin.png', 32, 32);
         this.target.getComponent('ColoredSprite').runAnimation(0, 7, 0.2, true);
         this.moveGoal();
@@ -62,12 +66,37 @@ var GameState = Juicy.State.extend({
 
         Palette.set(Juicy.rand(5));
     },
+
+    init: function() {
+        var self = this;
+        if (!this.loaded) {
+            var chunk_row = 0;
+            this.game.setState(new LoadingState(this, {
+                // Build chunks down to 100!!
+                load: function(piece) {
+                    for (var i = 0; i < self.tile_manager.width * self.tile_manager.TILE_SIZE / self.tile_manager.chunk_width; i ++) {
+                        self.tile_manager.buildChunk(i, chunk_row);
+                    }
+
+                    return (++chunk_row / 10);
+                }
+            }));
+        }
+
+        music.play('lvl1');
+
+        this.game.getPlayer = function() { return self.player; };
+    },
+
     moveGoal: function() {
         this.target.position = new Juicy.Point(Juicy.rand(this.tile_manager.width), -Juicy.rand(10, 80));
     },
 
     score: function() {
         if (!this.gateOpen) {
+            this.target.getComponent('Goal').asplode();
+            this.moveGoal();
+
             this.gate.getComponent('ColoredSprite').goNextFrame();
         }
     },
@@ -81,13 +110,6 @@ var GameState = Juicy.State.extend({
 
     dramaticPause: function() {
         this.dramaticPauseTime = 0.2;
-    },
-
-    init: function() {
-        music.play('lvl1');
-
-        var self = this;
-        this.game.getPlayer = function() { return self.player; };
     },
     key_ESC: function() {
         music.pause('lvl1');
@@ -109,6 +131,7 @@ var GameState = Juicy.State.extend({
         if (this.dramaticPauseTime > 0) {
             this.dramaticPauseTime -= dt;
             // update whatever cool effects can still happen when we're dramatically paused
+            this.particles.getComponent('ParticleManager').update(dt);
         }
         else if (this.panningToGate) {
             var gateCenter = this.gate.center();
@@ -140,11 +163,16 @@ var GameState = Juicy.State.extend({
             game.setState(new GameState());
         }
         else {
+            if (this.target.getComponent('Goal')) {
+                this.target.getComponent('Goal').update(dt);
+            }
             this.watching = this.player;
 
             this.particles.getComponent('ParticleManager').update(dt);
-            this.target.getComponent('ColoredSprite').update(dt);
-
+            
+            if (!this.gateOpen) {
+                this.target.getComponent('ColoredSprite').update(dt);
+            }
 
             if (this.countdown > -0.5) {
                 var nextCountdown = this.countdown - dt;
@@ -198,8 +226,11 @@ var GameState = Juicy.State.extend({
 
         this.tiles.render(context, this.camera.x, this.camera.y, this.game.width, this.game.height);
         this.gate.render(context);
-        this.target.render(context);
+        if (this.target !== this.gate) {
+            this.target.render(context);
+        }
         this.particles.render(context);
+        this.target.render(context);
         this.player.render(context);
 
         context.restore();

@@ -1,6 +1,5 @@
 (function() {
     var TILE_SIZE = 2;
-    var PRESET_PAD = 3;
 
     var tiles = {
         EMPTY: [0, 0],
@@ -27,10 +26,24 @@
             rarity: 100
         },
         FOSSIL: {
-            start: [4, 0], 
+            start: [0, 5], 
             width: 7,
             height: 7,
             rarity: 150
+        },
+        CRACK: {
+            start: [4, 0], 
+            width: 3,
+            height: 5,
+            rarity: 100
+        },
+        DOGE: {
+            start: [7, 0], 
+            width: 28,
+            height: 28,
+            padding: 60,
+            rarity: 100,
+            limit: 1
         }
     };
     var preset_names = Object.keys(presets);
@@ -41,11 +54,16 @@
         for (var i = 0; i < preset_names.length; i ++) {
             if (max < presets[preset_names[i]].rarity + 1)
                 max = presets[preset_names[i]].rarity + 1;
+
+            if (!presets[preset_names[i]].padding)
+                presets[preset_names[i]].padding = 12;
         }
 
-        // Ignore EMPTY
-        for (var i = 1; i < preset_names.length; i ++) {
+        // Ignore EMPTY and DIRT
+        for (var i = 2; i < preset_names.length; i ++) {
             presets[preset_names[i]].rarity = max - presets[preset_names[i]].rarity;
+
+            presets[preset_names[i]].name = preset_names[i];
         }
 
         for (var i = 0; i < preset_names.length; i ++) {
@@ -83,20 +101,13 @@
             }
         };
 
-    Juicy.Point.prototype.floor = function() {
-        return new Juicy.Point(Math.floor(this.x), Math.floor(this.y));
-    };
-
-    Juicy.Point.prototype.clone = function() {
-        return new Juicy.Point(this.x, this.y);
-    };
-
     Juicy.Component.create('TileManager', {
         TILE_SIZE: TILE_SIZE,
         constructor: function(width) {
             this.tiles       = [];
             this.transitions = [];
             this.chunks      = [];
+            this.objects     = [];
 
             this.width = width;
             this.height = 0;
@@ -124,36 +135,70 @@
                         var preset = getRandomPreset();
                         
                         var presetApproved = true;
-                        for (var p_i = 0; presetApproved && p_i < preset.width + PRESET_PAD * 2; p_i ++) {
-                            for (var p_j = 0; presetApproved && p_j < preset.height + PRESET_PAD * 2; p_j ++) {
-                                if (this.tiles[p_j + j] && this.tiles[p_j + j][p_i + i]) {
+                        for (var p_i = 0; presetApproved && p_i < preset.width + preset.padding * 2; p_i ++) {
+                            for (var p_j = 0; presetApproved && p_j < preset.height + preset.padding * 2; p_j ++) {
+                                if (p_i < 0 || p_j < 0 || p_i >= this.width / TILE_SIZE ||
+                                   (this.tiles[p_j + j] && this.tiles[p_j + j][p_i + i])) {
                                     presetApproved = false;
 
                                     if (!this.tiles[j]) { this.tiles[j] = []; }
-                                    this.tiles[j][i] = presets.DIRT.start;
+                                    this.tiles[j][i] = {
+                                        sx: presets.DIRT.start[0],
+                                        sy: presets.DIRT.start[1],
+                                        obj: false
+                                    };
                                 }
                             }
                         }
 
+                        var object_ndx = this.objects.length;
+                        var object_size = 0;
+                        var object = { name: preset.name };
+
                         if (presetApproved) {
-                            for (var p_i = 0; p_i < preset.width + PRESET_PAD * 2; p_i ++) {
-                                for (var p_j = 0; p_j < preset.height + PRESET_PAD * 2; p_j ++) {
+                            var center = {
+                                x: preset.width / 2 + preset.padding,
+                                y: preset.height / 2 + preset.padding
+                            };
+                            var withinEllipse = function(x, y) {
+                                // (x−h)^2/r^2 + (y−k)^2/r^2 ≤ 1
+                                return Math.pow(x - center.x, 2) / Math.pow(center.x, 2)
+                                     + Math.pow(y - center.y, 2) / Math.pow(center.y, 2) <= 0.05;
+                            }
+
+                            for (var p_i = 0; p_i < preset.width + preset.padding * 2; p_i ++) {
+                                for (var p_j = 0; p_j < preset.height + preset.padding * 2; p_j ++) {
                                     if (!this.tiles[p_j + j]) {
                                         this.tiles[p_j + j] = [];
                                     }
 
-                                    if (p_i >= PRESET_PAD && p_i < preset.width + PRESET_PAD &&
-                                        p_j >= PRESET_PAD && p_j < preset.height + PRESET_PAD) {
-                                        this.tiles[p_j + j][p_i + i] = [
-                                            preset.start[0] + p_i - PRESET_PAD,
-                                            preset.start[1] + p_j - PRESET_PAD
-                                        ];
+                                    if (p_i >= preset.padding && p_i < preset.width + preset.padding &&
+                                        p_j >= preset.padding && p_j < preset.height + preset.padding) {
+                                        this.tiles[p_j + j][p_i + i] = {
+                                            sx: preset.start[0] + p_i - preset.padding,
+                                            sy: preset.start[1] + p_j - preset.padding,
+                                            obj: false
+                                        };
+
+                                        if (preset.name && withinEllipse(p_i, p_j)) {
+                                            this.tiles[p_j + j][p_i + i].obj = object_ndx
+                                            object_size ++;
+                                        }
                                     }
                                     else {
-                                        this.tiles[p_j + j][p_i + i] = [1, 0];
+                                        this.tiles[p_j + j][p_i + i] = {
+                                            sx: 1, 
+                                            sy: 0,
+                                            obj: false
+                                        };
                                     }
                                 }
                             }
+
+                            this.objects.push({
+                                count: Math.floor(object_size * 0.95),
+                                type: preset.name
+                            });
                         }
                     }
 
@@ -169,32 +214,36 @@
                 }
             }
         },
-        getChunk: function(x, y) {
+        buildChunk: function(chunk_x, chunk_y) {
+            if (!this.chunks[chunk_y]) {
+                this.chunks[chunk_y] = [];
+            }
+
+            if (this.chunks[chunk_y][chunk_x]) throw 'Chunk already exists';
+
+            var image    = document.createElement('canvas');
+            image.width  = this.chunk_width ;
+            image.height = this.chunk_height;
+
+            this.chunks[chunk_y][chunk_x] = {
+                image: image, 
+                context: image.getContext('2d'),
+                x: chunk_x,
+                y: chunk_y
+            };
+
+            this.generateChunk(chunk_x, chunk_y);
+        },
+        getChunk: function(x, y, build) {
             var x = Math.floor(x / this.chunk_width);
             var y = Math.floor(y / this.chunk_height);
 
-            if (!this.chunks[y]) {
-                this.chunks[y] = [];
-            }
-
-            if (!this.chunks[y][x]) {
-                var image    = document.createElement('canvas');
-                image.width  = this.chunk_width ;
-                image.height = this.chunk_height;
-
+            if (!this.chunks[y] || !this.chunks[y][x]) {
                 // console.log('Creating Chunk', x, y);
-
-                this.chunks[y][x] = {
-                    image: image, 
-                    context: image.getContext('2d'),
-                    x: x,
-                    y: y
-                };
-
-                this.generateChunk(x, y);
+                this.buildChunk(x, y);
 
                 for (var i = 0; i < this.width * TILE_SIZE; i += this.chunk_width) {
-                    this.getChunk(i, y * this.chunk_height);
+                    this.getChunk(i, y * this.chunk_height, build);
                 }
             }
 
@@ -214,6 +263,13 @@
 
             if (this.tiles[y][x] === 0) {
                 return 0;
+            }
+            var obj = this.tiles[y][x].obj;
+            if (obj !== false) {
+                this.objects[obj].count --;
+                if (this.objects[obj].count === 0) {
+                    console.log('Removed object ' + obj + ': ' + this.objects[obj].type);
+                }
             }
             this.tiles[y][x] = 0;
 
@@ -279,14 +335,15 @@
                         /* Create a parabola with player as directrix LOL */
                         // Vertex: player position - { 0, 4 }
                         // y = 4(x - player.x)^2 + player.y
-                        var toPlayer = (new Juicy.Point(piece_x, piece_y)).sub(this.entity.state.player.center());
-                        var below_parabola = (toPlayer.x * toPlayer.x / 200 + toPlayer.y - 50 > 0)
+                        var toPlayer = (Juicy.Point.create(piece_x, piece_y))._sub(this.entity.state.player.center());
+                        var below_parabola = (toPlayer.x * toPlayer.x / 200 + toPlayer.y - 50 > 0);
+                        toPlayer.free();
 
                         if (below_parabola) {
                             break;
                         }
                         else if (transition.t <= 0 || piece_y < (y + h) / 2) {
-                            transition.chunk.context.drawImage(tile, transition.cell[0] * TILE_SIZE, transition.cell[1] * TILE_SIZE, TILE_SIZE, TILE_SIZE, 
+                            transition.chunk.context.drawImage(tile, transition.cell.sx * TILE_SIZE, transition.cell.sy * TILE_SIZE, TILE_SIZE, TILE_SIZE, 
                                                                 transition.x, transition.y, TILE_SIZE, TILE_SIZE);
 
                             transitions.splice(t, 1);
@@ -297,7 +354,7 @@
                             var dy = piece_y + transition.dy * transition.t;
 
                             // Draw transitioning piece
-                            context.drawImage(tile, transition.cell[0] * TILE_SIZE, transition.cell[1] * TILE_SIZE, TILE_SIZE, TILE_SIZE,
+                            context.drawImage(tile, transition.cell.sx * TILE_SIZE, transition.cell.sy * TILE_SIZE, TILE_SIZE, TILE_SIZE,
                                                     dx, dy, TILE_SIZE, TILE_SIZE);
                         }
                     }

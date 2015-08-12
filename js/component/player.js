@@ -8,22 +8,37 @@ Juicy.Component.create('Player', {
         this.controls = ['LEFT', 'RIGHT', 'DOWN', 'UP'];
 
         /** Lets us keep track of what spritesheet direction we're using */
-        this.direction = 'IDLE';
+        this.direction = 'POOP';
 
         this.arrow = document.createElement('canvas');
         this.arrow_context = this.arrow.getContext('2d');
+
+        this.lives = 3;
+        this.health = 100;
+        this.baseDmg = 20;
     },
 
     score: function() {
-        this.entity.state.moveGoal();
-
         this.entity.state.score();
+    },
+    
+    loseLife: function() {
+        this.lives -= 1;
+        // Call death animation + sound?
+
+        if (this.lives == 0) {
+            this.RIP();
+        }
+    },
+
+    RIP: function() {
+        // probably call some game.setState(gameover) or something
+        // idfk i have no idea what im doing
     },
 
     startIdleAnim: function() {
         this.entity.getComponent('ColoredSprite').runAnimation(8, 19, 0.16, true);
     },
-
     updateAnim: function(newDirection) {
         if (this.direction == newDirection) {
             return;
@@ -94,6 +109,7 @@ Juicy.Component.create('Player', {
             newDirection = 'DOWN';
         }
         if (game.keyDown(this.controls[3])) {
+            digger.up();
             newDirection = 'UP';
         }
 
@@ -136,13 +152,15 @@ Juicy.Component.create('Player', {
         var step = distanceToTarget.mult(-1 / distanceToTarget.length());
         function castPixels(position, color) {
             var pos = position;
-            while (position.sub(pos).length() < arrow_length) {
+            while (position.distance(pos) < arrow_length) {
                 var p = pos.floor();
 
                 // Gotta be far away from center
-                if (center.sub(p).length() > 10) {
+                if (center.distance(p) > 10) {
                     setPixel(p, color);
                 }
+
+                p.free();
 
                 pos = pos.add(step);
             }
@@ -152,9 +170,12 @@ Juicy.Component.create('Player', {
             var vert  = step.rotate(-Math.PI * 3 / 4);
 
             for (var dist = 0; dist < 10; dist ++) {
-                setPixel(pos.add(horiz.mult(dist)).floor(), color);
-                setPixel(pos.add(vert .mult(dist)).floor(), color);
+                setPixel(pos.add(horiz.mult(dist).free())._floor(), color);
+                setPixel(pos.add(vert .mult(dist).free())._floor(), color);
             }
+
+            horiz.free();
+            vert.free();
         }
 
         for (var i = -arrow_width; i <= arrow_width; i ++) {
@@ -162,6 +183,7 @@ Juicy.Component.create('Player', {
                 castPixels(center.add(i, j), Palette.get('MID'));
             }
         }
+        step.free();
 
         this.arrow_context.putImageData(arrowData, 0, 0);  
 

@@ -2,7 +2,7 @@ Juicy.Component.create('Physics', {
     constructor: function() {
         this.dx = this.dy = 0;
         this.jumpPower = -120;
-        this.weight = 300;
+        this.weight = 450;
         this.weight_modifier = 1;
     },
 
