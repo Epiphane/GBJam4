@@ -78,7 +78,7 @@ var GameState = Juicy.State.extend({
                         self.tile_manager.buildChunk(i, chunk_row);
                     }
 
-                    return (++chunk_row / 10);
+                    return (++chunk_row / 50);
                 }
             }));
         }
@@ -160,7 +160,7 @@ var GameState = Juicy.State.extend({
             this.updateCamera(dt);
         }
         else if (this.gameOver) {
-            game.setState(new GameState());
+            game.setState(new Juicy.State());//new GameState());
         }
         else {
             if (this.target.getComponent('Goal')) {
