@@ -96,13 +96,13 @@ function WOWOWOWOWOW(X_GOOD_JOB, Y_U_DID_IT, HOW_LONG_DUNKY) {
 Juicy.Component.create('Animations', {
     constructor: function(myEntity) {
         myEntity.visualTransform = {
-            translate: new Juicy.Point(0, 0),
+            translate: Juicy.Point.create(0, 0),
             
-            scale: new Juicy.Point(1, 1),
-            scaleAnchor: new Juicy.Point(0.5, 0.5),
+            scale: Juicy.Point.create(1, 1),
+            scaleAnchor: Juicy.Point.create(0.5, 0.5),
         
             rotate: 0,
-            rotateAnchor: new Juicy.Point(0, 0),
+            rotateAnchor: Juicy.Point.create(0, 0),
         };
 
         this.currAnimations = {};

@@ -78,7 +78,7 @@ var GameState = Juicy.State.extend({
                         self.tile_manager.buildChunk(i, chunk_row);
                     }
 
-                    return (++chunk_row / 100);
+                    return (++chunk_row / 10);
                 }
             }));
         }

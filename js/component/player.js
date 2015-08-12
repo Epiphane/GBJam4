@@ -152,13 +152,15 @@ Juicy.Component.create('Player', {
         var step = distanceToTarget.mult(-1 / distanceToTarget.length());
         function castPixels(position, color) {
             var pos = position;
-            while (position.sub(pos).length() < arrow_length) {
+            while (position.distance(pos) < arrow_length) {
                 var p = pos.floor();
 
                 // Gotta be far away from center
-                if (center.sub(p).length() > 10) {
+                if (center.distance(p) > 10) {
                     setPixel(p, color);
                 }
+
+                p.free();
 
                 pos = pos.add(step);
             }
@@ -168,9 +170,12 @@ Juicy.Component.create('Player', {
             var vert  = step.rotate(-Math.PI * 3 / 4);
 
             for (var dist = 0; dist < 10; dist ++) {
-                setPixel(pos.add(horiz.mult(dist)).floor(), color);
-                setPixel(pos.add(vert .mult(dist)).floor(), color);
+                setPixel(pos.add(horiz.mult(dist).free())._floor(), color);
+                setPixel(pos.add(vert .mult(dist).free())._floor(), color);
             }
+
+            horiz.free();
+            vert.free();
         }
 
         for (var i = -arrow_width; i <= arrow_width; i ++) {
@@ -178,6 +183,7 @@ Juicy.Component.create('Player', {
                 castPixels(center.add(i, j), Palette.get('MID'));
             }
         }
+        step.free();
 
         this.arrow_context.putImageData(arrowData, 0, 0);  
 

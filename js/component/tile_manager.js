@@ -101,14 +101,6 @@
             }
         };
 
-    Juicy.Point.prototype.floor = function() {
-        return new Juicy.Point(Math.floor(this.x), Math.floor(this.y));
-    };
-
-    Juicy.Point.prototype.clone = function() {
-        return new Juicy.Point(this.x, this.y);
-    };
-
     Juicy.Component.create('TileManager', {
         TILE_SIZE: TILE_SIZE,
         constructor: function(width) {
@@ -343,8 +335,9 @@
                         /* Create a parabola with player as directrix LOL */
                         // Vertex: player position - { 0, 4 }
                         // y = 4(x - player.x)^2 + player.y
-                        var toPlayer = (new Juicy.Point(piece_x, piece_y)).sub(this.entity.state.player.center());
-                        var below_parabola = (toPlayer.x * toPlayer.x / 200 + toPlayer.y - 50 > 0)
+                        var toPlayer = (Juicy.Point.create(piece_x, piece_y))._sub(this.entity.state.player.center());
+                        var below_parabola = (toPlayer.x * toPlayer.x / 200 + toPlayer.y - 50 > 0);
+                        toPlayer.free();
 
                         if (below_parabola) {
                             break;

@@ -16,15 +16,16 @@ Juicy.Component.create('Digger', {
     },
     forCollisionBox: function(callback) {
         var tile_manager = this.entity.state.tile_manager;
-        var center = new Juicy.Point(this.entity.width / 2, this.entity.height / 2);
+        var center = Juicy.Point.create(this.entity.width / 2, this.entity.height / 2);
         var pad = 5;
         for (var x = -pad; x <= this.entity.width + pad; x += tile_manager.TILE_SIZE) {
             for (var y = -pad; y <= this.entity.height + pad; y += tile_manager.TILE_SIZE) {
-                if (center.sub(new Juicy.Point(x, y)).length() > 10) continue;
+                if (center.distance(Juicy.Point.temp(x, y)) > 10) continue;
 
                 callback(x, y);
             }
         }
+        center.free();
     },
     update: function(dt, game) {
         var physics = this.entity.getComponent('Physics');
@@ -51,7 +52,7 @@ Juicy.Component.create('Digger', {
         var blocksRekt = 0;
         var self = this;
         this.forCollisionBox(function(x, y) {
-            var pos = self.entity.position.add(x, y).floor();
+            var pos = self.entity.position.add(x, y)._floor().free();
             blocksRekt += tile_manager.removeCell(pos.x, pos.y);
         });
 

@@ -124,12 +124,12 @@ Juicy.Component.create('Enemy', {
         this.arrow.height = 2 * (arrow_width * Math.abs(Math.sin(angleToTarget)) + arrow_length *  Math.abs(Math.cos(angleToTarget))) + 10;
 
         var self = this;
-        var center = new Juicy.Point(this.arrow.width / 2, this.arrow.height / 2);
-        var step = distanceToTarget.mult(-1 / distanceToTarget.length());
+        var center = Juicy.Point.create(this.arrow.width / 2, this.arrow.height / 2);
+        var step = distanceToTarget.mult(-1 / distanceToTarget.length()).free();
 
         for (var i = -arrow_width; i <= arrow_width; i ++) {
             for (var j = -arrow_width; j <= arrow_width; j ++) {
-                castPixels(center.add(i, j), Palette.get('MID'));
+                castPixels(center.add(i, j).free(), Palette.get('MID'));
             }
         }
     }
