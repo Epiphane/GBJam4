@@ -68,13 +68,8 @@ var GameState = Juicy.State.extend({
     },
 
     cleanup: function() {
-        var gabbaGo = ['tile_manager', 'tiles', 'loaded', 'player', 'gate', 'gateOpen', 'particles', 'countdown', 'countdown_entity', 'countdown_sprite', 'watching', 'camera', 'target', 'dramaticPauseTime', 'shake', 'game', 'updated', 'panningToGate', 'suckingInPlayer', 'gameOver', 'constructor', 'cleanup', 'init', 'moveGoal', 'score', 'completeLevel', 'dramaticPause'];
-
-        for (var i = 0; i < gabbaGo.length; i ++) {
-            console.log(gabbaGo[i]);
-
-            delete this[gabbaGo[i]];
-        }
+        this.tile_manager.cleanup();
+        delete this.tiles;
     },
 
     init: function() {

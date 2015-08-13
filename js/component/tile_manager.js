@@ -88,12 +88,12 @@
         return presets[preset_names[ndx]];
     };
 
-    var tile = document.createElement('canvas');
+    var tile_img = document.createElement('canvas');
     var tile_queue = [];
     var tile_template = new Image();
         tile_template.src = 'img/tiles.png';
         tile_template.onload = function() {
-            Palette.applyPalette(tile_template, tile);
+            Palette.applyPalette(tile_template, tile_img);
 
             var cb;
             while (cb = tile_queue.shift()) {
@@ -101,11 +101,35 @@
             }
         };
 
+    var _pool_Tile = [];
+    var Tile = function(sx, sy, obj) {
+        this.sx = sx;
+        this.sy = sy;
+        this.obj = obj || false;
+        this.drawn = false;
+    }
+
+    Tile.create = function(sx, sy, obj) {
+        // if (_pool_Tile.length > 0) {
+        //     var tile = _pool_Tile.shift();
+        //     tile.sx = sx;
+        //     tile.sy = sy;
+        //     tile.obj = obj || false;
+        //     tile.drawn = false;
+
+        //     return tile;
+        // }
+        // else {
+            return new Tile(sx, sy, obj);
+        // }
+    }
+
+    Tile.prototype.free = function() { };//_pool_Tile.push(this); };
+
     Juicy.Component.create('TileManager', {
         TILE_SIZE: TILE_SIZE,
         constructor: function(width) {
             this.tiles       = [];
-            this.transitions = [];
             this.chunks      = [];
             this.objects     = [];
 
@@ -116,6 +140,18 @@
             this.chunk_width  = 160;
             this.chunk_height = 144;
         },
+        cleanup: function() {
+            for (var i = 0; i < this.tiles.length; i ++) {
+                for (var j = 0; j < this.tiles[i].length; j ++) {
+                    if (this.tiles[i][j] !== false) {
+                        this.tiles[i][j].free();
+                        delete this.tiles[i][j];
+                    }
+                }
+                delete this.tiles[i];
+            }
+            delete this.tiles;
+        },
         generateChunk: function(x, y) {
             var chunk = this.chunks[y][x];
 
@@ -125,14 +161,10 @@
             for (var i = x; i < x + this.chunk_width / TILE_SIZE; i ++) {
                 for (var j = y; j < y + this.chunk_height / TILE_SIZE; j ++) {
 
-                    // Make sure the proper rows exist
-                    if (!this.transitions[i]) {
-                        this.transitions[i] = [];
-                    }
-
                     // Figure out whether we need to continue a pattern
                     if (!this.tiles[j] || typeof(this.tiles[j][i]) === 'undefined') {
                         var preset = getRandomPreset();
+                        preset = presets.DOGE;
                         
                         var presetApproved = true;
                         for (var p_i = 0; presetApproved && p_i < preset.width + preset.padding * 2; p_i ++) {
@@ -142,11 +174,7 @@
                                     presetApproved = false;
 
                                     if (!this.tiles[j]) { this.tiles[j] = []; }
-                                    this.tiles[j][i] = {
-                                        sx: presets.DIRT.start[0],
-                                        sy: presets.DIRT.start[1],
-                                        obj: false
-                                    };
+                                    this.tiles[j][i] = Tile.create(presets.DIRT.start[0], presets.DIRT.start[1]);
                                 }
                             }
                         }
@@ -174,11 +202,7 @@
 
                                     if (p_i >= preset.padding && p_i < preset.width + preset.padding &&
                                         p_j >= preset.padding && p_j < preset.height + preset.padding) {
-                                        this.tiles[p_j + j][p_i + i] = {
-                                            sx: preset.start[0] + p_i - preset.padding,
-                                            sy: preset.start[1] + p_j - preset.padding,
-                                            obj: false
-                                        };
+                                        this.tiles[p_j + j][p_i + i] = Tile.create(preset.start[0] + p_i - preset.padding, preset.start[1] + p_j - preset.padding);
 
                                         if (preset.name && withinEllipse(p_i, p_j)) {
                                             this.tiles[p_j + j][p_i + i].obj = object_ndx
@@ -186,11 +210,7 @@
                                         }
                                     }
                                     else {
-                                        this.tiles[p_j + j][p_i + i] = {
-                                            sx: 1, 
-                                            sy: 0,
-                                            obj: false
-                                        };
+                                        this.tiles[p_j + j][p_i + i] = Tile.create(1, 0, false);
                                     }
                                 }
                             }
@@ -201,16 +221,6 @@
                             });
                         }
                     }
-
-                    this.transitions[i].push({
-                        x: (i - x) * TILE_SIZE,
-                        y: (j - y) * TILE_SIZE,
-                        chunk: chunk,
-                        cell: this.tiles[j][i],
-                        t: 8 + Juicy.rand(2),
-                        dx: Juicy.rand(-1, 1),
-                        dy: 1
-                    });
                 }
             }
         },
@@ -225,7 +235,7 @@
             image.width  = this.chunk_width ;
             image.height = this.chunk_height;
 
-            this.chunks[chunk_y][chunk_x] = {
+            var chunk = this.chunks[chunk_y][chunk_x] = {
                 image: image, 
                 context: image.getContext('2d'),
                 x: chunk_x,
@@ -261,7 +271,7 @@
             x /= TILE_SIZE;
             y /= TILE_SIZE;
 
-            if (this.tiles[y][x] === 0) {
+            if (this.tiles[y][x] === false) {
                 return 0;
             }
             var obj = this.tiles[y][x].obj;
@@ -271,7 +281,7 @@
                     console.log('Removed object ' + obj + ': ' + this.objects[obj].type);
                 }
             }
-            this.tiles[y][x] = 0;
+            this.tiles[y][x] = false;
 
             var self = this;
             this.entity.state.particles.getComponent('ParticleManager').spawnParticles({
@@ -305,59 +315,51 @@
             var chunk_x = Math.floor(x / this.chunk_width);
             var chunk_y = Math.floor(y / this.chunk_height);
 
-            window.rendering = [];
-
             for (var i = chunk_x * this.chunk_width; i < x + w; i += this.chunk_width) {
                 for (var j = chunk_y * this.chunk_height; j <= y + h; j += this.chunk_height) {
                     if (j < 0) continue;
 
                     var chunk = this.getChunk(i, j);
-                    rendering.push(j);
 
-                    context.drawImage(chunk.image, i, j);
-                }
-            }
+                    for (var tile_x = 0; tile_x < this.chunk_width; tile_x += 2) {
+                        var global_x = tile_x + i;
 
-            for (var i = 0; i < this.transitions.length; i ++) {
-                var transitions = this.transitions[i];
-
-                if (transitions.length > 0) {
-                    var MAX_T = 4;
-                    var lookahead = Math.max(1, MAX_T - transitions[0].t);
-                    for (var t = 0; t < transitions.length; t ++) {
-                        var transition = transitions[t];
-
-                        transition.t --;
-
-                        var piece_x = transition.chunk.x * this.chunk_width + transition.x;
-                        var piece_y = transition.chunk.y * this.chunk_height + transition.y;
-
-                        /* Create a parabola with player as directrix LOL */
+                        // Create a parabola with player as directrix LOL
                         // Vertex: player position - { 0, 4 }
-                        // y = 4(x - player.x)^2 + player.y
-                        var toPlayer = (Juicy.Point.create(piece_x, piece_y))._sub(this.entity.state.player.center());
-                        var below_parabola = (toPlayer.x * toPlayer.x / 200 + toPlayer.y - 50 > 0);
-                        toPlayer.free();
+                        // y = 1/200*(x - player.x)^2 + player.y - 50
 
-                        if (below_parabola) {
-                            break;
-                        }
-                        else if (transition.t <= 0 || piece_y < (y + h) / 2) {
-                            transition.chunk.context.drawImage(tile, transition.cell.sx * TILE_SIZE, transition.cell.sy * TILE_SIZE, TILE_SIZE, TILE_SIZE, 
-                                                                transition.x, transition.y, TILE_SIZE, TILE_SIZE);
+                        var player_center = this.entity.state.player.center();
+                        var dx_to_player = global_x - player_center.x;
+                        var dy_to_player = j - player_center.y;
 
-                            transitions.splice(t, 1);
-                            t --;
-                        }
-                        else {
-                            var dx = piece_x + transition.dx * transition.t;
-                            var dy = piece_y + transition.dy * transition.t;
+                        var bottom_parabola = dx_to_player * dx_to_player / 200 + dy_to_player - 50;
 
-                            // Draw transitioning piece
-                            context.drawImage(tile, transition.cell.sx * TILE_SIZE, transition.cell.sy * TILE_SIZE, TILE_SIZE, TILE_SIZE,
-                                                    dx, dy, TILE_SIZE, TILE_SIZE);
+                        for (var tile_y = 0; tile_y < this.chunk_height && tile_y + bottom_parabola <= 16; tile_y += 2) {
+                            var global_y = tile_y + j;
+
+                            var tile = this.tiles[global_y / TILE_SIZE][global_x / TILE_SIZE];
+                            if (tile !== false && !tile.drawn) {
+                                var opacity = (1 - (tile_y + bottom_parabola) / 16);
+
+                                if (opacity >= 1) {
+                                    chunk.context.globalAlpha = 1;
+                                    chunk.context.drawImage(tile_img, tile.sx * TILE_SIZE, tile.sy * TILE_SIZE, TILE_SIZE, TILE_SIZE,
+                                                            tile_x, tile_y, TILE_SIZE, TILE_SIZE);
+
+                                    tile.drawn = true;
+                                }
+                                else if (opacity >= 0) {
+                                    if (global_x >= x - 2 && global_x < x + w) {
+                                        chunk.context.globalAlpha = opacity;
+                                        chunk.context.drawImage(tile_img, tile.sx * TILE_SIZE, tile.sy * TILE_SIZE, TILE_SIZE, TILE_SIZE,
+                                                               tile_x, tile_y, TILE_SIZE, TILE_SIZE);
+                                    }
+                                }
+                            }
                         }
                     }
+
+                    context.drawImage(chunk.image, i, j);
                 }
             }
         }
