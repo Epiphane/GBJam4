@@ -23,6 +23,8 @@ var GameState = Juicy.State.extend({
         this.player.getComponent('ColoredSprite').setSheet('img/sawman-all.png', 20, 20);
         this.player.getComponent('Player').updateAnim('IDLE');
 
+        this.birdManager = new Juicy.Entity(this, ['BirdManager']);
+
         this.gate = new Juicy.Entity(this, ['ColoredSprite']);
         var gateSprite = this.gate.getComponent('ColoredSprite');
         gateSprite.setSheet('img/gate.png', 52, 48);
@@ -200,6 +202,8 @@ var GameState = Juicy.State.extend({
                 }
             }
 
+            this.birdManager.update(dt);
+
             if (this.gateOpen) {
                 if (this.gate.center().sub(this.player.center()).length() < 30) {
                     this.suckingInPlayer = true;
@@ -235,6 +239,9 @@ var GameState = Juicy.State.extend({
         if (this.target !== this.gate) {
             this.target.render(context);
         }
+
+        this.birdManager.render(context);
+
         this.particles.render(context);
         this.target.render(context);
         this.player.render(context);
