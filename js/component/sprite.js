@@ -54,6 +54,14 @@ Juicy.Component.create('Sprite', {
 
         return this;
     },
+
+    setSize: function(width, height) {
+        this.sprite_width = width;
+        this.sprite_height = height;
+        this.entity.width = width;
+        this.entity.height = height;
+    },
+
     runAnimation: function(start, end, frametime, repeat) {
         this.frametime = this.timeleft = frametime;
         this.sprite = this.first_sprite = start;
@@ -117,8 +125,8 @@ Juicy.Component.create('Sprite', {
 
         var dx = arguments[5] || arguments[1] || 0;
         var dy = arguments[6] || arguments[2] || 0;
-        var dwidth = arguments[7] || arguments[3] || this.entity.   width;
-        var dheight = arguments[8] || arguments[4] || this.entity.   height;
+        var dwidth = arguments[7] || arguments[3] || this.entity.width;
+        var dheight = arguments[8] || arguments[4] || this.entity.height;
 
         var scaleAdjustX = (dwidth * this.scale - dwidth) / 2;
         var scaleAdjustY = (dheight * this.scale - dheight) * 3;
