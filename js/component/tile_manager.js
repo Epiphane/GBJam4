@@ -89,16 +89,24 @@
     };
 
     var tile_img = document.createElement('canvas');
-    var tile_queue = [];
     var tile_template = new Image();
         tile_template.src = 'img/tiles.png';
         tile_template.onload = function() {
-            Palette.applyPalette(tile_template, tile_img);
+            Palette.applyPalette(this, tile_img);
+        };
 
-            var cb;
-            while (cb = tile_queue.shift()) {
-                cb();
-            }
+    var tile_mid_img = document.createElement('canvas');
+    var tile_mid_template = new Image();
+        tile_mid_template.src = 'img/tiles_mid.png';
+        tile_mid_template.onload = function() {
+            Palette.applyPalette(this, tile_mid_img);
+        };
+
+    var tile_low_img = document.createElement('canvas');
+    var tile_low_template = new Image();
+        tile_low_template.src = 'img/tiles_low.png';
+        tile_low_template.onload = function() {
+            Palette.applyPalette(this, tile_low_img);
         };
 
     var _pool_Tile = [];
@@ -346,7 +354,6 @@
                                 var opacity = (1 - (tile_y + bottom_parabola) / 16);
 
                                 if (opacity >= 1) {
-                                    chunk.context.globalAlpha = 1;
                                     chunk.context.drawImage(tile_img, tile.sx * TILE_SIZE, tile.sy * TILE_SIZE, TILE_SIZE, TILE_SIZE,
                                                             tile_x, tile_y, TILE_SIZE, TILE_SIZE);
 
@@ -354,8 +361,9 @@
                                 }
                                 else if (opacity >= 0) {
                                     if (global_x >= x - 2 && global_x < x + w) {
-                                        chunk.context.globalAlpha = opacity;
-                                        chunk.context.drawImage(tile_img, tile.sx * TILE_SIZE, tile.sy * TILE_SIZE, TILE_SIZE, TILE_SIZE,
+                                        var img = tile_mid_img;
+                                        if (opacity < 0.5) img = tile_low_img;
+                                        chunk.context.drawImage(img, tile.sx * TILE_SIZE, tile.sy * TILE_SIZE, TILE_SIZE, TILE_SIZE,
                                                                tile_x, tile_y, TILE_SIZE, TILE_SIZE);
                                     }
                                 }
