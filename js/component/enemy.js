@@ -106,9 +106,9 @@ Juicy.Component.create('Enemy', {
 
         this.updateAnim(newDirection);
 
-        if (game.getPlayer().entity.testCollision(this.entity)) {
+        if (this.entity.state.player.testCollision(this.entity)) {
             // In here, test further for this.weakPoint
-            var player =  game.getPlayer();
+            var player = this.entity.state.player;
             if (this.weakPoint == 'ALL') {
                 this.health -= player.baseDmg * Math.abs(playerself.entity.getComponent('Physics').dy/70);
             }

@@ -75,6 +75,11 @@ var GameState = Juicy.State.extend({
         Palette.set(Juicy.rand(5));
     },
 
+    cleanup: function() {
+        this.tile_manager.cleanup();
+        delete this.tiles;
+    },
+
     init: function() {
         var self = this;
         if (!this.loaded) {
@@ -86,14 +91,12 @@ var GameState = Juicy.State.extend({
                         self.tile_manager.buildChunk(i, chunk_row);
                     }
 
-                    return (++chunk_row / 10);
+                    return (++chunk_row / 50);
                 }
             }));
         }
 
         music.play('lvl1');
-
-        this.game.getPlayer = function() { return self.player; };
     },
 
     moveGoal: function() {
@@ -105,6 +108,13 @@ var GameState = Juicy.State.extend({
             this.target.getComponent('Goal').asplode();
             this.moveGoal();
 
+            this.gate.getComponent('ColoredSprite').goNextFrame();
+            this.gate.getComponent('ColoredSprite').goNextFrame();
+            this.gate.getComponent('ColoredSprite').goNextFrame();
+            this.gate.getComponent('ColoredSprite').goNextFrame();
+            this.gate.getComponent('ColoredSprite').goNextFrame();
+            this.gate.getComponent('ColoredSprite').goNextFrame();
+            this.gate.getComponent('ColoredSprite').goNextFrame();
             this.gate.getComponent('ColoredSprite').goNextFrame();
         }
     },
@@ -168,6 +178,7 @@ var GameState = Juicy.State.extend({
             this.updateCamera(dt);
         }
         else if (this.gameOver) {
+            this.cleanup();
             game.setState(new GameState());
         }
         else {
@@ -199,6 +210,10 @@ var GameState = Juicy.State.extend({
                 if (this.player.position.x < 0) this.player.position.x = 0;
                 if (this.player.position.x + this.player.width > this.tile_manager.width) {
                     this.player.position.x = this.tile_manager.width - this.player.width;
+                }
+
+                if (this.player.position.y + this.player.height > this.tile_manager.height) {
+                    this.player.position.y = this.tile_manager.height - this.player.height;
                 }
             }
 
