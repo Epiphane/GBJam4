@@ -88,10 +88,10 @@ var GameState = Juicy.State.extend({
                 // Build chunks down to 100!!
                 load: function(piece) {
                     for (var i = 0; i < self.tile_manager.width * self.tile_manager.TILE_SIZE / self.tile_manager.chunk_width; i ++) {
-                        self.tile_manager.buildChunk(i, chunk_row);
+                        self.tile_manager.buildChunk(i, chunk_row, chunk_row === 4);
                     }
 
-                    return (++chunk_row / 50);
+                    return (++chunk_row / 5);
                 }
             }));
         }

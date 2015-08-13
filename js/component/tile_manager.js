@@ -160,7 +160,7 @@
             }
             delete this.tiles;
         },
-        generateChunk: function(x, y) {
+        generateChunk: function(x, y, solid) {
             var chunk = this.chunks[y][x];
 
             x *= this.chunk_width  / TILE_SIZE;
@@ -169,8 +169,18 @@
             for (var i = x; i < x + this.chunk_width / TILE_SIZE; i ++) {
                 for (var j = y; j < y + this.chunk_height / TILE_SIZE; j ++) {
 
+                    // Just put solid blocks here?
+                    if (solid) {
+                        if (!this.tiles[j]) {
+                            this.tiles[j] = [];
+                        }
+
+                        var sx = i % 4;
+                        var sy = 12 + j % 4;
+                        this.tiles[j][i] = Tile.create(sx, sy);
+                    }
                     // Figure out whether we need to continue a pattern
-                    if (!this.tiles[j] || typeof(this.tiles[j][i]) === 'undefined') {
+                    else if (!this.tiles[j] || typeof(this.tiles[j][i]) === 'undefined') {
                         var preset = getRandomPreset();
                         preset = presets.DOGE;
                         
@@ -232,7 +242,7 @@
                 }
             }
         },
-        buildChunk: function(chunk_x, chunk_y) {
+        buildChunk: function(chunk_x, chunk_y, solid) {
             if (!this.chunks[chunk_y]) {
                 this.chunks[chunk_y] = [];
             }
@@ -250,7 +260,7 @@
                 y: chunk_y
             };
 
-            this.generateChunk(chunk_x, chunk_y);
+            this.generateChunk(chunk_x, chunk_y, solid);
 
             if (chunk_y * this.chunk_height > this.height) {
                 this.height = chunk_y * this.chunk_height;
@@ -339,19 +349,19 @@
                         // Create a parabola with player as directrix LOL
                         // Vertex: player position - { 0, 4 }
                         // y = 1/200*(x - player.x)^2 + player.y - 50
-
                         var player_center = this.entity.state.player.center();
                         var dx_to_player = global_x - player_center.x;
                         var dy_to_player = j - player_center.y;
 
                         var bottom_parabola = dx_to_player * dx_to_player / 200 + dy_to_player - 50;
+                        var fadeLength = 24;
 
-                        for (var tile_y = 0; tile_y < this.chunk_height && tile_y + bottom_parabola <= 16; tile_y += 2) {
+                        for (var tile_y = 0; tile_y < this.chunk_height && tile_y + bottom_parabola <= fadeLength; tile_y += 2) {
                             var global_y = tile_y + j;
 
                             var tile = this.tiles[global_y / TILE_SIZE][global_x / TILE_SIZE];
                             if (tile !== false && !tile.drawn) {
-                                var opacity = (1 - (tile_y + bottom_parabola) / 16);
+                                var opacity = (1 - (tile_y + bottom_parabola) / fadeLength);
 
                                 if (opacity >= 1) {
                                     chunk.context.drawImage(tile_img, tile.sx * TILE_SIZE, tile.sy * TILE_SIZE, TILE_SIZE, TILE_SIZE,
