@@ -80,11 +80,13 @@
 
    <script src="memory-stats.js"></script>
    <script>
-   var stats = new MemoryStats();
-   stats.domElement.style.position  = 'fixed';
-   stats.domElement.style.right     = '0px';
-   stats.domElement.style.top    = '0px';
-   document.body.appendChild( stats.domElement );
+   if (location.href.indexOf('localhost') >= 0 || location.href.indexOf('file') >= 0) {
+      var stats = new MemoryStats();
+      stats.domElement.style.position  = 'fixed';
+      stats.domElement.style.right     = '0px';
+      stats.domElement.style.top    = '0px';
+      document.body.appendChild( stats.domElement );
+   }
    </script>
 
    <script src="http://elliotfiske.com/bonald.js"></script>
