@@ -1,13 +1,11 @@
 Juicy.Component.create('ParticleManager', {
     constructor: function() {
-        return;
         this.pendingParticles = Array();
         this.particles = Array();
     },
 
     /* Required: color, size, howMany, timeToLive, initThisParticle, updateParticle */
     spawnParticles: function(config) {
-        return;
         this.howMany = config.howMany;
         this.updateFunction = config.updateParticle;
 
@@ -25,13 +23,11 @@ Juicy.Component.create('ParticleManager', {
     },
 
     initParticle: function(currParticle) {
-        return;
         this.particles.push(currParticle);
         currParticle.init(currParticle);
     },
 
     update: function(dt, input) {
-        return;
 
         /**
          * Go through the particles that haven't spawned yet and check
@@ -62,7 +58,6 @@ Juicy.Component.create('ParticleManager', {
     },
 
     render: function(context) {
-        return;
         context.mozImageSmoothingEnabled = false;
         context.imageSmoothingEnabled = false;
         for (var i = 0; i < this.particles.length; i++) {
