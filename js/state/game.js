@@ -11,6 +11,8 @@ var GameState = Juicy.State.extend({
 
         this.loaded = false;
 
+        this.ui = new Juicy.Entity(this, ['UI']);
+
         this.player = new Juicy.Entity(this, ['ColoredSprite', 'Player', 'Digger', 'Physics', 'Animations']);
         this.player.position = new Juicy.Point(40, -40);
         
@@ -222,6 +224,9 @@ var GameState = Juicy.State.extend({
         }
 
         context.save();
+
+        // Draw UI independent of Camera
+
         context.translate(-Math.round(this.camera.x + Math.sin(this.shake * 100)), -Math.round(this.camera.y));
 
         this.tiles.render(context, this.camera.x, this.camera.y, this.game.width, this.game.height);
