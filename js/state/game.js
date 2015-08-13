@@ -109,13 +109,6 @@ var GameState = Juicy.State.extend({
             this.moveGoal();
 
             this.gate.getComponent('ColoredSprite').goNextFrame();
-            this.gate.getComponent('ColoredSprite').goNextFrame();
-            this.gate.getComponent('ColoredSprite').goNextFrame();
-            this.gate.getComponent('ColoredSprite').goNextFrame();
-            this.gate.getComponent('ColoredSprite').goNextFrame();
-            this.gate.getComponent('ColoredSprite').goNextFrame();
-            this.gate.getComponent('ColoredSprite').goNextFrame();
-            this.gate.getComponent('ColoredSprite').goNextFrame();
         }
     },
 
