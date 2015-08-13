@@ -243,6 +243,10 @@
             };
 
             this.generateChunk(chunk_x, chunk_y);
+
+            if (chunk_y * this.chunk_height > this.height) {
+                this.height = chunk_y * this.chunk_height;
+            }
         },
         getChunk: function(x, y, build) {
             var x = Math.floor(x / this.chunk_width);

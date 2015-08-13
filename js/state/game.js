@@ -203,6 +203,10 @@ var GameState = Juicy.State.extend({
                 if (this.player.position.x + this.player.width > this.tile_manager.width) {
                     this.player.position.x = this.tile_manager.width - this.player.width;
                 }
+
+                if (this.player.position.y + this.player.height > this.tile_manager.height) {
+                    this.player.position.y = this.tile_manager.height - this.player.height;
+                }
             }
 
             if (this.gateOpen) {
