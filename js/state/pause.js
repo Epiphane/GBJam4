@@ -21,6 +21,7 @@ var PauseState = Juicy.State.extend({
     },
     init: function() {
     },
+    update: function() { return true; },
     render: function(context) {
         this.prevState.render(context);
 

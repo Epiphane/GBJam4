@@ -67,6 +67,16 @@ var GameState = Juicy.State.extend({
         Palette.set(Juicy.rand(5));
     },
 
+    cleanup: function() {
+        var gabbaGo = ['tile_manager', 'tiles', 'loaded', 'player', 'gate', 'gateOpen', 'particles', 'countdown', 'countdown_entity', 'countdown_sprite', 'watching', 'camera', 'target', 'dramaticPauseTime', 'shake', 'game', 'updated', 'panningToGate', 'suckingInPlayer', 'gameOver', 'constructor', 'cleanup', 'init', 'moveGoal', 'score', 'completeLevel', 'dramaticPause'];
+
+        for (var i = 0; i < gabbaGo.length; i ++) {
+            console.log(gabbaGo[i]);
+
+            delete this[gabbaGo[i]];
+        }
+    },
+
     init: function() {
         var self = this;
         if (!this.loaded) {
@@ -84,8 +94,6 @@ var GameState = Juicy.State.extend({
         }
 
         music.play('lvl1');
-
-        this.game.getPlayer = function() { return self.player; };
     },
 
     moveGoal: function() {
@@ -97,6 +105,13 @@ var GameState = Juicy.State.extend({
             this.target.getComponent('Goal').asplode();
             this.moveGoal();
 
+            this.gate.getComponent('ColoredSprite').goNextFrame();
+            this.gate.getComponent('ColoredSprite').goNextFrame();
+            this.gate.getComponent('ColoredSprite').goNextFrame();
+            this.gate.getComponent('ColoredSprite').goNextFrame();
+            this.gate.getComponent('ColoredSprite').goNextFrame();
+            this.gate.getComponent('ColoredSprite').goNextFrame();
+            this.gate.getComponent('ColoredSprite').goNextFrame();
             this.gate.getComponent('ColoredSprite').goNextFrame();
         }
     },
@@ -160,7 +175,8 @@ var GameState = Juicy.State.extend({
             this.updateCamera(dt);
         }
         else if (this.gameOver) {
-            game.setState(new Juicy.State());//new GameState());
+            this.cleanup();
+            game.setState(new GameState());
         }
         else {
             if (this.target.getComponent('Goal')) {
