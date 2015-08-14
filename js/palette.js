@@ -7,33 +7,34 @@
     var NO_PALETTE = (location.href.indexOf('file://') >= 0);
     var palettes   = [[[255, 255, 255, 255], [MID, MID, MID, 255], [LOW, LOW, LOW, 255], [DARK, DARK, DARK, 255]]];
     if (!NO_PALETTE) {
+        palettes = dynamicPalette();
         var palette    = new Image();
         palette.src    = 'img/palette.png';
         palette.crossOrigin = 'Anonymous';
         palette.onload = function() {
-            palettes = [];
+            // palettes = [];
 
-            var tempcanvas = document.createElement('canvas');
-            tempcanvas.width = palette.width;
-            tempcanvas.height = palette.height;
-            var ctx = tempcanvas.getContext('2d');
+            // var tempcanvas = document.createElement('canvas');
+            // tempcanvas.width = palette.width;
+            // tempcanvas.height = palette.height;
+            // var ctx = tempcanvas.getContext('2d');
 
-            ctx.drawImage(palette, 0, 0);
-            var palettedata = ctx.getImageData(0, 0, palette.width, palette.height).data;
+            // ctx.drawImage(palette, 0, 0);
+            // var palettedata = ctx.getImageData(0, 0, palette.width, palette.height).data;
         
-            for (var p = 0; p < palettedata.length; /* p incremented in the loop */) {
-                var new_palette = [];
-                while (new_palette.length < 4 /* pixels per palette */) {
-                    var color = [];
-                    color[0] = palettedata[p++];
-                    color[1] = palettedata[p++];
-                    color[2] = palettedata[p++];
-                    color[3] = palettedata[p++];
+            // for (var p = 0; p < palettedata.length; /* p incremented in the loop */) {
+            //     var new_palette = [];
+            //     while (new_palette.length < 4 /* pixels per palette */) {
+            //         var color = [];
+            //         color[0] = palettedata[p++];
+            //         color[1] = palettedata[p++];
+            //         color[2] = palettedata[p++];
+            //         color[3] = palettedata[p++];
 
-                    new_palette.push(color);
-                }
-                palettes.push(new_palette);
-            }
+            //         new_palette.push(color);
+            //     }
+            //     palettes.push(new_palette);
+            // }
 
             Palette.set(Palette.current);
         };
@@ -45,6 +46,10 @@
     Palette.templates = [];
 
     Palette.set = function(palette_id) {
+        if (typeof(palette_id) === 'undefined') {
+            palette_id = Juicy.rand(palettes.length);
+        }
+
         if (NO_PALETTE) palette_id = 0;
 
         Palette.current = palette_id;
