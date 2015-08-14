@@ -137,7 +137,8 @@ var PLACE_SECOND_WORD = [
     "KEEP",
     "DUNGEON",
     "PARKING LOT OUTSIDE OF DENNY'S",
-
+    "TEMPLE",
+    "UNDERBELLY",
 
 ];
 
