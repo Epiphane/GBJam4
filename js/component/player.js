@@ -1,6 +1,3 @@
-var sfx = new Juicy.SFX();
-sfx.load('goal', 'audio/fx_jump.mp3');
-
 Juicy.Component.create('Player', {
     constructor: function(myEntity) {
         this.speed = 200;
@@ -16,10 +13,6 @@ Juicy.Component.create('Player', {
         this.lives = 3;
         this.health = 100;
         this.baseDmg = 20;
-    },
-
-    score: function() {
-        this.entity.state.score();
     },
     
     loseLife: function() {
@@ -115,13 +108,17 @@ Juicy.Component.create('Player', {
 
         this.updateAnim(newDirection);
 
-        if (this.entity.state.target.testCollision(this.entity)) {
-            this.score();
-            sfx.play('goal');
+        if (this.entity.target.testCollision(this.entity)) {
+            this.entity.state.getTarget();
         }
     },
+
     render: function(context) {
-        var target = this.entity.state.target;
+        var target = this.entity.target;
+
+        if (!target) {
+            return;
+        }
 
         var entity_center = this.entity.center();
         var distanceToTarget = entity_center.sub(target.center());
