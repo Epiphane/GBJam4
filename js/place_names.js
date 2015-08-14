@@ -102,6 +102,7 @@ var PLACE_FIRST_WORD = [
     "ASBESTOS",
     "CACKLING",
     "SPOOPY",
+    "CANNIBAL",
 
 
 ];
@@ -139,6 +140,11 @@ var PLACE_SECOND_WORD = [
     "PARKING LOT OUTSIDE OF DENNY'S",
     "TEMPLE",
     "UNDERBELLY",
+    "WOMB",
+    "MEADOWS",
+    "SANDS",
+    "ISLE",
+    "HAGGENS",
 
 ];
 
