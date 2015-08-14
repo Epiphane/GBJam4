@@ -1,6 +1,3 @@
-function randFromArray(array) {
-    return array[Math.floor(Math.random() * array.length)];
-}
 
 Juicy.Component.create('UI', {
     constructor: function() {
@@ -35,17 +32,16 @@ Juicy.Component.create('UI', {
     testText: function() {
         var newText = {
             position: new Juicy.Point(30, 10),
-            text: "THE SCOURGE OF DARKNESS"
+            text: COOL_NAME() + " " + COOL_PLACE_SUBTITLE()
         };
         this.textObjects.push(newText);
     },
 
 
     generatePlaceName: function() {
-        var country1 = randFromArray(COUNTRY_FIRST_SYLLABLE);
-        var country2 = randFromArray(COUNTRY_SECOND_SYLLABLE);
-        var country3 = randFromArray(COUNTRY_THIRD_SYLLABLE);
-
-        console.log(country1 + country2 + country3);
+        console.log(COOL_NAME() + " " + COOL_PLACE_SUBTITLE());
+        console.log(COOL_NAME() + " " + COOL_PLACE_SUBTITLE());
+        console.log(COOL_NAME() + " " + COOL_PLACE_SUBTITLE());
+        console.log(COOL_NAME() + " " + COOL_PLACE_SUBTITLE());
     },
 });

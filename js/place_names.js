@@ -1,64 +1,47 @@
-public static String[] vowels = new String[] {"a","e","i","o","u"};
-	public static String[] loneConsonants = new String[] {"d","j","m","n","qu","t"};
-	public static String[] doubleLetters = new String[] {"mm","nn","tt","ll","dd","ff","kk","ss"};
-	public static String[] followerConsonants = new String[] {"h","l","r"};
-	public static String[] leaderConsonants = new String[] {"b","c","f","g","k","p","s"};
-	
-	private String name;
-	
-	public Pidgeon() {
-		name = "";
-		while(name.length() < Math.random() * 16) {
-			switch((int) (Math.random() * 4)) {
-			case 0:
-				name += randomLetter(loneConsonants);
-				name += randomLetter(vowels);
-				break;
-			case 1:
-				if(name.length() > 1)
-					name += randomLetter(doubleLetters);
-				name += randomLetter(vowels);
-				break;
-			case 2:
-				name += randomLetter(leaderConsonants);
-				name += randomLetter(vowels);
-				break;
-			case 3:
-				name += randomLetter(leaderConsonants);
-				name += randomLetter(followerConsonants);
-			case 4:
-				name += randomLetter(vowels);
-				break;
-			}
-		}
-	}
+var VOWELS = ['A', 'E', 'I', 'O', 'U'];
+var LONE_CONSONANTS = ["D","J","M","QU","T"];
+var DOUBLE_LETTERS = ["MM","NN","TT","LL","DD","FF","SS"];
+var FOLLOWER_CONSONANTS = ["H","L","R"];
+var LEADER_CONSONANTS = ["B","C","F","G","K","P","S"];
 
-var VOWELS = ['a', 'e', 'i', 'o', 'u'];
-var LONE_CONSONANTS = ["d","j","m","n","qu","t"];
-var DOUBLE_LETTERS = ["mm","nn","tt","ll","dd","ff","kk","ss"];
-var FOLLOWER_CONSONANTS = ["h","l","r"];
-var LEADER_CONSONANTS = ["b","c","f","g","k","p","s"];
+function randomRange(min, max) {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+}
 
-var COUNTRY_FIRST_SYLLABLE = [
-    "WEED",
-    "TUR",
-    "DURK",
-    "FORK",
-    "OIL",
-    "STA",
-    "DUCK",
-    "ARM",
-    "AND",
-    "BUR",
-    "CHEST",
-];
+function randFromArray(array) {
+    return array[Math.floor(Math.random() * array.length)];
+}
 
-var COUNTRY_SECOND_SYLLABLE = [
-    "MAN",
-    "OIL",
-    "DOG",
-    "ER",
-];
+
+function COOL_NAME() {
+    var result = "";
+    
+    while (result.length < Math.random() * 4 + 5) {
+        switch(randomRange(0, 3)) {
+        case 0:
+            result += randFromArray(LONE_CONSONANTS);
+            result += randFromArray(VOWELS);
+            break;
+        case 1:
+            if (result.length > 1) {
+                result += randFromArray(DOUBLE_LETTERS);
+            }
+            result += randFromArray(VOWELS);
+            break;
+        case 2:
+            result += randFromArray(LEADER_CONSONANTS);
+            result += randFromArray(VOWELS);
+            break;
+        case 3:
+            result += randFromArray(LEADER_CONSONANTS);
+            result += randFromArray(FOLLOWER_CONSONANTS);
+            result += randFromArray(VOWELS);
+            break;
+        }
+    }
+
+    return result;
+}
 
 var COUNTRY_THIRD_SYLLABLE = [
     "ISTAN",
@@ -66,7 +49,6 @@ var COUNTRY_THIRD_SYLLABLE = [
     "ANY",
     "IUM",
     "IA",
-    "OLA",
     "FORD",
 ];
 
@@ -83,6 +65,29 @@ var PLACE_FIRST_WORD = [
     "RUBY",
     "FOSSIL",
     "DINOSAUR",
+    "SKELETON",
+    "GOLD",
+    "EXOTIC",
+    "SECRET",
+    "WET",
+    "MOIST",
+    "TRICKLING",
+    "SPRAWLING",
+    "INAPPROPRIATE",
+    "HIDDEN",
+    "FROZEN",
+    "ICY",
+    "VOLCANIC",
+    "EXPLOSIVE",
+    "ABANDONED",
+    "EMERALD",
+    "SAPPHIRE",
+    "CRYSTAL",
+    "DESERTED",
+    "SANDY",
+    "CANDY",
+    "SUBMERGED",
+
 ];
 
 var PLACE_SECOND_WORD = [
@@ -97,6 +102,14 @@ var PLACE_SECOND_WORD = [
     "VILLAGE",
     "KINGDOM",
     "LEVEL",
+    "FACTORY",
+    "CREVICE",
+    "MAN",
+    "LAKE",
+
 ];
 
+function COOL_PLACE_SUBTITLE() {
+    return "THE " + randFromArray(PLACE_FIRST_WORD) + " " + randFromArray(PLACE_SECOND_WORD);
+}
 
