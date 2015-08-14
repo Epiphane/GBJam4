@@ -211,7 +211,7 @@ var GameState = Juicy.State.extend({
                 }
             }
 
-            // this.birdManager.update(dt);
+            this.birdManager.update(dt);
 
             if (this.gateOpen) {
                 if (this.gate.center().sub(this.player.center()).length() < 30) {
@@ -249,7 +249,7 @@ var GameState = Juicy.State.extend({
             this.target.render(context);
         }
 
-        // this.birdManager.render(context);
+        this.birdManager.render(context);
 
         this.particles.render(context);
         this.target.render(context);
