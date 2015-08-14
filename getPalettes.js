@@ -25,7 +25,6 @@ function parseBody(body) {
    var items = body.match(/itemer\('([a-zA-Z0-9]*)'/g);
 
    while (items.length > 0) {
-      generatedCode += '[';
       var item = items.shift();
 
       var code = item.match(/itemer\('([a-zA-Z0-9]*)'/)[1];
@@ -45,15 +44,18 @@ function parseBody(body) {
          colors[i] = [r, g, b, 255];
       }
 
-      for (var i = 0; i < colors.length; i ++) {
-      }
-
       colors = colors.sort(function(a, b) {
          return Brightness(b) - Brightness(a);
       });
 
+      if (Brightness(colors[3]) > 130 || Brightness(colors[0]) > 200 || Brightness(colors[0]) < 100) {
+         console.log('skipping', colors);
+         continue;
+      }
+
       for (var i = 0; i < colors.length; i ++) { colors[i] = '[' + colors[i].join(',') + ']'; }
 
+      generatedCode += '[';
       generatedCode += colors.join(',') + '],';
       // if (items.length > 0) generatedCode += ','
    }
