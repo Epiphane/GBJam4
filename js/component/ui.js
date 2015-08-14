@@ -1,6 +1,11 @@
+function randFromArray(array) {
+    return array[Math.floor(Math.random() * array.length)];
+}
+
 Juicy.Component.create('UI', {
     constructor: function() {
         this.textObjects = [];
+        this.generatePlaceName();
     },
 
     setFontSprite: function(spriteEntity, letterWidth, letterHeight) {
@@ -37,7 +42,10 @@ Juicy.Component.create('UI', {
 
 
     generatePlaceName: function() {
+        var country1 = randFromArray(COUNTRY_FIRST_SYLLABLE);
+        var country2 = randFromArray(COUNTRY_SECOND_SYLLABLE);
+        var country3 = randFromArray(COUNTRY_THIRD_SYLLABLE);
 
+        console.log(country1 + country2 + country3);
     },
-
 });
