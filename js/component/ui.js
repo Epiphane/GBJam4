@@ -7,6 +7,8 @@ Juicy.Component.create('UI', {
         this.font = null;
         this.font_width = 0;
         this.font_height = 0;
+
+        this.testText();
     },
 
     setFontSprite: function(spriteEntity, letterWidth, letterHeight) {
@@ -24,10 +26,12 @@ Juicy.Component.create('UI', {
             // Go through each character of the string
             var currString = this.textObjects[ndx].text;
             for (var c = 0; c < currString.length; c++) {
-                var intChar = currString.charCodeAt(c) - 65;
+                if (currString.charCodeAt(c) != 32) {
+                    var intChar = currString.charCodeAt(c) - 65 + 26 + 26;
 
-                this.font.sprite = intChar;
-                this.font.render(context, drawPosition.x, drawPosition.y);
+                    this.font.sprite = intChar;
+                    this.font.render(context, drawPosition.x, drawPosition.y);
+                }
 
                 drawPosition.x += this.font_width;
             }
