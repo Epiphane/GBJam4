@@ -151,7 +151,7 @@
         cleanup: function() {
             for (var i = 0; i < this.tiles.length; i ++) {
                 for (var j = 0; j < this.tiles[i].length; j ++) {
-                    if (this.tiles[i][j] !== false) {
+                    if (this.tiles[i][j]) {
                         this.tiles[i][j].free();
                         delete this.tiles[i][j];
                     }
@@ -182,7 +182,6 @@
                     // Figure out whether we need to continue a pattern
                     else if (!this.tiles[j] || typeof(this.tiles[j][i]) === 'undefined') {
                         var preset = getRandomPreset();
-                        preset = presets.DOGE;
                         
                         var presetApproved = true;
                         for (var p_i = 0; presetApproved && p_i < preset.width + preset.padding * 2; p_i ++) {

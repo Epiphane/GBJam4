@@ -17,6 +17,16 @@ Palette.onchange.push(function(palette) {
     canvas.style.background = 'rgba(' + palette[3].join(',') +')';
 })
 
+var music = new Juicy.Music();
+music.load('lvl1', 'audio/music_cave_in.mp3');
+music.load('lvl2', 'audio/music_cave_in.mp3');
+
+var sfx = new Juicy.SFX();
+sfx.load('goal', 'audio/fx_jump.mp3');
+sfx.load('quack', 'audio/duck.m4a');
+
 document.addEventListener('DOMContentLoaded', function() {
-    Juicy.Game.setState(new InfiniteLevel(4)).run();
+    Juicy.Game.setState(new InfiniteLevel({
+        width: 4 /* in chunks */
+    })).run();
 }, false);

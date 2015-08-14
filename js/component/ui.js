@@ -38,6 +38,8 @@ Juicy.Component.create('UI', {
             text: "THE SCOURGE OF DARKNESS"
         };
         this.textObjects.push(newText);
+
+        return this.textObjects.length - 1;
     },
 
 });

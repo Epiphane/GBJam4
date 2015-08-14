@@ -1,6 +1,3 @@
-var sfx = new Juicy.SFX();
-sfx.load('quack', 'audio/duck.m4a');
-
 Juicy.Component.create('BirdManager', {
     constructor: function() {
         this.burds = [];
