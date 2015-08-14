@@ -2,7 +2,7 @@ var VOWELS = ['A', 'E', 'I', 'O', 'U'];
 var LONE_CONSONANTS = ["D","J","M","QU","T"];
 var DOUBLE_LETTERS = ["MM","NN","TT","LL","DD","FF","SS"];
 var FOLLOWER_CONSONANTS = ["H","L","R"];
-var LEADER_CONSONANTS = ["B","C","F","G","K","P","S"];
+var LEADER_CONSONANTS = ["B","C","F","G","K","P","S","T"];
 
 function randomRange(min, max) {
     return Math.floor(Math.random() * (max - min + 1)) + min;
@@ -17,7 +17,7 @@ function COOL_NAME() {
     var result = "";
     
     while (result.length < Math.random() * 4 + 5) {
-        switch(randomRange(0, 3)) {
+        switch(randomRange(0, 4)) {
         case 0:
             result += randFromArray(LONE_CONSONANTS);
             result += randFromArray(VOWELS);
@@ -25,14 +25,15 @@ function COOL_NAME() {
         case 1:
             if (result.length > 1) {
                 result += randFromArray(DOUBLE_LETTERS);
+                result += randFromArray(VOWELS);
             }
-            result += randFromArray(VOWELS);
             break;
         case 2:
             result += randFromArray(LEADER_CONSONANTS);
             result += randFromArray(VOWELS);
             break;
         case 3:
+        case 4:
             result += randFromArray(LEADER_CONSONANTS);
             result += randFromArray(FOLLOWER_CONSONANTS);
             result += randFromArray(VOWELS);
@@ -54,15 +55,13 @@ var COUNTRY_THIRD_SYLLABLE = [
 
 var PLACE_FIRST_WORD = [
     "HOWLING",
-    "RICH",    
-    "DARK",
+    "RICH",
     "DANK",
-    "DANGEROUS",
     "TREACHEROUS",
     "RADICAL",
-    "TRICKY",
     "AMETHYST",
     "RUBY",
+    "TRICKY",
     "FOSSIL",
     "DINOSAUR",
     "SKELETON",
@@ -87,7 +86,12 @@ var PLACE_FIRST_WORD = [
     "SANDY",
     "CANDY",
     "SUBMERGED",
-
+    "HORRIFIC",
+    "ANCIENT",
+    "WORST",
+    "ROTTEN",
+    "GUTTED",
+    "SWARMING",
 ];
 
 var PLACE_SECOND_WORD = [
@@ -106,7 +110,11 @@ var PLACE_SECOND_WORD = [
     "CREVICE",
     "MAN",
     "LAKE",
-
+    "RIVER",
+    "TOMB",
+    "SKELETONS",
+    "NURSERY",
+    
 ];
 
 function COOL_PLACE_SUBTITLE() {
