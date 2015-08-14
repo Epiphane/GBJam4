@@ -100,7 +100,8 @@ var PLACE_FIRST_WORD = [
     "DIAMOND",
     "QUARTZ",
     "ASBESTOS",
-    "EBOLA",
+    "CACKLING",
+    "SPOOPY",
 
 
 ];
@@ -135,6 +136,7 @@ var PLACE_SECOND_WORD = [
     "HALLOWS",
     "KEEP",
     "DUNGEON",
+    "PARKING LOT OUTSIDE OF DENNY'S",
 
 
 ];

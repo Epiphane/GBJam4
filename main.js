@@ -19,11 +19,11 @@ Palette.onchange.push(function(palette) {
 
 var music = new Juicy.Music();
 music.load('lvl1', 'audio/music_cave_in.mp3');
-music.load('lvl2', 'audio/music_cave_in.mp3');
+music.load('lvl2', 'audio/music_particles.mp3');
 
 var sfx = new Juicy.SFX();
 sfx.load('goal', 'audio/fx_jump.mp3');
-sfx.load('quack', 'audio/duck.m4a');
+sfx.load('quack', 'audio/fx_creature.wav');
 
 document.addEventListener('DOMContentLoaded', function() {
     Juicy.Game.setState(new InfiniteLevel({
