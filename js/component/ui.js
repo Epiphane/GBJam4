@@ -43,5 +43,9 @@ Juicy.Component.create('UI', {
         console.log(COOL_NAME() + " " + COOL_PLACE_SUBTITLE());
         console.log(COOL_NAME() + " " + COOL_PLACE_SUBTITLE());
         console.log(COOL_NAME() + " " + COOL_PLACE_SUBTITLE());
+        console.log(COOL_NAME() + " " + COOL_PLACE_SUBTITLE());
+        console.log(COOL_NAME() + " " + COOL_PLACE_SUBTITLE());
+        console.log(COOL_NAME() + " " + COOL_PLACE_SUBTITLE());
+        console.log(COOL_NAME() + " " + COOL_PLACE_SUBTITLE());
     },
 });

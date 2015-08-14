@@ -92,6 +92,17 @@ var PLACE_FIRST_WORD = [
     "ROTTEN",
     "GUTTED",
     "SWARMING",
+    "MASONIC",
+    "ANGRY",
+    "CRUEL",
+    "BEST",
+    "DEATHLY",
+    "DIAMOND",
+    "QUARTZ",
+    "ASBESTOS",
+    "EBOLA",
+
+
 ];
 
 var PLACE_SECOND_WORD = [
@@ -105,6 +116,7 @@ var PLACE_SECOND_WORD = [
     "HIVE",
     "VILLAGE",
     "KINGDOM",
+    "3-BEDROOM APARTMENT IN QUEEN'S LAKE",
     "LEVEL",
     "FACTORY",
     "CREVICE",
@@ -114,7 +126,17 @@ var PLACE_SECOND_WORD = [
     "TOMB",
     "SKELETONS",
     "NURSERY",
-    
+    "PRISON",
+    "ORCHARD",
+    "GARAGE",
+    "FOREST",
+    "JUNGLE",
+    "BOG",
+    "HALLOWS",
+    "KEEP",
+    "DUNGEON",
+
+
 ];
 
 function COOL_PLACE_SUBTITLE() {
