@@ -2,9 +2,10 @@ var music = new Juicy.Music();
 music.load('lvl1', 'audio/music_cave_in.mp3');
 
 var GameState = Juicy.State.extend({
-    constructor: function() {
+    constructor: function(width_in_chunks, height_in_chunks) {
         var self = this;
-        var game_width = 480;
+        var game_width = width_in_chunks * 80; // tiles per chunk
+        this.game_height = height_in_chunks || 30;
 
         this.tile_manager = new Juicy.Components.TileManager(game_width);
         this.tiles = new Juicy.Entity(this, [ this.tile_manager ]);
@@ -87,11 +88,11 @@ var GameState = Juicy.State.extend({
             this.game.setState(new LoadingState(this, {
                 // Build chunks down to 100!!
                 load: function(piece) {
-                    for (var i = 0; i < self.tile_manager.width * self.tile_manager.TILE_SIZE / self.tile_manager.chunk_width; i ++) {
-                        self.tile_manager.buildChunk(i, chunk_row, chunk_row === 29);
+                    for (var i = 0; i < self.tile_manager.width / self.tile_manager.chunk_width; i ++) {
+                        self.tile_manager.buildChunk(i, chunk_row, chunk_row === self.game_height - 1);
                     }
 
-                    return (++chunk_row / 30);
+                    return (++chunk_row / self.game_height);
                 }
             }));
         }
@@ -210,7 +211,7 @@ var GameState = Juicy.State.extend({
                 }
             }
 
-            this.birdManager.update(dt);
+            // this.birdManager.update(dt);
 
             if (this.gateOpen) {
                 if (this.gate.center().sub(this.player.center()).length() < 30) {
@@ -248,7 +249,7 @@ var GameState = Juicy.State.extend({
             this.target.render(context);
         }
 
-        this.birdManager.render(context);
+        // this.birdManager.render(context);
 
         this.particles.render(context);
         this.target.render(context);

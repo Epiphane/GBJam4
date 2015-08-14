@@ -141,7 +141,7 @@
             this.chunks      = [];
             this.objects     = [];
 
-            this.width = width;
+            this.width = width * TILE_SIZE;
             this.height = 0;
 
             // For ultimate performance gainz
@@ -274,7 +274,7 @@
                 // console.log('Creating Chunk', x, y);
                 this.buildChunk(x, y);
 
-                for (var i = 0; i < this.width * TILE_SIZE; i += this.chunk_width) {
+                for (var i = 0; i < this.width; i += this.chunk_width) {
                     this.getChunk(i, y * this.chunk_height, build);
                 }
             }
@@ -345,6 +345,8 @@
 
                     for (var tile_x = 0; tile_x < this.chunk_width; tile_x += 2) {
                         var global_x = tile_x + i;
+                        if (global_x < x - 2) continue;
+                        if (global_x >= x + w) break;
 
                         // Create a parabola with player as directrix LOL
                         // Vertex: player position - { 0, 4 }
@@ -358,6 +360,8 @@
 
                         for (var tile_y = 0; tile_y < this.chunk_height && tile_y + bottom_parabola <= fadeLength; tile_y += 2) {
                             var global_y = tile_y + j;
+                            if (global_y < y - 2) continue;
+                            if (global_y >= y + h) break;
 
                             var tile = this.tiles[global_y / TILE_SIZE][global_x / TILE_SIZE];
                             if (tile !== false && !tile.drawn) {
@@ -370,12 +374,13 @@
                                     tile.drawn = true;
                                 }
                                 else if (opacity >= 0) {
-                                    if (global_x >= x - 2 && global_x < x + w) {
-                                        var img = tile_mid_img;
-                                        if (opacity < 0.5) img = tile_low_img;
-                                        chunk.context.drawImage(img, tile.sx * TILE_SIZE, tile.sy * TILE_SIZE, TILE_SIZE, TILE_SIZE,
-                                                               tile_x, tile_y, TILE_SIZE, TILE_SIZE);
-                                    }
+                                    var img = tile_mid_img;
+                                    if (opacity < 0.5) img = tile_low_img;
+                                    chunk.context.drawImage(img, tile.sx * TILE_SIZE, tile.sy * TILE_SIZE, TILE_SIZE, TILE_SIZE,
+                                                           tile_x, tile_y, TILE_SIZE, TILE_SIZE);
+                                }
+                                else {
+                                    break;
                                 }
                             }
                         }

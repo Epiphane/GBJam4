@@ -18,5 +18,5 @@ Palette.onchange.push(function(palette) {
 })
 
 document.addEventListener('DOMContentLoaded', function() {
-    Juicy.Game.setState(new GameState()).run();
+    Juicy.Game.setState(new GameState(4)).run();
 }, false);
