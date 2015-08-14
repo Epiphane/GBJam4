@@ -4,8 +4,8 @@ music.load('lvl1', 'audio/music_cave_in.mp3');
 var GameState = Juicy.State.extend({
     constructor: function(width_in_chunks, height_in_chunks) {
         var self = this;
-        var game_width = width_in_chunks * 80; // tiles per chunk
-        this.game_height = height_in_chunks || 30;
+        var game_width = (width_in_chunks || 4) * 80; // tiles per chunk
+        this.game_height = (height_in_chunks + 1) || 30;
 
         this.tile_manager = new Juicy.Components.TileManager(game_width);
         this.tiles = new Juicy.Entity(this, [ this.tile_manager ]);
@@ -173,7 +173,7 @@ var GameState = Juicy.State.extend({
         }
         else if (this.gameOver) {
             this.cleanup();
-            game.setState(new GameState());
+            game.setState(new GameState(4, 30));
         }
         else {
             if (this.target.getComponent('Goal')) {
