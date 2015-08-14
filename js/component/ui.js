@@ -1,13 +1,18 @@
 Juicy.Component.create('UI', {
     constructor: function() {
         this.textObjects = [];
+
+        this.font = null;
+        this.font_width = 0;
+        this.font_height = 0;
     },
 
     setFontSprite: function(spriteEntity, letterWidth, letterHeight) {
-        this.fontSprite = spriteEntity;
-        this.fontSprite.getComponent('ColoredSprite').setSize(letterWidth, letterHeight);
-        this.fontSprite.width = letterWidth;
-        this.fontSprite.height = letterHeight;
+        this.font = spriteEntity.getComponent('ColoredSprite');
+        this.font_width = letterWidth;
+        this.font_height = letterHeight;
+
+        this.font.setSize(letterWidth, letterHeight);
     },
 
     render: function(context) {
@@ -19,10 +24,10 @@ Juicy.Component.create('UI', {
             for (var c = 0; c < currString.length; c++) {
                 var intChar = currString.charCodeAt(c) - 65;
 
-                this.fontSprite.getComponent('ColoredSprite').sprite = intChar;
-                this.fontSprite.getComponent('ColoredSprite').render(context, drawPosition.x, drawPosition.y);
+                this.font.sprite = intChar;
+                this.font.render(context, drawPosition.x, drawPosition.y);
 
-                drawPosition.x += this.fontSprite.width;
+                drawPosition.x += this.font_width;
             }
         }
     },

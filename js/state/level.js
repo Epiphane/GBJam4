@@ -1,32 +1,45 @@
 var music = new Juicy.Music();
 music.load('lvl1', 'audio/music_cave_in.mp3');
 
-var GameState = Juicy.State.extend({
+var Level = Juicy.State.extend({
     constructor: function(width_in_chunks, height_in_chunks) {
+        // Initialize variables
         var self = this;
         var game_width = (width_in_chunks || 4) * 80; // tiles per chunk
         this.game_height = (height_in_chunks + 1) || 30;
+        this.dramaticPauseTime = 0.0;
+        this.shake = 0;
+        this.song = 'lvl1';
+        this.loaded = false;
+        this.gateOpen = false;
 
+        // Random palette!
+        Palette.set(Juicy.rand(5));
+
+        // Create Tile Manager
         this.tile_manager = new Juicy.Components.TileManager(game_width);
         this.tiles = new Juicy.Entity(this, [ this.tile_manager ]);
 
-        this.loaded = false;
-
-        this.ui = new Juicy.Entity(this, ['UI']);
-        this.ui.getComponent('UI').testText();
+        // Create UI
         var fontSprite = new Juicy.Entity(this, ['ColoredSprite']);
         fontSprite.getComponent('ColoredSprite').setSheet('img/font.png', 0, 0);
+
+        this.ui = new Juicy.Entity(this, ['UI']);
         this.ui.getComponent('UI').setFontSprite(fontSprite, 4, 5);
 
+        // Create Player
         this.player = new Juicy.Entity(this, ['ColoredSprite', 'Player', 'Digger', 'Physics', 'Animations']);
-        this.player.position = new Juicy.Point(40, -40);
-        
+        this.player.position = new Juicy.Point(40, -40);        
         this.player.getComponent('ColoredSprite').setSheet('img/sawman-all.png', 20, 20);
         this.player.getComponent('Player').updateAnim('IDLE');
 
+        // Create tha birds
         this.birdManager = new Juicy.Entity(this, ['BirdManager']);
 
+        // Create gate to next level
         this.gate = new Juicy.Entity(this, ['ColoredSprite']);
+        this.gate.position = new Juicy.Point((game_width - 52) / 2, -48);
+
         var gateSprite = this.gate.getComponent('ColoredSprite');
         gateSprite.setSheet('img/gate.png', 52, 48);
         gateSprite.runAnimation(0, 7, 0, false);
@@ -41,12 +54,11 @@ var GameState = Juicy.State.extend({
 
                 self.shake = 2.0;
             };
-        this.gate.position = new Juicy.Point((game_width - 52) / 2, -48);
 
-        this.gateOpen = false;
-
+        // Particle Manager
         this.particles = new Juicy.Entity(this, ['ParticleManager']);
 
+        // Countdown until game starts
         this.countdown = 2.99;
         this.countdown_entity = new Juicy.Entity(this, ['ColoredSprite']);
         this.countdown_sprite = this.countdown_entity.getComponent('ColoredSprite');
@@ -54,8 +66,8 @@ var GameState = Juicy.State.extend({
         this.countdown_sprite.last_sprite = 3;
         this.countdown_sprite.repeat = true;
 
+        // Camera info
         this.watching = this.player;
-
         this.camera = {
             x: this.player.position.x,
             y: this.player.position.y,
@@ -65,15 +77,11 @@ var GameState = Juicy.State.extend({
             dy: 20
         };
 
+        // Create coins!
         this.target = new Juicy.Entity(this, ['ColoredSprite', 'Goal']);
         this.target.getComponent('ColoredSprite').setSheet('img/doge-coin.png', 32, 32);
         this.target.getComponent('ColoredSprite').runAnimation(0, 7, 0.2, true);
         this.moveGoal();
-
-        this.dramaticPauseTime = 0.0;
-        this.shake = 0;
-
-        Palette.set(Juicy.rand(5));
     },
 
     cleanup: function() {
@@ -86,7 +94,7 @@ var GameState = Juicy.State.extend({
         if (!this.loaded) {
             var chunk_row = 0;
             this.game.setState(new LoadingState(this, {
-                // Build chunks down to 100!!
+                // Pre-build chunks down to self.game_height!!
                 load: function(piece) {
                     for (var i = 0; i < self.tile_manager.width / self.tile_manager.chunk_width; i ++) {
                         self.tile_manager.buildChunk(i, chunk_row, chunk_row === self.game_height - 1);
@@ -97,7 +105,7 @@ var GameState = Juicy.State.extend({
             }));
         }
 
-        music.play('lvl1');
+        music.play(this.song);
     },
 
     moveGoal: function() {
@@ -173,7 +181,7 @@ var GameState = Juicy.State.extend({
         }
         else if (this.gameOver) {
             this.cleanup();
-            game.setState(new GameState(4, 30));
+            game.setState(new InfiniteLevel(4, 30));
         }
         else {
             if (this.target.getComponent('Goal')) {
@@ -222,6 +230,7 @@ var GameState = Juicy.State.extend({
             this.updateCamera(dt);
         }
     },
+    
     updateCamera: function(dt) {
         // Update Camera
         var dx = (this.watching.position.x - this.game.width / 2) - this.camera.x;
@@ -235,6 +244,7 @@ var GameState = Juicy.State.extend({
             this.camera.x = this.tile_manager.width - this.game.width;
         }
     },
+
     render: function(context) {
         if (this.countdown > -0.5) {
             this.countdown_entity.render(context, this.game.width / 2 - 5, 20);
