@@ -35,4 +35,9 @@ Juicy.Component.create('UI', {
         this.textObjects.push(newText);
     },
 
+
+    generatePlaceName: function() {
+
+    },
+
 });
