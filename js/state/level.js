@@ -50,6 +50,17 @@ var Level = Juicy.State.extend({
         // Countdown until game starts
         if (options.countdown !== false) {
             this._countdown = options.countdown - 0.01;
+            this.countdownText = {
+                text: Math.ceil(this._countdown) + '',
+                font: UI.FONTS.BIG,
+                position: Juicy.Point.create(80, 10),
+                center: true,
+                brightness: 3,
+                noBG: true,
+                animate: UI.ANIMATIONS.DRAMATIC
+            };
+
+            this.ui.addText(this.countdownText);
         }
         else {
             this._countdown = false;
@@ -115,10 +126,22 @@ var Level = Juicy.State.extend({
         this.ui_entity.update(dt);
 
         if (this._countdown !== false) {
-                if (this._countdown > 0) {
-                    this._countdown -= dt;
-                    shouldUpdate = false; // Don't update game yet
+            if (this._countdown > 0) {
+                this._countdown -= dt;
+
+                this.countdownText.text = Math.ceil(this._countdown) + '';
+
+                shouldUpdate = false; // Don't update game yet
+            }
+            else if (this._countdown > -0.5) {
+                this._countdown -= dt;
+
+                if (this._countdown <= -0.5) { 
+                    this.countdownText.remove = true;
                 }
+
+                this.countdownText.text = 'GO';
+            }
         }
 
         if (this.updateFunc) {

@@ -63,7 +63,7 @@
 
             for (var i = 0; i < this.textObjects.length; i ++) {
                 this.textObjects[i].animationTicks++;
-                if (this.textObjects.remove) {
+                if (this.textObjects[i].remove) {
                     this.textObjects.splice(i--, 1);
                 }
             }
@@ -89,11 +89,11 @@
                 if (textObject.noBG != true) {
                     if (textObject.brightness > 0) {
                         context.fillStyle = 'rgba(' + Palette.get('DARK').join(',') + ')';
-                        context.fillRect(drawPosition.x - font.pad, drawPosition.y - font.pad, currString.length * font.width + font.pad, font.height + font.pad);
+                        context.fillRect(drawPosition.x - font.pad, drawPosition.y - font.pad - 1, currString.length * font.width + font.pad * 2, font.height + font.pad * 2);
                     }
                     else if (textObject.brightness) {
                         context.fillStyle = 'rgba(' + Palette.get('LIGHT').join(',') + ')';
-                        context.fillRect(drawPosition.x - font.pad, drawPosition.y - font.pad, currString.length * font.width + font.pad, font.height + font.pad);
+                        context.fillRect(drawPosition.x - font.pad, drawPosition.y - font.pad - 1, currString.length * font.width + font.pad * 2, font.height + font.pad * 2);
                     }
                 }
 
@@ -169,7 +169,7 @@
             }
             else if (charCode >= _0 && charCode <= _9) {
                 charCode -= _0;
-                charCode += 25; // To go to numbers
+                charCode += 26; // To go to numbers
             }
 
             context.drawImage(font.font, charCode * font.width, brightness * font.height, font.width, font.height,
