@@ -26,5 +26,5 @@ sfx.load('goal', 'audio/fx_jump.mp3');
 sfx.load('quack', 'audio/fx_creature.wav');
 
 document.addEventListener('DOMContentLoaded', function() {
-    Juicy.Game.setState(new TutorialLevel()).run();
+    Juicy.Game.setState(new InfiniteLevel()).run();
 }, false);
