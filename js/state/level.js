@@ -38,29 +38,27 @@ var Level = Juicy.State.extend({
 
         /*var placeTitle = {
             text: 'THIS IS A STICKUP YA HEAR',
-            font: UI.FONTS.BIG,
+            font: TEXT.FONTS.BIG,
             position: Juicy.Point.create(this.game_width/4, 10),
             center: true,
             showBackground: false,
             brightness: 2,
-            animate: UI.ANIMATIONS.DRAMATIC,
+            animate: TEXT.ANIMATIONS.DRAMATIC,
         };
         this.ui.addText(placeTitle);*/
 
         // Countdown until game starts
         if (options.countdown !== false) {
             this._countdown = options.countdown - 0.01;
-            this.countdownText = {
+            this.countdownText = this.ui.addText({
                 text: Math.ceil(this._countdown) + '',
-                font: UI.FONTS.BIG,
+                font: TEXT.FONTS.BIG,
                 position: Juicy.Point.create(80, 10),
                 center: true,
                 brightness: 3,
                 noBG: true,
-                animate: UI.ANIMATIONS.DRAMATIC
-            };
-
-            this.ui.addText(this.countdownText);
+                animate: TEXT.ANIMATIONS.DRAMATIC
+            });
         }
         else {
             this._countdown = false;
@@ -130,13 +128,21 @@ var Level = Juicy.State.extend({
                 var nextCountdown = this._countdown - dt;
 
                 if (Math.ceil(nextCountdown) !== Math.ceil(this._countdown)) {
-                    this.countdownText.text = Math.ceil(nextCountdown) + '';
-                    this.countdownText.animationTicks = 0;
+                    this.countdownText.setText(Math.ceil(nextCountdown) + '');
                 }
 
                 this._countdown = nextCountdown;
 
                 shouldUpdate = false; // Don't update game yet
+            }
+            else if (this._countdown > -0.5) {
+                this._countdown -= dt;
+
+                this.countdownText.setText('GO');
+
+                if (this._countdown <= -0.5) {
+                    this.countdownText.remove = true;
+                }
             }
         }
 

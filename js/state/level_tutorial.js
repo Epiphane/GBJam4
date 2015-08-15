@@ -9,21 +9,27 @@ var TutorialLevel = Level.extend({
 
         Level.call(this, options);
 
-        this.message = {
-            text: 'HI THERE',
-            font: UI.FONTS.BIG,
-            animate: UI.ANIMATIONS.NONE,
-            position: Juicy.Point.create(10, 10),
-            showBackground: true,
-            brightness: 3
-        };
-        this.ui.addText(this.message);
-
-        this.helper = new Juicy.Entity(this, ['ColoredSprite', 'Follower']);
+        this.helper = new Juicy.Entity(this, ['ColoredSprite', 'Follower', 'TextRender']);
         this.helper.getComponent('ColoredSprite').setSheet('img/helper.png', 10, 14);
         this.helper.getComponent('ColoredSprite').runAnimation(0, 11, 0.16, true);
         this.helper.position = this.player.position.sub(Juicy.Point.temp(10, 8));
         this.helper.getComponent('Follower').follow(this.player, Juicy.Point.create(-10, -8), true);
+        this.message = this.helper.getComponent('TextRender').set({
+            text: 'HI THERE',
+            font: 'BIG',
+            animate: 'NONE',
+            position: Juicy.Point.create(10, 10),
+            showBackground: true,
+            brightness: 3,
+            offset: Juicy.Point.create(14, -4)
+        });
+
+        this.ui.addText({
+            text: 'PRESS ESC TO SKIP',
+            animate: 'NONE',
+            showBackground: true,
+            brightness: 3
+        });
 
         this.objects.push(this.helper);
 
@@ -38,6 +44,11 @@ var TutorialLevel = Level.extend({
         pyramid.position.x = 30;
         pyramid.position.y = -30;
         pyramid.scale = Juicy.Point.create(2, 2);
+    },
+
+    key_ESC: function() {
+        this.complete = true;
+        this.game.setState(new InfiniteLevel());
     },
 
     init: function() {
@@ -60,8 +71,7 @@ var TutorialLevel = Level.extend({
         this._blink -= dt;
         if (this._blink <= 0) this._blink = 1.9;
 
-        this.message.position = this.helper.center().sub(Juicy.Point.temp(this.camera.x - 8, this.camera.y + 8));
-        if (this.message.font === UI.FONTS.SPECIAL) {
+        if (this.message.font.name === 'SPECIAL') {
             this.message.brightness = Math.floor(this._blink);
         }
 
@@ -72,7 +82,7 @@ var TutorialLevel = Level.extend({
         var niceTime = 1.5;
         this.message.text = 'NICE';
         this.message.brightness = 3;
-        this.message.font = UI.FONTS.BIG;
+        this.message.setFont('BIG');
 
         this.updateFunc = function(dt) {
                 niceTime -= dt;
@@ -121,7 +131,7 @@ var TutorialLevel = Level.extend({
 
     pressDown: function(dt, game) {
         this.message.text = '\2';
-        this.message.font = UI.FONTS.SPECIAL;
+        this.message.setFont('SPECIAL');
 
         if (game.keyDown('DOWN')) {
             this.sayNice(this.pressRightUp);
@@ -134,7 +144,7 @@ var TutorialLevel = Level.extend({
 
     pressRightUp: function(dt, game) {
         this.message.text = '\1\0';
-        this.message.font = UI.FONTS.SPECIAL;
+        this.message.setFont('SPECIAL');
 
         if (this.player.getComponent('Physics').dy < -20) {
             this.sayNice(this.countdownToGame);
@@ -143,7 +153,7 @@ var TutorialLevel = Level.extend({
 
     countdownToGame: function(dt, game) {
         this.countdown -= dt;
-        this.message.font = UI.FONTS.BIG;
+        this.message.setFont('BIG');
         this.message.text = Math.floor(this.countdown) + '';
         this.message.brightness = 3;
 

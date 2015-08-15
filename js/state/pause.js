@@ -6,7 +6,7 @@ var PauseState = Juicy.State.extend({
         this.ui = this.ui_entity.getComponent('UI');
         this.ui.addText({
             text: 'PAUSED',
-            font: UI.FONTS.BIG,
+            font: 'BIG',
             center: true,
             position: Juicy.Point.create(80, 10),
             brightness: 3
