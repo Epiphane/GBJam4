@@ -2,18 +2,21 @@ var PauseState = Juicy.State.extend({
     constructor: function(prevState) {
         this.prevState = prevState;
 
-        this.text = new Juicy.Entity(this, ['Text']);
-        this.text.getComponent('Text').set({
-            text: 'PAUSED', 
-            font: '10pt Arial', 
-            fillStyle: 'red'
+        this.ui_entity = new Juicy.Entity(this, ['UI']);
+        this.ui = this.ui_entity.getComponent('UI');
+        this.ui.addText({
+            text: 'PAUSED',
+            font: UI.FONTS.BIG,
+            center: true,
+            position: Juicy.Point.create(80, 10),
+            brightness: 3
         });
 
-        this.sub = new Juicy.Entity(this, ['Text']);
-        this.sub.getComponent('Text').set({
-            text: 'Press ESC to continue', 
-            font: '8pt Arial', 
-            fillStyle: 'red'
+        this.ui.addText({
+            text: 'Press ESC to continue',
+            center: true,
+            position: Juicy.Point.create(80, 30),
+            brightness: 3
         });
     },
     key_ESC: function() {
@@ -21,11 +24,13 @@ var PauseState = Juicy.State.extend({
     },
     init: function() {
     },
-    update: function() { return true; },
+    update: function(dt) { 
+        this.ui_entity.update(dt);
+        return true; 
+    },
     render: function(context) {
         this.prevState.render(context);
 
-        this.text.render(context, (this.game.width - this.text.width) / 2, 0);
-        this.sub.render(context, (this.game.width - this.sub.width) / 2, 30);
+        this.ui_entity.render(context);
     }
 });

@@ -108,7 +108,7 @@ Juicy.Component.create('Player', {
 
         this.updateAnim(newDirection);
 
-        if (this.entity.target.testCollision(this.entity)) {
+        if (this.entity.target && this.entity.target.testCollision(this.entity)) {
             this.entity.state.getTarget();
         }
     },

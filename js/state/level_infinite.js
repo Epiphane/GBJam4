@@ -59,6 +59,8 @@ var InfiniteLevel = Level.extend({
         }
         else if (this.updateFunc !== this.checkGate) {
             this.updateFunc = this.checkGate;
+
+            this.shake = 3.0;
         }
 
         sfx.play('goal');
@@ -88,15 +90,12 @@ var InfiniteLevel = Level.extend({
             this.watching = this.player;
         }
 
-        this.shake = 1.0;
-
         return false; // Do NOT update physics
     },
 
     checkGate: function(dt, game) {
         if (this.gate.center().sub(this.player.center()).length() < 30) {
             this.updateFunc = this.endLevel;
-            this.shake = 2;
 
             return false; // Do NOT update physics
         }
