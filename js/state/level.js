@@ -38,7 +38,7 @@ var Level = Juicy.State.extend({
 
 
         var placeTitle = {
-            text: 'THIS IS A STICKUP YA HEAR',
+            text: COOL_NAME(),
             font: UI.FONTS.BIG,
             position: Juicy.Point.create(this.game_width/4, 10),
             center: true,
@@ -51,11 +51,6 @@ var Level = Juicy.State.extend({
         // Countdown until game starts
         if (options.countdown !== false) {
             this._countdown = options.countdown - 0.01;
-            this.countdown_entity = new Juicy.Entity(this, ['ColoredSprite']);
-            this.countdown_sprite = this.countdown_entity.getComponent('ColoredSprite');
-            this.countdown_sprite.setSheet('img/countdown.png', 10, 10);
-            this.countdown_sprite.last_sprite = 3;
-            this.countdown_sprite.repeat = true;
         }
         else {
             this._countdown = false;
@@ -120,20 +115,10 @@ var Level = Juicy.State.extend({
         this.ui_entity.update(dt);
 
         if (this._countdown !== false) {
-            if (this._countdown > -0.5) {
-                var nextCountdown = this._countdown - dt;
-
-                if (Math.floor(this._countdown) !== Math.floor(nextCountdown)) {
-                    this.countdown_sprite.goNextFrame();
-                }
-
-                this._countdown = nextCountdown;
-                this.player.getComponent('ColoredSprite').update(dt);
-
                 if (this._countdown > 0) {
+                    this._countdown -= dt;
                     shouldUpdate = false; // Don't update game yet
                 }
-            }
         }
 
         if (this.updateFunc) {
@@ -180,9 +165,6 @@ var Level = Juicy.State.extend({
     },
 
     render: function(context) {
-        if (this._countdown && this._countdown > -0.5) {
-            this.countdown_entity.render(context, this.game.width / 2 - 5, 20);
-        }
 
         context.save();
         context.translate(-Math.round(this.camera.x + Math.sin(this.shake * 100)), -Math.round(this.camera.y));

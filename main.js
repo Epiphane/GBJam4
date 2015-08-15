@@ -24,6 +24,7 @@ music.load('lvl2', 'audio/music_particles.mp3');
 var sfx = new Juicy.SFX();
 sfx.load('goal', 'audio/fx_jump.mp3');
 sfx.load('quack', 'audio/fx_creature.wav');
+sfx.load('textBonk', 'audio/text-impact.wav');
 
 document.addEventListener('DOMContentLoaded', function() {
     Juicy.Game.setState(new InfiniteLevel({})).run();

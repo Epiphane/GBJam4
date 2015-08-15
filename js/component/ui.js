@@ -1,3 +1,5 @@
+
+
 (function() {
     var fonts = [];
 
@@ -31,7 +33,6 @@
     window.UI = Juicy.Component.create('UI', {
         constructor: function(thisEntity) {
             this.textObjects = [];
-//             this.generatePlaceName();
 
             this.ui_particles = new Juicy.Entity(this.state, ['ParticleManager']);
         },
@@ -82,6 +83,7 @@
                 if (textObject.center) {
                     drawPosition.x -= currString.length * font.width / 2;
                 }
+                var startX = drawPosition.x;
 
                 // Draw background for text
                 if (textObject.noBG != true) {
@@ -99,10 +101,18 @@
                 for (var c = 0; c < currString.length; c++) {
                     var charCode = currString.charCodeAt(c);
 
-                    var textTiming = c*12 - textObject.animationTicks*2 + 10;
+                    var textTiming = c*16 - textObject.animationTicks*2 + 10;
+
+                    if (textTiming == 4) {
+                        if (charCode != 32) {
+                            sfx.play('textBonk');
+                        }
+                    }
+
                     if (textTiming == 8) {
                         var currNdx = c;
                         var self = this;
+
                         this.ui_particles.getComponent('ParticleManager').spawnParticles({
                             color: "LIGHT", 
                             size: 2, 
@@ -111,7 +121,7 @@
                                 return 0;
                             },
                             initParticle: function(particle) {
-                                particle.x = currNdx*font.width + Math.random() * font.width;
+                                particle.x = currNdx*font.width + Math.random() * font.width + startX;
                                 particle.y = drawPosition.y + Math.random() * font.height;
 
                                 particle.dx = Math.random() * 2 - 1;
@@ -130,7 +140,7 @@
                     var shakeIt = (textTiming > -7);
                     var offset = Math.max(1, textTiming);
 
-                    if (textObject.animationTicks*2 > c*12) {
+                    if (textObject.animationTicks*2 > c*16) {
                         if (shakeIt) {
                             context.save();
                             context.translate(Math.random() * 2 - 1, Math.random() * 2 - 1);
