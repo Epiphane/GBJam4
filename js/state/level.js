@@ -36,6 +36,18 @@ var Level = Juicy.State.extend({
         // Particle Manager
         this.particles = new Juicy.Entity(this, ['ParticleManager']);
 
+
+        var placeTitle = {
+            text: 'THIS IS A STICKUP YA HEAR',
+            font: UI.FONTS.BIG,
+            position: Juicy.Point.create(this.game_width/4, 10),
+            center: true,
+            noBG: true,
+            brightness: 2,
+            animate: UI.ANIMATIONS.DRAMATIC,
+        };
+        this.ui.addText(placeTitle);
+
         // Countdown until game starts
         if (options.countdown !== false) {
             this._countdown = options.countdown - 0.01;

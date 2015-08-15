@@ -31,7 +31,7 @@
     window.UI = Juicy.Component.create('UI', {
         constructor: function() {
             this.textObjects = [];
-            this.generatePlaceName();
+//             this.generatePlaceName();
         },
 
         setFontSprite: function(spriteEntity, letterWidth, letterHeight) {
@@ -46,6 +46,9 @@
             info.center     = !!info.center;
             info.brightness = info.brightness || 0;
             info.font       = info.font || UI.FONTS.SMALL;
+            info.animate    = info.animate || UI.ANIMATIONS.NONE;
+
+            info.animationTicks = -10;
 
             this.textObjects.push(info);
         },
@@ -54,6 +57,7 @@
 
         update: function() {
             for (var i = 0; i < this.textObjects.length; i ++) {
+                this.textObjects[i].animationTicks++;
                 if (this.textObjects.remove) {
                     this.textObjects.splice(i--, 1);
                 }
@@ -74,53 +78,62 @@
                 }
 
                 // Draw background for text
-                if (textObject.brightness > 0) {
-                    context.fillStyle = Palette.get('DARK');
-                    context.fillRect(drawPosition.x - font.pad, drawPosition.y - font.pad, currString.length * font.width + font.pad, font.height + font.pad);
+                if (textObject.noBG != true) {
+                    if (textObject.brightness > 0) {
+                        context.fillStyle = Palette.get('DARK');
+                        context.fillRect(drawPosition.x - font.pad, drawPosition.y - font.pad, currString.length * font.width + font.pad, font.height + font.pad);
+                    }
+                    else if (textObject.brightness) {
+                        context.fillStyle = Palette.get('LIGHT');
+                        context.fillRect(drawPosition.x - font.pad, drawPosition.y - font.pad, currString.length * font.width + font.pad, font.height + font.pad);
+                    }
                 }
-                else {
-                    context.fillStyle = Palette.get('LIGHT');
-                    context.fillRect(drawPosition.x - font.pad, drawPosition.y - font.pad, currString.length * font.width + font.pad, font.height + font.pad);
-                }
+
+                // Animation nonsense:
 
                 for (var c = 0; c < currString.length; c++) {
-                    if (currString.charCodeAt(c) != 32) {
-                        var charCode = currString.charCodeAt(c);
-                        if (charCode >= A && charCode <= Z) {
-                            charCode -= A;
-                        }
-                        else if (charCode >= a && charCode <= z) {
-                            charCode -= a;
-                        }
-                        else if (charCode >= _0 && charCode <= _9) {
-                            charCode -= _0;
-                            charCode += 25; // To go to numbers
-                        }
+                    var charCode = currString.charCodeAt(c);
 
-                        context.drawImage(font.font, charCode * font.width, textObject.brightness * font.height, font.width, font.height,
-                            drawPosition.x, drawPosition.y, font.width, font.height);
-                    }
-
+                    var offset = Math.max(1, c - textObject.animationTicks);
+//                     if (textObject.animationTicks / 20 > c) {
+                        if (charCode != 32) {
+                            this.drawCharacter(charCode, context, font, textObject.brightness-1, drawPosition, 0);
+                            this.drawCharacter(charCode, context, font, textObject.brightness, drawPosition, offset);
+                        }
+//                     }
+        
                     drawPosition.x += font.width;
                 }
             }
         },
 
-        generatePlaceName: function() {
-            console.log(COOL_NAME() + " " + COOL_PLACE_SUBTITLE());
-            console.log(COOL_NAME() + " " + COOL_PLACE_SUBTITLE());
-            console.log(COOL_NAME() + " " + COOL_PLACE_SUBTITLE());
-            console.log(COOL_NAME() + " " + COOL_PLACE_SUBTITLE());
-            console.log(COOL_NAME() + " " + COOL_PLACE_SUBTITLE());
-            console.log(COOL_NAME() + " " + COOL_PLACE_SUBTITLE());
-            console.log(COOL_NAME() + " " + COOL_PLACE_SUBTITLE());
-            console.log(COOL_NAME() + " " + COOL_PLACE_SUBTITLE());
-        },
+        drawCharacter: function(charCode, context, font, brightness, drawPosition, offset) {
+            if (charCode >= A && charCode <= Z) {
+                charCode -= A;
+            }
+            else if (charCode >= a && charCode <= z) {
+                charCode -= a;
+            }
+            else if (charCode >= _0 && charCode <= _9) {
+                charCode -= _0;
+                charCode += 25; // To go to numbers
+            }
+
+            context.drawImage(font.font, charCode * font.width, brightness * font.height, font.width, font.height,
+                drawPosition.x + offset, drawPosition.y - offset, font.width, font.height);
+        }
+
     }, {
         FONTS: {
             SMALL: 0,
             BIG: 1,
             SPECIAL: 2
+        },
+
+        ANIMATIONS: {
+            NONE: 0,
+            DRAMATIC: 1,
+            SLIDE: 2,   
         }
     });
 })();

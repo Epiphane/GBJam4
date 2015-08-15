@@ -14,7 +14,7 @@ var TutorialLevel = Level.extend({
             text: '\2',
             font: UI.FONTS.SPECIAL,
             position: Juicy.Point.create(),
-            center: true
+            center: true,
         };
         this.ui.addText(this.message);
 
