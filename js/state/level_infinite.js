@@ -43,7 +43,7 @@ var InfiniteLevel = Level.extend({
     },
 
     completeLevel: function() {
-        this.cleanup();
+        this.complete = true;
         this.game.setState(new InfiniteLevel({
             width: 4, 
             height: 30

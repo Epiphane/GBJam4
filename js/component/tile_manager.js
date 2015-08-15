@@ -149,15 +149,15 @@
             this.chunk_height = 144;
         },
         cleanup: function() {
-            // for (var i = 0; i < this.tiles.length; i ++) {
-            //     for (var j = 0; j < this.tiles[i].length; j ++) {
-            //         if (this.tiles[i][j]) {
-            //             this.tiles[i][j].free();
-            //             delete this.tiles[i][j];
-            //         }
-            //     }
-            //     delete this.tiles[i];
-            // }
+            for (var i = 0; i < this.tiles.length; i ++) {
+                for (var j = 0; j < this.tiles[i].length; j ++) {
+                    if (this.tiles[i][j]) {
+                        this.tiles[i][j].free();
+                        delete this.tiles[i][j];
+                    }
+                }
+                delete this.tiles[i];
+            }
         },
         generateChunk: function(x, y, solid) {
             var chunk = this.chunks[y][x];

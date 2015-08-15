@@ -38,7 +38,6 @@ var TutorialLevel = Level.extend({
         pyramid.position.x = 30;
         pyramid.position.y = -30;
         pyramid.scale = Juicy.Point.create(2, 2);
-        this.objects.push(pyramid);
     },
 
     init: function() {
@@ -149,7 +148,7 @@ var TutorialLevel = Level.extend({
         this.message.brightness = 3;
 
         if (this.countdown <= 1) {
-            this.cleanup();
+            this.complete = true;
             game.setState(new InfiniteLevel());
         }
     }
