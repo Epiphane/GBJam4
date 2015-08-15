@@ -88,11 +88,11 @@
                 // Draw background for text
                 if (textObject.noBG != true) {
                     if (textObject.brightness > 0) {
-                        context.fillStyle = Palette.get('DARK');
+                        context.fillStyle = 'rgba(' + Palette.get('DARK').join(',') + ')';
                         context.fillRect(drawPosition.x - font.pad, drawPosition.y - font.pad, currString.length * font.width + font.pad, font.height + font.pad);
                     }
                     else if (textObject.brightness) {
-                        context.fillStyle = Palette.get('LIGHT');
+                        context.fillStyle = 'rgba(' + Palette.get('LIGHT').join(',') + ')';
                         context.fillRect(drawPosition.x - font.pad, drawPosition.y - font.pad, currString.length * font.width + font.pad, font.height + font.pad);
                     }
                 }
@@ -101,7 +101,7 @@
                 for (var c = 0; c < currString.length; c++) {
                     var charCode = currString.charCodeAt(c);
 
-                    var textTiming = c*16 - textObject.animationTicks*2 + 10;
+                    var textTiming = c*8 - textObject.animationTicks*2 + 10;
 
                     if (textTiming == 4) {
                         if (charCode != 32) {
@@ -140,7 +140,7 @@
                     var shakeIt = (textTiming > -7);
                     var offset = Math.max(1, textTiming);
 
-                    if (textObject.animationTicks*2 > c*16) {
+                    if (textObject.animationTicks*2 > c*8) {
                         if (shakeIt) {
                             context.save();
                             context.translate(Math.random() * 2 - 1, Math.random() * 2 - 1);
