@@ -13,8 +13,9 @@ var TutorialLevel = Level.extend({
             text: 'HI THERE',
             font: UI.FONTS.BIG,
             animate: UI.ANIMATIONS.NONE,
-            position: Juicy.Point.create(),
-            brightness: 2
+            position: Juicy.Point.create(10, 10),
+            showBackground: true,
+            brightness: 3
         };
         this.ui.addText(this.message);
 

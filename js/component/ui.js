@@ -23,13 +23,6 @@
 
     fonts[2].pad = 0;
 
-    var A = 'A'.charCodeAt(0);
-    var Z = 'Z'.charCodeAt(0);
-    var a = 'a'.charCodeAt(0);
-    var z = 'z'.charCodeAt(0);
-    var _0 = '0'.charCodeAt(0);
-    var _9 = '9'.charCodeAt(0);
-
     window.UI = Juicy.Component.create('UI', {
         constructor: function(thisEntity) {
             this.textObjects = [];
@@ -37,20 +30,18 @@
             this.ui_particles = new Juicy.Entity(this.state, ['ParticleManager']);
         },
 
-        setFontSprite: function(spriteEntity, letterWidth, letterHeight) {
-            this.font = spriteEntity.getComponent('ColoredSprite');
-            this.font_width = letterWidth;
-            this.font_height = letterHeight;
-
-            this.font.setSize(letterWidth, letterHeight);
-        },
-
         addText: function(info) {
             var newText = new Juicy.Entity(this.state, ['TextRender']);
-            newText.center     = !!info.center;
-            newText.brightness = info.brightness || 0;
-            newText.font       = info.font || UI.FONTS.SMALL;
-            newText.animate    = info.animate || UI.ANIMATIONS.NONE;
+            var textComp = newText.getComponent('TextRender');
+            textComp.center         = !!info.center;
+            textComp.brightness     = info.brightness || 0;
+            var fontNum             = info.font || UI.FONTS.SMALL;
+            textComp.font           = fonts[fontNum];
+            textComp.animate        = info.animate || UI.ANIMATIONS.NONE;
+            textComp.showBackground = info.showBackground || false;
+            textComp.setText(info.text || '');
+
+            newText.position        = info.position;// || new Juicy.Point();
 
             this.textObjects.push(newText);
         },
@@ -61,7 +52,7 @@
             this.ui_particles.getComponent('ParticleManager').update(dt);
 
             for (var i = 0; i < this.textObjects.length; i ++) {
-                this.textObjects[i].update(dt);
+                this.textObjects[i].getComponent('TextRender').update(dt);
                 if (this.textObjects.remove) {
                     this.textObjects.splice(i--, 1);
                 }
