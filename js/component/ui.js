@@ -29,9 +29,11 @@
     var _9 = '9'.charCodeAt(0);
 
     window.UI = Juicy.Component.create('UI', {
-        constructor: function() {
+        constructor: function(thisEntity) {
             this.textObjects = [];
 //             this.generatePlaceName();
+
+            this.ui_particles = new Juicy.Entity(this.state, ['ParticleManager']);
         },
 
         setFontSprite: function(spriteEntity, letterWidth, letterHeight) {
@@ -55,7 +57,9 @@
 
         clearText: function() { this.textObjects = []; },
 
-        update: function() {
+        update: function(dt) {
+            this.ui_particles.getComponent('ParticleManager').update(dt);
+
             for (var i = 0; i < this.textObjects.length; i ++) {
                 this.textObjects[i].animationTicks++;
                 if (this.textObjects.remove) {
@@ -65,6 +69,8 @@
         },
 
         render: function(context) {
+            this.ui_particles.getComponent('ParticleManager').render(context);
+
             for (var ndx = 0; ndx < this.textObjects.length; ndx++) {
                 var textObject = this.textObjects[ndx];
                 var drawPosition = textObject.position.floor();
@@ -90,19 +96,53 @@
                 }
 
                 // Animation nonsense:
-
                 for (var c = 0; c < currString.length; c++) {
                     var charCode = currString.charCodeAt(c);
 
-                    var offset = Math.max(1, c*4 - textObject.animationTicks*2 + 10);
-                    if (textObject.animationTicks*2 > c*4) {
-                        context.save();
-                        context.translate(Math.random() * 2 - 1, Math.random() * 2 - 1);
+                    var textTiming = c*12 - textObject.animationTicks*2 + 10;
+                    if (textTiming == 8) {
+                        var currNdx = c;
+                        var self = this;
+                        this.ui_particles.getComponent('ParticleManager').spawnParticles({
+                            color: "LIGHT", 
+                            size: 2, 
+                            howMany: 8, 
+                            timeToLive: function(particle, ndx) {
+                                return 0;
+                            },
+                            initParticle: function(particle) {
+                                particle.x = currNdx*font.width + Math.random() * font.width;
+                                particle.y = drawPosition.y + Math.random() * font.height;
+
+                                particle.dx = Math.random() * 2 - 1;
+                                particle.dy = Math.random() * 6 - 2.8;
+
+                                particle.startLife = 4;
+                                particle.life = particle.startLife;
+                            },
+                            updateParticle: function(particle) {
+                                particle.x += particle.dx;
+                                particle.y += particle.dy;
+                            }
+                        });
+                    }
+
+                    var shakeIt = (textTiming > -7);
+                    var offset = Math.max(1, textTiming);
+
+                    if (textObject.animationTicks*2 > c*12) {
+                        if (shakeIt) {
+                            context.save();
+                            context.translate(Math.random() * 2 - 1, Math.random() * 2 - 1);
+                        }
                         if (charCode != 32) {
                             this.drawCharacter(charCode, context, font, textObject.brightness-1, drawPosition, 0);
                             this.drawCharacter(charCode, context, font, textObject.brightness, drawPosition, offset);
                         }
-                        context.restore();
+
+                        if (shakeIt) {
+                            context.restore();
+                        }
                     }
         
                     drawPosition.x += font.width;
