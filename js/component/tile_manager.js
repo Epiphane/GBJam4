@@ -149,16 +149,15 @@
             this.chunk_height = 144;
         },
         cleanup: function() {
-            for (var i = 0; i < this.tiles.length; i ++) {
-                for (var j = 0; j < this.tiles[i].length; j ++) {
-                    if (this.tiles[i][j]) {
-                        this.tiles[i][j].free();
-                        delete this.tiles[i][j];
-                    }
-                }
-                delete this.tiles[i];
-            }
-            delete this.tiles;
+            // for (var i = 0; i < this.tiles.length; i ++) {
+            //     for (var j = 0; j < this.tiles[i].length; j ++) {
+            //         if (this.tiles[i][j]) {
+            //             this.tiles[i][j].free();
+            //             delete this.tiles[i][j];
+            //         }
+            //     }
+            //     delete this.tiles[i];
+            // }
         },
         generateChunk: function(x, y, solid) {
             var chunk = this.chunks[y][x];
@@ -291,6 +290,10 @@
             
             x /= TILE_SIZE;
             y /= TILE_SIZE;
+
+            if (!this.tiles[y]) {
+                throw 'Tile row ' + y + ' does not exist?';
+            }
 
             if (this.tiles[y][x] === false) {
                 return 0;

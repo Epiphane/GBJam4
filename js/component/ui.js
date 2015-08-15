@@ -75,7 +75,6 @@
                 this.textObjects[ndx].getComponent('TextRender').render(context);
             }
         },
-
     }, {
         FONTS: {
             SMALL: 0,
