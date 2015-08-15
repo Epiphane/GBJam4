@@ -94,13 +94,16 @@
                 for (var c = 0; c < currString.length; c++) {
                     var charCode = currString.charCodeAt(c);
 
-                    var offset = Math.max(1, c - textObject.animationTicks);
-//                     if (textObject.animationTicks / 20 > c) {
+                    var offset = Math.max(1, c*4 - textObject.animationTicks*2 + 10);
+                    if (textObject.animationTicks*2 > c*4) {
+                        context.save();
+                        context.translate(Math.random() * 2 - 1, Math.random() * 2 - 1);
                         if (charCode != 32) {
                             this.drawCharacter(charCode, context, font, textObject.brightness-1, drawPosition, 0);
                             this.drawCharacter(charCode, context, font, textObject.brightness, drawPosition, offset);
                         }
-//                     }
+                        context.restore();
+                    }
         
                     drawPosition.x += font.width;
                 }

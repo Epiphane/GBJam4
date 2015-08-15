@@ -4,6 +4,8 @@ var InfiniteLevel = Level.extend({
 
         this.gateOpen = false;
 
+        options.countdown = 3;
+
         // Level.apply(this, arguments);
         Level.call(this, options);
 

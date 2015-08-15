@@ -128,7 +128,7 @@ var Level = Juicy.State.extend({
                 }
 
                 this._countdown = nextCountdown;
-                this.player.update(dt, 'ColoredSprite');//.update(dt);
+                this.player.getComponent('ColoredSprite').update(dt);
 
                 if (this._countdown > 0) {
                     shouldUpdate = false; // Don't update game yet
