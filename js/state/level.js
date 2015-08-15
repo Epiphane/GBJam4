@@ -127,7 +127,15 @@ var Level = Juicy.State.extend({
 
         if (this._countdown !== false) {
             if (this._countdown > 0) {
-                this._countdown -= dt;
+                var nextCountdown = this._countdown - dt;
+
+                if (Math.ceil(nextCountdown) !== Math.ceil(this._countdown)) {
+                    this.countdownText.text = Math.ceil(nextCountdown) + '';
+                    this.countdownText.animationTicks = 0;
+                }
+
+                this._countdown = nextCountdown;
+
                 shouldUpdate = false; // Don't update game yet
             }
         }
@@ -146,6 +154,7 @@ var Level = Juicy.State.extend({
 
             if (this.player.position.y + this.player.height > this.tile_manager.height) {
                 this.player.position.y = this.tile_manager.height - this.player.height;
+                this.player.getComponent('Digger').onGround = true;
             }
 
             for (var i = 0; i < this.objects.length; i ++) {
@@ -155,6 +164,15 @@ var Level = Juicy.State.extend({
             this.camera.dx = 8;
             this.camera.dy = 20;
             this.watching = this.player;
+        }
+        else {
+            var alwaysUpdate = ['ColoredSprite', 'Follower'];
+
+            for (var n = 0; n < alwaysUpdate.length; n ++) {
+                for (var i = 0; i < this.objects.length; i ++) {
+                    this.objects[i].update(dt, alwaysUpdate[n]);
+                }
+            }
         }
 
         this.updateCamera(dt);

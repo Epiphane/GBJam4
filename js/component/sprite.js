@@ -114,6 +114,8 @@ Juicy.Component.create('Sprite', {
     }, 
 
     render: function(context) {
+        context.imageSmoothingEnabled = false;
+
         context.save();
         if (this.flipped) {
             context.translate(this.entity.width, 0);

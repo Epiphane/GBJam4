@@ -2,7 +2,7 @@ var TutorialLevel = Level.extend({
     constructor: function(options) {
         // Set tutorial specific options
         options = options || {};
-        options.width = 2;
+        options.width = 10;
         options.height = 3;
         options.countdown = false;
         options.song = 'tutorial';
@@ -19,10 +19,11 @@ var TutorialLevel = Level.extend({
         };
         this.ui.addText(this.message);
 
-        this.helper = new Juicy.Entity(this, ['ColoredSprite']);
+        this.helper = new Juicy.Entity(this, ['ColoredSprite', 'Follower']);
         this.helper.getComponent('ColoredSprite').setSheet('img/helper.png', 10, 14);
         this.helper.getComponent('ColoredSprite').runAnimation(0, 11, 0.16, true);
         this.helper.position = this.player.position.sub(Juicy.Point.temp(10, 8));
+        this.helper.getComponent('Follower').follow(this.player, Juicy.Point.create(-10, -8), true);
 
         this.objects.push(this.helper);
 
@@ -30,6 +31,14 @@ var TutorialLevel = Level.extend({
         this.countdown = 7;
 
         this.initIntro();
+
+        var pyramid = new Juicy.Entity(this, ['ColoredSprite']);
+        pyramid.getComponent('ColoredSprite').setSheet('img/altar.png', 40, 80);
+        pyramid.getComponent('ColoredSprite').runAnimation(0, 3, 0.32, true);
+        pyramid.position.x = 30;
+        pyramid.position.y = -30;
+        pyramid.scale = Juicy.Point.create(2, 2);
+        this.objects.push(pyramid);
     },
 
     init: function() {
@@ -51,9 +60,6 @@ var TutorialLevel = Level.extend({
     update: function(dt, game) {
         this._blink -= dt;
         if (this._blink <= 0) this._blink = 1.9;
-
-        var dest = this.player.position.sub(Juicy.Point.temp(10, 8 + Math.sin(this._blink * 10)));
-        this.helper.position = this.helper.position.add(dest._sub(this.helper.position)._mult(1/8));
 
         this.message.position = this.helper.center().sub(Juicy.Point.temp(this.camera.x - 8, this.camera.y + 8));
         if (this.message.font === UI.FONTS.SPECIAL) {
@@ -111,8 +117,6 @@ var TutorialLevel = Level.extend({
     },
 
     updateHelperOnly: function(dt, game) {
-        this.helper.update(dt);
-
         return false;
     },
 
