@@ -29,24 +29,23 @@ var Level = Juicy.State.extend({
 
         // Create Player
         this.player = new Juicy.Entity(this, ['ColoredSprite', 'Player', 'Digger', 'Physics', 'Animations']);
-        this.player.position = new Juicy.Point(40, -40);        
+        this.player.position = new Juicy.Point(16, -40);        
         this.player.getComponent('ColoredSprite').setSheet('img/sawman-all.png', 20, 20);
         this.player.getComponent('Player').updateAnim('IDLE');
 
         // Particle Manager
         this.particles = new Juicy.Entity(this, ['ParticleManager']);
 
-
-        var placeTitle = {
-            text: COOL_NAME(),
-            font: UI.FONTS.BIG,
-            position: Juicy.Point.create(this.game_width/4, 10),
-            center: true,
-            noBG: true,
-            brightness: 2,
-            animate: UI.ANIMATIONS.DRAMATIC,
-        };
-        this.ui.addText(placeTitle);
+        // var placeTitle = {
+        //     text: 'THIS IS A STICKUP YA HEAR',
+        //     font: UI.FONTS.BIG,
+        //     position: Juicy.Point.create(this.game_width/4, 10),
+        //     center: true,
+        //     noBG: true,
+        //     brightness: 2,
+        //     animate: UI.ANIMATIONS.DRAMATIC,
+        // };
+        // this.ui.addText(placeTitle);
 
         // Countdown until game starts
         if (options.countdown !== false) {
@@ -73,6 +72,7 @@ var Level = Juicy.State.extend({
 
     cleanup: function() {
         this.tile_manager.cleanup();
+        music.pause(this.song);
         delete this.tiles;
     },
 
@@ -96,7 +96,7 @@ var Level = Juicy.State.extend({
     },
 
     key_ESC: function() {
-        music.pause('lvl1');
+        music.pause(this.song);
         this.game.setState(new PauseState(this));
     },
     

@@ -146,7 +146,7 @@
                             context.translate(Math.random() * 2 - 1, Math.random() * 2 - 1);
                         }
                         if (charCode != 32) {
-                            this.drawCharacter(charCode, context, font, textObject.brightness-1, drawPosition, 0);
+                            this.drawCharacter(charCode, context, font, textObject.brightness-2, drawPosition, 0);
                             this.drawCharacter(charCode, context, font, textObject.brightness, drawPosition, offset);
                         }
 

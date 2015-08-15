@@ -1,5 +1,7 @@
 var InfiniteLevel = Level.extend({
     constructor: function(options) {
+        options = options || {};
+
         var self = this;
 
         this.gateOpen = false;

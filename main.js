@@ -18,6 +18,7 @@ Palette.onchange.push(function(palette) {
 })
 
 var music = new Juicy.Music();
+music.load('tutorial', 'audio/music_tutorial.mp3');
 music.load('lvl1', 'audio/music_cave_in.mp3');
 music.load('lvl2', 'audio/music_particles.mp3');
 
@@ -27,5 +28,5 @@ sfx.load('quack', 'audio/fx_creature.wav');
 sfx.load('textBonk', 'audio/text-impact.wav');
 
 document.addEventListener('DOMContentLoaded', function() {
-    Juicy.Game.setState(new InfiniteLevel({})).run();
+    Juicy.Game.setState(new TutorialLevel()).run();
 }, false);

@@ -43,7 +43,7 @@
             Palette.onchange[i](palettes[palette_id]);
         }
 
-        console.log(Brightness(palettes[palette_id][3]), Brightness(palettes[palette_id][0]));
+        console.log(palette_id);
     };
 
     Palette.get = function(type) {
