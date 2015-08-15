@@ -40,6 +40,8 @@
 
         if (NO_PALETTE) palette_id = 0;
 
+        while (palette_id < 0)                  palette_id += palettes.length;
+        while (palette_id >= palettes.length)   palette_id -= palettes.length;
         Palette.current = palette_id;
 
         if (!palettes[palette_id]) return;

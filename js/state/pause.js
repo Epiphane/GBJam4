@@ -28,6 +28,14 @@ var PauseState = Juicy.State.extend({
                 }
             },
             {
+                text: 'Random Palette',
+                oncomplete: function() {
+                    Palette.set();
+
+                    this.updated = true;
+                }
+            },
+            {
                 text: 'Tutorial',
                 oncomplete: function() {
                     this.prevState.cleanup();
@@ -40,25 +48,36 @@ var PauseState = Juicy.State.extend({
 
         for (var i = 0; i < this.menu_items.length; i ++) {
             var item = this.menu_items[i];
-            item.brightness = 3;
+            item.brightness = 2;
             item.position = menu_pos.clone();
+            item.showBackground = true;
 
-            this.ui.addText(item);
+            this.menu_items[i].text = this.ui.addText(item);
 
-            menu_pos.y += 20;
+            menu_pos.y += 10;
         }
 
         this.menu_choice = 0;
+        this.menu_items[this.menu_choice].text.brightness = 3;
     },
     
     key_DOWN: function() {
+        this.menu_items[this.menu_choice].text.brightness = 2;
+
         this.menu_choice = (this.menu_choice + 1) % this.menu_items.length;
+
+        this.menu_items[this.menu_choice].text.brightness = 3;
 
         this.updated = true;
     },
     
     key_UP: function() {
+        this.menu_items[this.menu_choice].text.brightness = 2;
+
         this.menu_choice = (this.menu_choice - 1) % this.menu_items.length;
+        if (this.menu_choice < 0) this.menu_choice += this.menu_items.length;
+
+        this.menu_items[this.menu_choice].text.brightness = 3;
 
         this.updated = true;
     },
@@ -92,6 +111,6 @@ var PauseState = Juicy.State.extend({
 
         this.ui_entity.render(context);
 
-        context.drawImage(selector, this.menu_left + 3, this.menu_top + 25 + this.menu_choice * 20);
+        context.drawImage(selector, this.menu_left + 3, this.menu_top + 25 + this.menu_choice * 10);
     }
 });

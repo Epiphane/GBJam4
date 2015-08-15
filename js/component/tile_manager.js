@@ -147,7 +147,10 @@
             // For ultimate performance gainz
             this.chunk_width  = 160;
             this.chunk_height = 144;
+
+            Palette.onchange.push(this.onPaletteChange.bind(this));
         },
+
         cleanup: function() {
             for (var i = 0; i < this.tiles.length; i ++) {
                 for (var j = 0; j < this.tiles[i].length; j ++) {
@@ -159,6 +162,7 @@
                 delete this.tiles[i];
             }
         },
+
         generateChunk: function(x, y, solid) {
             var chunk = this.chunks[y][x];
 
@@ -240,6 +244,7 @@
                 }
             }
         },
+
         buildChunk: function(chunk_x, chunk_y, solid) {
             if (!this.chunks[chunk_y]) {
                 this.chunks[chunk_y] = [];
@@ -264,6 +269,7 @@
                 this.height = chunk_y * this.chunk_height;
             }
         },
+
         getChunk: function(x, y, build) {
             var x = Math.floor(x / this.chunk_width);
             var y = Math.floor(y / this.chunk_height);
@@ -279,6 +285,26 @@
 
             return this.chunks[y][x];
         },
+
+        onPaletteChange: function() {
+            for (var chunk_y = 0; chunk_y < this.chunks.length; chunk_y ++) {
+                for (var chunk_x = 0; chunk_x < this.chunks[chunk_y].length; chunk_x ++) {
+                    var chunk = this.chunks[chunk_y][chunk_x];
+
+                    for (var tile_x = 0; tile_x < this.chunk_width / TILE_SIZE; tile_x ++) {
+                        for (var tile_y = 0; tile_y < this.chunk_height / TILE_SIZE; tile_y ++) {
+                            var tile = this.tiles[tile_y + chunk_y * this.chunk_height / TILE_SIZE]
+                                                 [tile_x + chunk_x * this.chunk_width  / TILE_SIZE];
+                            if (tile !== false && tile.drawn) {
+                                chunk.context.drawImage(tile_img, tile.sx * TILE_SIZE, tile.sy * TILE_SIZE, TILE_SIZE, TILE_SIZE,
+                                                        tile_x * TILE_SIZE, tile_y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
+                            }
+                        }
+                    }
+                }
+            }
+        },
+
         removeCell: function(x, y) {
             x -= x % TILE_SIZE;
             y -= y % TILE_SIZE;
@@ -335,6 +361,7 @@
 
             return 1;
         },
+
         render: function(context, x, y, w, h) {
             var chunk_x = Math.floor(x / this.chunk_width);
             var chunk_y = Math.floor(y / this.chunk_height);

@@ -92,11 +92,11 @@
             // Draw background for text
             if (this.showBackground) {
                 if (this.brightness > 0) {
-                    context.fillStyle = 'rgba(' + Palette.get('DARK').join(',') + ')';
+                    context.fillStyle = 'rgba(' + Palette.getStyle('DARK') + ')';
                     context.fillRect(drawPosition.x - this.font.pad, drawPosition.y - this.font.pad, this.text.length * this.font.width + this.font.pad, this.font.height + this.font.pad);
                 }
-                else if (this.brightness) {
-                    context.fillStyle = 'rgba(' + Palette.get('LIGHT').join(',') + ')';
+                else {
+                    context.fillStyle = 'rgba(' + Palette.getStyle('MID') + ')';
                     context.fillRect(drawPosition.x - this.font.pad, drawPosition.y - this.font.pad, this.text.length * this.font.width + this.font.pad, this.font.height + this.font.pad);
                 }
             }
