@@ -115,10 +115,10 @@ var Level = Juicy.State.extend({
         this.ui_entity.update(dt);
 
         if (this._countdown !== false) {
-                if (this._countdown > 0) {
-                    this._countdown -= dt;
-                    shouldUpdate = false; // Don't update game yet
-                }
+            if (this._countdown > 0) {
+                this._countdown -= dt;
+                shouldUpdate = false; // Don't update game yet
+            }
         }
 
         if (this.updateFunc) {
