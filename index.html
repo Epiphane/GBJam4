@@ -11,6 +11,7 @@
    <meta name="360-fullscreen" content="true"/>
 
    <link href='http://fonts.googleapis.com/css?family=Poiret+One' rel='stylesheet' type='text/css'>
+   <link href='css/font-awesome.min.css' rel='stylesheet' type='text/css'>
    <style>
    /* following code make sure user won't see selection in the app */
    body, canvas, div {
@@ -51,7 +52,10 @@
 
    <div class="container">
       <!-- Main stage for rendering game scenes -->
-      <canvas id="game-canvas" width="160" height="144" fixed></canvas>
+      <canvas id="game-canvas" width="160" height="144" fixed></canvas><br />
+      <div id="controls">
+         <button id="mute"><i class="fa fa-volume-off"></i></button>
+      </div>
 
       <p>Left, right - move</p>
       <p>Up - ascend</p>
@@ -83,6 +87,7 @@
    <script src="js/state/level.js"></script>
    <script src="js/state/level_infinite.js"></script>
    <script src="js/state/level_tutorial.js"></script>
+   <script src="js/sound_manager.js"></script>
    <script src="main.js"></script>
 
    <script src="memory-stats.js"></script>

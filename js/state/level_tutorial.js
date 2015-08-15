@@ -25,10 +25,11 @@ var TutorialLevel = Level.extend({
         });
 
         this.ui.addText({
-            text: 'PRESS ESC TO SKIP',
+            text: 'PRESS SPACE TO SKIP',
             animate: 'NONE',
             showBackground: true,
-            brightness: 3
+            brightness: 2,
+            position: Juicy.Point.create(1)
         });
 
         this.objects.push(this.helper);
@@ -46,7 +47,7 @@ var TutorialLevel = Level.extend({
         pyramid.scale = Juicy.Point.create(2, 2);
     },
 
-    key_ESC: function() {
+    key_SPACE: function() {
         this.complete = true;
         this.game.setState(new InfiniteLevel());
     },

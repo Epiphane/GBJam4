@@ -22,6 +22,17 @@
     Palette.onchange = [];
     Palette.templates = [];
 
+    Palette.loadImage = function(src) {
+        var img = document.createElement('canvas');
+        var template = new Image();
+            template.src = src;
+            template.onload = function() {
+                Palette.applyPalette(this, img);
+            };
+
+        return img;
+    };
+
     Palette.set = function(palette_id) {
         if (typeof(palette_id) === 'undefined') {
             palette_id = Juicy.rand(palettes.length);
@@ -44,6 +55,10 @@
         }
 
         console.log(palette_id);
+    };
+
+    Palette.getStyle = function(type) {
+        return 'rgba(' + Palette.get(type).join(',') + ')';
     };
 
     Palette.get = function(type) {
