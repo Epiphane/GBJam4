@@ -35,7 +35,7 @@ var TutorialLevel = Level.extend({
         this.objects.push(this.helper);
 
         this._blink = 2;
-        this.countdown = 7;
+        this.countdown = 5;
 
         this.initIntro();
 

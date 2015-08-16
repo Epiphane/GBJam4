@@ -55,8 +55,6 @@
         for (var i = 0; i < Palette.onchange.length; i ++) {
             Palette.onchange[i](palettes[palette_id]);
         }
-
-        console.log(palette_id);
     };
 
     Palette.getStyle = function(type) {
