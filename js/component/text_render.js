@@ -28,6 +28,8 @@
     var z = 'z'.charCodeAt(0);
     var _0 = '0'.charCodeAt(0);
     var _9 = '9'.charCodeAt(0);
+    var exclaim = '!'.charCodeAt(0);
+    var question = '?'.charCodeAt(0);
 
     window.TEXT = Juicy.Component.create('TextRender', {
         constructor: function(myEntity) {
@@ -211,6 +213,12 @@
             else if (charCode >= _0 && charCode <= _9) {
                 charCode -= _0;
                 charCode += 26; // To go to numbers
+            }
+            if (charCode === exclaim) {
+                charCode = 36;
+            }
+            if (charCode === question) {
+                charCode = 37;
             }
 
             context.drawImage(font.font, charCode * font.width, brightness * font.height, font.width, font.height,
