@@ -5,8 +5,15 @@
     };
 
     window.updateVolume = function() {
+        if (volume.music < 0)  volume.music = 0;
+        if (volume.sfx < 0)    volume.sfx = 0;
+        if (volume.music > 10) volume.music = 10;
+        if (volume.sfx > 10)   volume.sfx = 10;
+        
         music.setVolume(volume.music / 10);
         sfx.setVolume  (volume.sfx / 10);
+
+        localStorage.setItem('volume', JSON.stringify(volume));
     };
 
     window.OptionsState = PauseState.extend({
@@ -52,12 +59,7 @@
         },
 
         updateVolume: function() {
-            localStorage.setItem('volume', JSON.stringify(volume));
-
-            if (volume.music < 0)  volume.music = 0;
-            if (volume.sfx < 0)    volume.sfx = 0;
-            if (volume.music > 10) volume.music = 10;
-            if (volume.sfx > 10)   volume.sfx = 10;
+            updateVolume();
 
             var before = (new Array(volume.music + 1)).join(' ');
             var after  = (new Array(11 - before.length)).join(' ');
@@ -66,8 +68,6 @@
             before = (new Array(volume.sfx + 1)).join(' ');
             after  = (new Array(11 - before.length)).join(' ');
             this.sfx.text.setText('SFX   ' + before + 'O' + after);
-
-            updateVolume();
             this.updated = true;
         },
 

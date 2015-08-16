@@ -114,7 +114,7 @@
         this.sx = sx;
         this.sy = sy;
         this.obj = obj || false;
-        this.drawn = false;
+        this.drawn = 0;
         this.persistent = false;
     }
 
@@ -324,8 +324,18 @@
                             var tile = this.tiles[tile_y + chunk_y * this.chunk_height / TILE_SIZE]
                                                  [tile_x + chunk_x * this.chunk_width  / TILE_SIZE];
                             if (tile !== false && tile.drawn) {
-                                chunk.context.drawImage(tile_img, tile.sx * TILE_SIZE, tile.sy * TILE_SIZE, TILE_SIZE, TILE_SIZE,
-                                                        tile_x * TILE_SIZE, tile_y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
+                                var opacity = tile.drawn;
+
+                                if (opacity === 1) {
+                                    chunk.context.drawImage(tile_img, tile.sx * TILE_SIZE, tile.sy * TILE_SIZE, TILE_SIZE, TILE_SIZE,
+                                                            tile_x * TILE_SIZE, tile_y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
+                                }
+                                else {
+                                    var img = tile_mid_img;
+                                    if (opacity < 0.5) img = tile_low_img;
+                                    chunk.context.drawImage(img, tile.sx * TILE_SIZE, tile.sy * TILE_SIZE, TILE_SIZE, TILE_SIZE,
+                                                           tile_x * TILE_SIZE, tile_y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
+                                }
                             }
                         }
                     }
@@ -497,20 +507,22 @@
                             if (global_y >= y + h) break;
 
                             var tile = this.tiles[global_y / TILE_SIZE][global_x / TILE_SIZE];
-                            if (tile !== false && !tile.drawn) {
+                            if (tile !== false && tile.drawn < 1) {
                                 var opacity = (1 - (tile_y + bottom_parabola) / fadeLength);
 
                                 if (opacity >= 1) {
                                     chunk.context.drawImage(tile_img, tile.sx * TILE_SIZE, tile.sy * TILE_SIZE, TILE_SIZE, TILE_SIZE,
                                                             tile_x, tile_y, TILE_SIZE, TILE_SIZE);
 
-                                    tile.drawn = true;
+                                    tile.drawn = 1;
                                 }
                                 else if (opacity >= 0) {
                                     var img = tile_mid_img;
                                     if (opacity < 0.5) img = tile_low_img;
                                     chunk.context.drawImage(img, tile.sx * TILE_SIZE, tile.sy * TILE_SIZE, TILE_SIZE, TILE_SIZE,
                                                            tile_x, tile_y, TILE_SIZE, TILE_SIZE);
+                                
+                                    tile.drawn = opacity;
                                 }
                                 else {
                                     break;

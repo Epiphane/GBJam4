@@ -95,10 +95,6 @@ var PauseState = Juicy.State.extend({
         this.updated = true;
     },
 
-    key_RIGHT: function() {
-        this.key_ENTER();
-    },
-
     key_ENTER: function() {
         this.menu_items[this.menu_choice].oncomplete.apply(this);
     },
