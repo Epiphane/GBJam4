@@ -47,6 +47,16 @@ var TutorialLevel = Level.extend({
         pyramid.scale = Juicy.Point.create(2, 2);
     
         // this.objects.push(pyramid);
+
+        var self = this;
+        this.pauseMenuItems = [
+            {
+                text: 'Skip Tutorial',
+                oncomplete: function() {
+                    self.key_SPACE();
+                }
+            }
+        ];
     },
 
     key_SPACE: function() {

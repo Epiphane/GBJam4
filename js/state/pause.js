@@ -42,6 +42,11 @@ var PauseState = Juicy.State.extend({
             }
         ];
 
+        extraMenuItems = prevState.pauseMenuItems || [];
+        for (var i = 0; i < extraMenuItems.length; i ++) {
+            this.menu_items.push(extraMenuItems[i]);
+        }
+
         var menu_pos = Juicy.Point.create(this.menu_left + 10, this.menu_top + 25);
 
         for (var i = 0; i < this.menu_items.length; i ++) {
@@ -61,9 +66,7 @@ var PauseState = Juicy.State.extend({
     
     key_DOWN: function() {
         this.menu_items[this.menu_choice].text.brightness = 3;
-
         this.menu_choice = (this.menu_choice + 1) % this.menu_items.length;
-
         this.menu_items[this.menu_choice].text.brightness = 0;
 
         this.updated = true;
@@ -71,10 +74,8 @@ var PauseState = Juicy.State.extend({
     
     key_UP: function() {
         this.menu_items[this.menu_choice].text.brightness = 3;
-
         this.menu_choice = (this.menu_choice - 1) % this.menu_items.length;
         if (this.menu_choice < 0) this.menu_choice += this.menu_items.length;
-
         this.menu_items[this.menu_choice].text.brightness = 0;
 
         this.updated = true;
