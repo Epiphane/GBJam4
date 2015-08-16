@@ -171,7 +171,7 @@ var Level = Juicy.State.extend({
         // Update Camera
         var center = this.watching.center();
         var dx = (center.x - this.game.width / 2) - this.camera.x;
-        var dy = (center.y - this.game.height / 4) - this.camera.y;
+        var dy = (center.y - this.game.height / 2) - this.camera.y;
 
         this.camera.x += dx * this.camera.dx * dt;
         this.camera.y += dy * this.camera.dy * dt;

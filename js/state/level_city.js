@@ -40,7 +40,8 @@ var CityLevel = Level.extend({
         Level.prototype.init.apply(this, arguments);
 
         if (this.loaded) {
-            this.tile_manager.persistTiles(40, 0, this.game_width * this.tile_manager.TILE_SIZE - 100, 20);
+            this.tile_manager.persistTiles(0, 0, this.game_width * this.tile_manager.TILE_SIZE, 32);
+            this.tile_manager.blockTiles  (40, 0, this.game_width * this.tile_manager.TILE_SIZE - 100, 16);
         }
     }
 });

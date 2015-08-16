@@ -116,6 +116,7 @@
         this.obj = obj || false;
         this.drawn = 0;
         this.persistent = false;
+        this.blocking   = false;
     }
 
     Tile.create = function(sx, sy, obj) {
@@ -185,7 +186,33 @@
                 for (var i = x; i < x + w; i ++) {
                     if (!this.tiles[j][i]) continue;
 
+                    var sx = i % 4;
+                    var sy = 16 + j % 4;
+                    this.tiles[j][i].sx = sx;
+                    this.tiles[j][i].sy = sy;
                     this.tiles[j][i].persistent = true;
+                }
+            }
+        },
+
+        blockTiles: function(x, y, w, h) {
+            x = Math.floor(x / TILE_SIZE);
+            y = Math.floor(y / TILE_SIZE);
+            w = Math.floor(w / TILE_SIZE);
+            h = Math.floor(h / TILE_SIZE);
+        
+            for (var j = y; j < y + h; j ++) {
+                if (!this.tiles[j]) continue;
+
+                for (var i = x; i < x + w; i ++) {
+                    if (!this.tiles[j][i]) continue;
+
+                    var sx = i % 4;
+                    var sy = 12 + j % 4;
+                    this.tiles[j][i].sx = sx;
+                    this.tiles[j][i].sy = sy;
+                    this.tiles[j][i].persistent = true;
+                    this.tiles[j][i].blocking = true;
                 }
             }
         },
@@ -349,9 +376,16 @@
 
             if (y < 0) return 0; // No tiles above ground
 
-            if (this.tiles[y] && this.tiles[y][x] && this.tiles[y][x].persistent) {
-                return 0;
+            if (this.tiles[y] && this.tiles[y][x]) {
+                if (this.tiles[y][x].blocking) {
+                    return 0;
+                }
+                else if (this.tiles[y][x].persistent) {
+                    return 1;
+                }
             }
+
+
 
             var chunk = this.getChunk(x * TILE_SIZE, y * TILE_SIZE);
             chunk.context.clearRect(x * TILE_SIZE - chunk.x * this.chunk_width, y * TILE_SIZE - chunk.y * this.chunk_height, TILE_SIZE, TILE_SIZE);
@@ -413,7 +447,7 @@
         
         isTileBlocking: function(point) {
             var tile = this.getTile(point);
-            return typeof(tile) === 'undefined' || !!tile.persistent;
+            return typeof(tile) === 'undefined' || !!tile.blocking;
         },
         
         canMove: function(point, movement) {
