@@ -19,14 +19,14 @@ Palette.onchange.push(function(palette) {
 })
 
 var music = new Juicy.Music();
-music.load('tutorial', 'audio/music_tutorial.mp3');
-music.load('lvl1', 'audio/music_cave_in.mp3');
-music.load('lvl2', 'audio/music_particles.mp3');
+music.load('tutorial', 'audio/music_tutorial');
+music.load('lvl1', 'audio/music_cave_in');
+music.load('lvl2', 'audio/music_particles');
 
 var sfx = new Juicy.SFX();
-sfx.load('goal', 'audio/fx_jump.mp3');
-sfx.load('quack', 'audio/fx_creature.wav');
-sfx.load('textBonk', 'audio/text-impact.wav');
+sfx.load('goal', 'audio/fx_jump');
+sfx.load('quack', 'audio/fx_creature');
+sfx.load('textBonk', 'audio/text-impact');
 
 window.updateVolume(); // From state/options.js
 document.addEventListener('DOMContentLoaded', function() {
