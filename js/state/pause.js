@@ -39,6 +39,13 @@ var PauseState = Juicy.State.extend({
                     this.prevState.cleanup();
                     this.game.setState(new TutorialLevel());
                 }
+            },
+            {
+                text: 'Free Play',
+                oncomplete: function() {
+                    this.prevState.cleanup();
+                    this.game.setState(new InfiniteLevel());
+                }
             }
         ];
 
@@ -62,6 +69,10 @@ var PauseState = Juicy.State.extend({
 
         this.menu_choice = 0;
         this.menu_items[this.menu_choice].text.brightness = 0;
+    },
+
+    key_ESC: function() {
+        this.game.setState(this.prevState);
     },
     
     key_DOWN: function() {

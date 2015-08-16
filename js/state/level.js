@@ -147,11 +147,6 @@ var Level = Juicy.State.extend({
                 this.player.position.x = this.tile_manager.width - this.player.width;
             }
 
-            if (this.player.position.y + this.player.height > this.tile_manager.height) {
-                this.player.position.y = this.tile_manager.height - this.player.height;
-                this.player.getComponent('Digger').onGround = true;
-            }
-
             for (var i = 0; i < this.objects.length; i ++) {
                 this.objects[i].update(dt);
             }

@@ -115,6 +115,7 @@
         this.sy = sy;
         this.obj = obj || false;
         this.drawn = false;
+        this.persistent = false;
     }
 
     Tile.create = function(sx, sy, obj) {
@@ -134,7 +135,7 @@
 
     Tile.prototype.free = function() { };//_pool_Tile.push(this); };
 
-    var currentTileManager = null;
+    window.currentTileManager = null;
     Palette.onchange.push(function() {
         if (currentTileManager) {
             currentTileManager.onPaletteChange();
@@ -172,6 +173,23 @@
             }
         },
 
+        persistTiles: function(x, y, w, h) {
+            x = Math.floor(x / TILE_SIZE);
+            y = Math.floor(y / TILE_SIZE);
+            w = Math.floor(w / TILE_SIZE);
+            h = Math.floor(h / TILE_SIZE);
+        
+            for (var j = y; j < y + h; j ++) {
+                if (!this.tiles[j]) continue;
+
+                for (var i = x; i < x + w; i ++) {
+                    if (!this.tiles[j][i]) continue;
+
+                    this.tiles[j][i].persistent = true;
+                }
+            }
+        },
+
         generateChunk: function(x, y, solid) {
             var chunk = this.chunks[y][x];
 
@@ -190,6 +208,7 @@
                         var sx = i % 4;
                         var sy = 12 + j % 4;
                         this.tiles[j][i] = Tile.create(sx, sy);
+                        this.tiles[j][i].persistent = true;
                     }
                     // Figure out whether we need to continue a pattern
                     else if (!this.tiles[j] || typeof(this.tiles[j][i]) === 'undefined') {
@@ -315,17 +334,18 @@
         },
 
         removeCell: function(x, y) {
-            x -= x % TILE_SIZE;
-            y -= y % TILE_SIZE;
+            x = Math.floor(x / TILE_SIZE);
+            y = Math.floor(y / TILE_SIZE);
 
             if (y < 0) return 0; // No tiles above ground
-            
-            var chunk = this.getChunk(x, y);
-            chunk.context.clearRect(x - chunk.x * this.chunk_width, y - chunk.y * this.chunk_height, TILE_SIZE, TILE_SIZE);
-            
-            x /= TILE_SIZE;
-            y /= TILE_SIZE;
 
+            if (this.tiles[y] && this.tiles[y][x] && this.tiles[y][x].persistent) {
+                return 0;
+            }
+
+            var chunk = this.getChunk(x * TILE_SIZE, y * TILE_SIZE);
+            chunk.context.clearRect(x * TILE_SIZE - chunk.x * this.chunk_width, y * TILE_SIZE - chunk.y * this.chunk_height, TILE_SIZE, TILE_SIZE);
+            
             if (!this.tiles[y]) {
                 throw 'Tile row ' + y + ' does not exist?';
             }
@@ -369,6 +389,81 @@
             });
 
             return 1;
+        },
+        
+        getTile: function(point) {
+            point = point.mult(1 / this.TILE_SIZE).floor();
+
+            if (!this.tiles[point.y]) {
+                return false;
+            }
+
+            return this.tiles[point.y][point.x];
+        },
+        
+        isTileBlocking: function(point) {
+            var tile = this.getTile(point);
+            return typeof(tile) === 'undefined' || !!tile.persistent;
+        },
+        
+        canMove: function(point, movement) {
+            return !this.isTileBlocking(point.add(movement));
+        },
+
+        raycast: function(origin, movement) {
+            var dy = movement.y;
+            var dx = movement.x;
+
+            var hit_y = false, hit_x = false;
+
+            var pos = origin;
+            if (dy !== 0) { // Vertical
+                var dist = Math.abs(dy);
+                var step = new Juicy.Point(0, dy / dist); // +1 or -1
+                while (dist > 0 && this.canMove(pos, step)) {
+                    pos = pos.add(step);
+                    dist --;
+                }
+
+                if (dist < 0) {
+                    // Went too far. Backtrack!
+                    pos = pos.add(step.mult(dist));
+                }
+                else {
+                    // Hit a block oh no...
+                    if (step.y > 0) 
+                        pos.y = Math.ceil(pos.y) - 0.1;
+                    else
+                        pos.y = Math.floor(pos.y) + 0.1;
+
+                    hit_y = true;
+                }
+            }
+
+            if (dx !== 0) { // Horizontal
+                var dist = Math.abs(dx);
+                var step = new Juicy.Point(dx / dist, 0); // +1 or -1
+                while (dist > 0 && this.canMove(pos, step)) {
+                    pos = pos.add(step);
+                    dist --;
+                }
+
+                if (dist < 0) {
+                    // Went too far. Backtrack!
+                    pos = pos.add(step.mult(dist));
+                }
+                else {
+                    // Hit a block oh no...
+                    if (step.x > 0)
+                        pos.x = Math.ceil(pos.x) - 0.1;
+                    else
+                        pos.x = Math.floor(pos.x) + 0.1;
+
+                    hit_x = true;
+                }
+            }
+
+            return origin.sub(pos);
         },
 
         render: function(context, x, y, w, h) {

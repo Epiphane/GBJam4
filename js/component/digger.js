@@ -58,7 +58,7 @@ Juicy.Component.create('Digger', {
 
         // Slow down and shoot upwards
         var MAX_UP = 0;
-        var upward = blocksRekt * 2 + (this._up && this.onGround ? 160 : 0);
+        var upward = blocksRekt * 2 + (this._up && physics.onGround ? 160 : 0);
         if (this._up || (physics.dy - upward > MAX_UP)) {
             physics.dy -= upward;
         }
@@ -66,11 +66,10 @@ Juicy.Component.create('Digger', {
             physics.dy = MAX_UP;
         }
 
-        this.onGround = false;
         this._up = this._down = this._left = this._right = false;
     },
     // render: function(context) {
-    //     context.fillStyle = 'rgba(255, 0, 0, 0.5)';
+    //     context.fillStyle = 'rgba(0, 255, 0, 0.5)';
     //     this.forCollisionBox(function(x, y) {
     //         context.fillRect(x, y, 2, 2);
     //     });

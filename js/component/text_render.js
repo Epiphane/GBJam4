@@ -81,6 +81,10 @@
         },
 
         render: function(context) {
+            if (this.text === '') {
+                return;
+            }
+
             var drawPosition = this.offset.clone();
 
             // Go through each character of the string
