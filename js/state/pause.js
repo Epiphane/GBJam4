@@ -1,5 +1,5 @@
 var PauseState = Juicy.State.extend({
-    constructor: function(prevState) {
+    constructor: function(prevState, menu_items) {
         this.prevState = prevState;
 
         this.menu_top = 20;
@@ -18,7 +18,7 @@ var PauseState = Juicy.State.extend({
             position: Juicy.Point.create(80, this.menu_top + 5)
         });
 
-        this.menu_items = [
+        menu_items = menu_items || [
             {
                 text: 'Continue',
                 oncomplete: function() {
@@ -26,11 +26,9 @@ var PauseState = Juicy.State.extend({
                 }
             },
             {
-                text: 'Random Palette',
+                text: 'Options',
                 oncomplete: function() {
-                    Palette.set();
-
-                    this.updated = true;
+                    this.game.setState(new OptionsState(this));
                 }
             },
             {
@@ -48,6 +46,11 @@ var PauseState = Juicy.State.extend({
                 }
             }
         ];
+        
+        this.menu_items = [];
+        for (var i = 0; i < menu_items.length; i ++) {
+            this.menu_items.push(menu_items[i]);
+        }
 
         extraMenuItems = prevState.pauseMenuItems || [];
         for (var i = 0; i < extraMenuItems.length; i ++) {
@@ -60,7 +63,7 @@ var PauseState = Juicy.State.extend({
             var item = this.menu_items[i];
             item.brightness = 3;
             item.position = menu_pos.clone();
-            item.showBackground = true;
+            item.showBackground  = true;
 
             this.menu_items[i].text = this.ui.addText(item);
 
