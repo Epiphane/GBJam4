@@ -12,7 +12,7 @@ var UI = Juicy.Component.create('UI', {
 
         newText.position = info.position || new Juicy.Point();
 
-        this.textObjects.push(newText);
+        this.textObjects.push(newText); 
 
         return textComp;
     },
@@ -24,7 +24,7 @@ var UI = Juicy.Component.create('UI', {
 
         for (var i = 0; i < this.textObjects.length; i ++) {
             this.textObjects[i].getComponent('TextRender').update(dt);
-            if (this.textObjects[i].remove) {
+            if (this.textObjects[i].getComponent('TextRender').remove) {
                 this.textObjects.splice(i--, 1);
             }
         }
