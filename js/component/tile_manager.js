@@ -513,6 +513,7 @@
         },
 
         render: function(context, x, y, w, h) {
+            return;
             var chunk_x = Math.floor(x / this.chunk_width);
             var chunk_y = Math.floor(y / this.chunk_height);
 
@@ -552,7 +553,7 @@
 
                                     tile.drawn = 1;
                                 }
-                                else if (opacity >= 0) {
+                                else if (opacity >= tile.drawn) {
                                     var img = tile_mid_img;
                                     if (opacity < 0.5) img = tile_low_img;
                                     chunk.context.drawImage(img, tile.sx * TILE_SIZE, tile.sy * TILE_SIZE, TILE_SIZE, TILE_SIZE,

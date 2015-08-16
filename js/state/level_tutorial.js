@@ -15,7 +15,7 @@ var TutorialLevel = Level.extend({
         this.helper.position = this.player.position.sub(Juicy.Point.temp(10, 8));
         this.helper.getComponent('Follower').follow(this.player, Juicy.Point.create(-10, -8), true);
         this.message = this.helper.getComponent('TextRender').set({
-            text: 'HI THERE',
+            text: 'HI THERE!',
             font: 'BIG',
             animate: 'NONE',
             position: Juicy.Point.create(10, 10),
@@ -61,7 +61,7 @@ var TutorialLevel = Level.extend({
 
     key_SPACE: function() {
         this.complete = true;
-        this.game.setState(new InfiniteLevel());
+        this.game.setState(new CityLevel());
     },
 
     init: function() {
@@ -93,7 +93,7 @@ var TutorialLevel = Level.extend({
 
     sayNice: function(whatToDoNext) {
         var niceTime = 1.5;
-        this.message.text = 'NICE';
+        this.message.text = 'NICE!!';
         this.message.brightness = 3;
         this.message.setFont('BIG');
 
@@ -129,9 +129,9 @@ var TutorialLevel = Level.extend({
         this.updateFunc = this.updateHelperOnly;
 
         this.queueMessages([
-            'HI THERE',
-            'IM IVAN',
-            'WELCOME TO QUICKSILVER',
+            'HI THERE!',
+            'IM IVAN!',
+            'WELCOME TO QUICKSILVER!',
             'LETS SHOW YOU THE ROPES'
         ], function() {
             self.updateFunc = self.pressDown;
@@ -172,7 +172,7 @@ var TutorialLevel = Level.extend({
 
         if (this.countdown <= 1) {
             this.complete = true;
-            game.setState(new InfiniteLevel());
+            game.setState(new CityLevel());
         }
     }
 });

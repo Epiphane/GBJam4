@@ -50,13 +50,13 @@
             options.width = 2;
             options.height = 2;
             options.countdown = false;
-            options.song = 'lvl2';
+            options.song = 'quake';
 
             Level.call(this, options);
 
             this.player.position.x = 140;
 
-            var pyramid = new Juicy.Entity(this, [altarComponent]);
+            var pyramid = this.altar = new Juicy.Entity(this, [altarComponent]);
             // pyramid.getComponent('ColoredSprite').setSheet('img/altar.png', 40, 80);
             // pyramid.getComponent('ColoredSprite').runAnimation(0, 3, 0.32, true);
             pyramid.position.x = 40;
@@ -64,12 +64,16 @@
             pyramid.scale = Juicy.Point.create(2, 2);
             this.objects.push(pyramid);
 
-            this.helper = new Juicy.Entity(this, ['ColoredSprite', 'Follower', 'TextRender']);
-            this.helper.getComponent('ColoredSprite').setSheet('img/helper.png', 10, 14);
-            this.helper.getComponent('ColoredSprite').runAnimation(0, 11, 0.16, true);
-            this.helper.position = this.player.position.sub(Juicy.Point.temp(10, 8));
-            this.helper.getComponent('Follower').follow(this.player, Juicy.Point.create(-10, -8), true);
-            this.ivan_message = this.helper.getComponent('TextRender').set({
+            this.gate = new Juicy.Entity(this, ['Gate', 'ColoredSprite']);
+            this.gate.position = new Juicy.Point(180, -48);
+            this.objects.push(this.gate);
+
+            this.ivan = new Juicy.Entity(this, ['ColoredSprite', 'Follower', 'TextRender']);
+            this.ivan.getComponent('ColoredSprite').setSheet('img/helper.png', 10, 14);
+            this.ivan.getComponent('ColoredSprite').runAnimation(0, 11, 0.16, true);
+            this.ivan.position = this.player.position.sub(Juicy.Point.temp(10, 8));
+            this.ivan.getComponent('Follower').follow(this.player, Juicy.Point.create(-10, -8), true);
+            this.ivan_message = this.ivan.getComponent('TextRender').set({
                 text: 'OH NO!',
                 font: 'BIG',
                 animate: 'NONE',
@@ -79,21 +83,13 @@
                 offset: Juicy.Point.create(14, -4)
             });
 
-            this.objects.push(this.helper);
-
-            this.gate = new Juicy.Entity(this, ['Gate', 'ColoredSprite']);
-            this.gate.position = new Juicy.Point(180, -48);
-            this.objects.push(this.gate);
-
-            this.gate.getComponent('Gate').onplayertouch = function() {
-                self.shake = 2;
-                self.updateFunc = self.endLevel;
-            };
+            this.objects.push(this.ivan);
 
             var gateSprite = this.gate.getComponent('ColoredSprite');
             gateSprite.setSheet('img/gate.png', 52, 48);
             gateSprite.runAnimation(8, 10, 0.2, true);
 
+            var badDudes = 0;
             var destroyShrine = Juicy.Component.extend({
                 constructor: function(i, j) {
                     this.toDelete_i = i;
@@ -111,9 +107,14 @@
 
                     if (this.entity.position.y < -200) {
                         this.entity.remove = true;
+                        badDudes --;
+
+                        if (badDudes === 0) {
+                            self.say('weNeedHelp');
+                        }
                     }
                 }
-            })
+            });
 
             // Create Saw enemies
             for (var i = 0; i < 86; i ++) {
@@ -124,8 +125,94 @@
                 badDude.getComponent('ColoredSprite').setSheet('img/sawman-all.png', 20, 20);
                 badDude.getComponent('ColoredSprite').runAnimation(4, 7, 0.016, true);
                 this.objects.push(badDude);
+
+                badDudes ++;
             }
         },
+
+        say: function(dialog) {
+            if (!dialog) {
+                this.updateFunc = null;
+                return;
+            }
+
+            dialog = this.speech[dialog];
+
+            this.ivan_message.set(dialog);
+
+            if (dialog.execute) {
+                dialog.execute.call(this);
+            }
+
+            var next = dialog.next;
+            if (next && typeof(next) === 'string') {
+                var nextDialog = next;
+                next = function() {
+                    this.say(nextDialog);
+                };
+            }
+
+            if (next) {
+                this.wait(2, next);
+            }
+        },
+
+        wait: function(time, callback) {
+            var timeleft = time;
+
+            this.updateFunc = function(dt) {
+                timeleft -= dt;
+
+                if (timeleft < 0) {
+                    this.updateFunc = null;
+
+                    callback.call(this);
+                }
+            }
+        },
+
+        speech: {
+            weNeedHelp: {
+                font: 'SMALL',
+                text: 'The altar!!!',
+                next: 'helpRestore',
+                execute: function() {
+                    this.ivan.getComponent('Follower').follow(this.altar, Juicy.Point.create(20, 44), true);
+                }
+            },
+            helpRestore: {
+                font: 'SMALL',
+                text: 'We must restore it!',
+                execute: function() {
+                    this.ivan.getComponent('Follower').follow(this.altar, Juicy.Point.create(30, 40), true);
+                },
+                next: 'pleaseHelp'
+            },
+            pleaseHelp: {
+                font: 'BIG',
+                text: 'Please help us!',
+                execute: function() {
+                    this.ivan.getComponent('Follower').follow(this.altar, Juicy.Point.create(36, 48), true);
+                },
+                next: 'gottaFind'
+            },
+            gottaFind: {
+                font: 'SMALL',
+                text: 'find the lost pieces!',
+                execute: function() {
+                    this.ivan.getComponent('Follower').follow(this.player, Juicy.Point.create(-10, -8), true);
+                    this.player.target = this.gate;
+
+                    var self = this;
+                    this.gate.getComponent('Gate').onplayertouch = function() {
+                        self.shake = 2;
+                        self.updateFunc = self.endLevel;
+                    };
+                }
+            }
+        },
+
+        getTarget: function() {}, // Ignore
 
         endLevel: function(dt, game) {
             var dist = this.gate.center().sub(this.player.center());

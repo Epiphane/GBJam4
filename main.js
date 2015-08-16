@@ -22,6 +22,7 @@ var music = new Juicy.Music();
 music.load('tutorial', 'audio/music_tutorial.mp3');
 music.load('lvl1', 'audio/music_cave_in.mp3');
 music.load('lvl2', 'audio/music_particles.mp3');
+music.load('quake', 'audio/music_quake.mp3');
 
 var sfx = new Juicy.SFX();
 sfx.load('goal', 'audio/fx_jump.mp3');

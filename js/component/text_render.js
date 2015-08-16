@@ -37,16 +37,13 @@
             this.delayPerCharacter = 8;
 
             this.font = fonts[0];
-        },
 
-        setText: function(text) {
-            this.text = text;
-            
-            // Tracks where each character is in its animation cycle
-            this.characterAnim = Array(text.length);
-            for (var ndx = 0; ndx < text.length; ndx++) {
-                this.characterAnim[ndx] = 0;
-            }
+            this.center = false;
+            this.brightness = 0;
+            this.showBackground = false;
+            this.offset = Juicy.Point.create();
+            this.animate = TEXT.ANIMATIONS.NONE;
+            this.text = '';
         },
 
         set: function(info) {
@@ -58,15 +55,25 @@
             }
 
             this.center         = !!info.center;
-            this.brightness     = info.brightness || 0;
-            this.showBackground = info.showBackground || false;
-            this.offset         = info.offset || Juicy.Point.create();
-            this.animate        = info.animate || TEXT.ANIMATIONS.NONE;
+            this.brightness     = info.brightness || this.brightness;
+            this.showBackground = info.showBackground || this.showBackground;
+            this.offset         = info.offset || this.offset;
+            this.animate        = info.animate || this.animate;
 
-            this.setFont(info.font || TEXT.FONTS.SMALL);
-            this.setText(info.text || '');
+            if (typeof(info.font) !== 'undefined') this.setFont(info.font);
+            this.setText(info.text || this.text);
 
             return this;
+        },
+
+        setText: function(text) {
+            this.text = text;
+            
+            // Tracks where each character is in its animation cycle
+            this.characterAnim = Array(text.length);
+            for (var ndx = 0; ndx < text.length; ndx++) {
+                this.characterAnim[ndx] = 0;
+            }
         },
 
         setFont: function(font) {

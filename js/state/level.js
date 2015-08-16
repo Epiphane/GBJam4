@@ -20,9 +20,6 @@ var Level = Juicy.State.extend({
         this.tile_manager = new Juicy.Components.TileManager(this.game_width);
         this.tiles = new Juicy.Entity(this, [ this.tile_manager ]);
 
-        // Random palette!
-        Palette.set(/* random */);
-
         // Create UI
         this.ui_entity = new Juicy.Entity(this, ['UI']);
         this.ui = this.ui_entity.getComponent('UI');
@@ -74,19 +71,22 @@ var Level = Juicy.State.extend({
         delete this.tiles;
     },
 
+    load: function(piece) {
+        for (var i = 0; i < this.tile_manager.width / this.tile_manager.chunk_width; i ++) {
+            this.tile_manager.buildChunk(i, this.loadedChunkRow, this.loadedChunkRow === self.game_height - 1);
+        }
+
+        return (++this.loadedChunkRow / this.game_height);
+    },
+
     init: function() {
         var self = this;
         if (!this.loaded) {
-            var chunk_row = 0;
+            this.loadedChunkRow = 0;
+            Palette.set(/* random */);
             this.game.setState(new LoadingState(this, {
                 // Pre-build chunks down to self.game_height!!
-                load: function(piece) {
-                    for (var i = 0; i < self.tile_manager.width / self.tile_manager.chunk_width; i ++) {
-                        self.tile_manager.buildChunk(i, chunk_row, chunk_row === self.game_height - 1);
-                    }
-
-                    return (++chunk_row / self.game_height);
-                }
+                load: this.load.bind(this)
             }));
         }
 
