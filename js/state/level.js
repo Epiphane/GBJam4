@@ -94,7 +94,6 @@ var Level = Juicy.State.extend({
     },
 
     key_ESC: function() {
-        music.pause(this.song);
         this.game.setState(new PauseState(this));
     },
     

@@ -28,6 +28,7 @@ sfx.load('goal', 'audio/fx_jump.mp3');
 sfx.load('quack', 'audio/fx_creature.wav');
 sfx.load('textBonk', 'audio/text-impact.wav');
 
+window.updateVolume(); // From state/options.js
 document.addEventListener('DOMContentLoaded', function() {
     Juicy.Game.setState(new TutorialLevel()).run();
 }, false);

@@ -1,52 +1,96 @@
-var OptionsState = PauseState.extend({
-   constructor: function(nextState) {
-      var menu_items = [
-         {
-            text: 'Music ' + (music.muted ? 'on' : 'off'),
-            oncomplete: function() {
-               this.toggleMusic()
+(function() {
+    var volume = JSON.parse(localStorage.getItem('volume')) || {
+        music: Math.round(music.volume * 10),
+        sfx: Math.round(sfx.volume * 10)
+    };
+
+    window.updateVolume = function() {
+        music.setVolume(volume.music / 10);
+        sfx.setVolume  (volume.sfx / 10);
+    };
+
+    window.OptionsState = PauseState.extend({
+        constructor: function(nextState) {
+            var menu_items = [
+                {
+                    text: 'Back',
+                    oncomplete: function() {
+                        this.key_ESC();
+                    }
+                },
+                {
+                    text: 'Music           ',
+                    oncomplete: function() {
+                        this.toggleMusic();
+                    }
+                },
+                {
+                    text: 'SFX             ',
+                    oncomplete: function() {
+                        this.toggleSFX();
+                    }
+                },
+                {
+                    text: 'Random Palette',
+                    oncomplete: function() {
+                        Palette.set();
+
+                        this.updated = true;
+                    }
+                },
+            ];
+
+            this.music_ndx = 1;
+            this.sfx_ndx = 2;
+
+            this.music = menu_items[this.music_ndx];
+            this.sfx = menu_items[this.sfx_ndx];
+
+            PauseState.call(this, nextState, menu_items);
+
+            this.updateVolume();
+        },
+
+        updateVolume: function() {
+            localStorage.setItem('volume', JSON.stringify(volume));
+
+            if (volume.music < 0)  volume.music = 0;
+            if (volume.sfx < 0)    volume.sfx = 0;
+            if (volume.music > 10) volume.music = 10;
+            if (volume.sfx > 10)   volume.sfx = 10;
+
+            var before = (new Array(volume.music + 1)).join(' ');
+            var after  = (new Array(11 - before.length)).join(' ');
+            this.music.text.setText('Music ' + before + 'O' + after);
+
+            before = (new Array(volume.sfx + 1)).join(' ');
+            after  = (new Array(11 - before.length)).join(' ');
+            this.sfx.text.setText('SFX   ' + before + 'O' + after);
+
+            updateVolume();
+            this.updated = true;
+        },
+
+        key_LEFT: function() {
+            if (this.menu_choice === this.music_ndx) {
+                volume.music --;
+                this.updateVolume();
             }
-         },
-         {
-            text: 'SFX ' + (sfx.muted ? 'on' : 'off'),
-            oncomplete: function() {
-               this.toggleSFX()
+            else if (this.menu_choice === this.sfx_ndx) {
+                volume.sfx --;
+                this.updateVolume();
             }
-         },
-         {
-             text: 'Random Palette',
-             oncomplete: function() {
-                 Palette.set();
+        },
 
-                 this.updated = true;
-             }
-         },
-      ];
-
-      this.music = menu_items[0];
-      this.sfx = menu_items[1];
-
-      PauseState.call(this, nextState, menu_items);
-   },
-
-   toggle: function(obj, sound, string) {
-      if (!sound.muted) {
-         obj.text.text = string + ' on';
-         sound.mute();
-      }
-      else {
-         obj.text.text = string + ' off';
-         sound.unmute();
-      }
-
-      this.updated = true;
-   },
-
-   toggleMusic: function() {
-      this.toggle(this.music, music, 'Music');
-   },
-
-   toggleSFX: function() {
-      this.toggle(this.sfx, sfx, 'SFX');
-   }
-});
+        key_RIGHT: function() {
+            if (this.menu_choice === this.music_ndx) {
+                volume.music ++;
+                this.updateVolume();
+            }
+            else if (this.menu_choice === this.sfx_ndx) {
+                volume.sfx ++;
+                this.updateVolume();
+            }
+        },
+    });
+})();
