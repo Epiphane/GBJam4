@@ -52,10 +52,22 @@ var CityLevel = Level.extend({
         gateSprite.setSheet('img/gate.png', 52, 48);
         gateSprite.runAnimation(8, 10, 0.2, true);
 
+        var destroyShrine = Juicy.Component.extend({
+            constructor: function(chunkToRemove) {
+                
+            },
+            update: function() {
+                if (this.entity.position.y < -200) {
+                    this.entity.remove = true;
+                }
+            }
+        })
+
         // Create Saw enemies
-        for (var i = 0; i < 100; i ++) {            
-            newDude = new Juicy.Entity(this, ['ColoredSprite', checkAboveWorld, 'CutScene']);
-            newDude.position = new Juicy.Point(48 + 44 * ((i / 13) % 1), options.height * this.tile_manager.chunk_height + 10 * (i % 73) * (i % 3));        
+        for (var i = 0; i < 100; i ++) {
+            var xval = 44 * ((i / 10) % 1);
+            newDude = new Juicy.Entity(this, ['ColoredSprite', destroyShrine, 'CutScene']);
+            newDude.position = new Juicy.Point(48 + xval, options.height * this.tile_manager.chunk_height + 10 * (i / 8) * (i % 3));        
             newDude.getComponent('ColoredSprite').setSheet('img/sawman-all.png', 20, 20);
             newDude.getComponent('ColoredSprite').runAnimation(4, 7, 0.016, true);
             newDude.getComponent('CutScene').setSpeed(0, -300);

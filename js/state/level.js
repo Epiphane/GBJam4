@@ -164,6 +164,12 @@ var Level = Juicy.State.extend({
             }
         }
 
+        for (var i = 0; i < this.objects.length; i ++) {
+            if (this.objects[i].remove) {
+                this.objects.splice(i--, 1);
+            }
+        }
+
         this.updateCamera(dt);
     },
     
