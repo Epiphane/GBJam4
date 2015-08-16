@@ -42,9 +42,11 @@ var TutorialLevel = Level.extend({
         var pyramid = new Juicy.Entity(this, ['ColoredSprite']);
         pyramid.getComponent('ColoredSprite').setSheet('img/altar.png', 40, 80);
         pyramid.getComponent('ColoredSprite').runAnimation(0, 3, 0.32, true);
-        pyramid.position.x = 30;
-        pyramid.position.y = -30;
+        pyramid.position.x = 40;
+        pyramid.position.y = -80;
         pyramid.scale = Juicy.Point.create(2, 2);
+    
+        this.objects.push(pyramid);
     },
 
     key_SPACE: function() {

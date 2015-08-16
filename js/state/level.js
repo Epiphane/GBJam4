@@ -16,12 +16,12 @@ var Level = Juicy.State.extend({
         this.updateFunc = null;
         this.objects = [];
 
-        // Random palette!
-        Palette.set(/* random */);
-
         // Create Tile Manager
         this.tile_manager = new Juicy.Components.TileManager(this.game_width);
         this.tiles = new Juicy.Entity(this, [ this.tile_manager ]);
+
+        // Random palette!
+        Palette.set(/* random */);
 
         // Create UI
         this.ui_entity = new Juicy.Entity(this, ['UI']);
@@ -186,6 +186,8 @@ var Level = Juicy.State.extend({
         if (this.camera.x + this.game.width > this.tile_manager.width) {
             this.camera.x = this.tile_manager.width - this.game.width;
         }
+
+        return 
     },
 
     render: function(context) {

@@ -134,6 +134,13 @@
 
     Tile.prototype.free = function() { };//_pool_Tile.push(this); };
 
+    var currentTileManager = null;
+    Palette.onchange.push(function() {
+        if (currentTileManager) {
+            currentTileManager.onPaletteChange();
+        }
+    })
+
     Juicy.Component.create('TileManager', {
         TILE_SIZE: TILE_SIZE,
         constructor: function(width) {
@@ -148,10 +155,12 @@
             this.chunk_width  = 160;
             this.chunk_height = 144;
 
-            Palette.onchange.push(this.onPaletteChange.bind(this));
+            currentTileManager = this;
         },
 
         cleanup: function() {
+            currentTileManager = null;
+
             for (var i = 0; i < this.tiles.length; i ++) {
                 for (var j = 0; j < this.tiles[i].length; j ++) {
                     if (this.tiles[i][j]) {
