@@ -1,5 +1,3 @@
-var selector = Palette.loadImage('img/menu_selector.png');
-
 var PauseState = Juicy.State.extend({
     constructor: function(prevState) {
         this.prevState = prevState;
@@ -58,11 +56,11 @@ var PauseState = Juicy.State.extend({
         }
 
         this.menu_choice = 0;
-        this.menu_items[this.menu_choice].text.brightness = 3;
+        this.menu_items[this.menu_choice].text.brightness = 0;
     },
     
     key_DOWN: function() {
-        this.menu_items[this.menu_choice].text.brightness = 2;
+        this.menu_items[this.menu_choice].text.brightness = 0;
 
         this.menu_choice = (this.menu_choice + 1) % this.menu_items.length;
 
@@ -72,7 +70,7 @@ var PauseState = Juicy.State.extend({
     },
     
     key_UP: function() {
-        this.menu_items[this.menu_choice].text.brightness = 2;
+        this.menu_items[this.menu_choice].text.brightness = 0;
 
         this.menu_choice = (this.menu_choice - 1) % this.menu_items.length;
         if (this.menu_choice < 0) this.menu_choice += this.menu_items.length;
@@ -110,7 +108,5 @@ var PauseState = Juicy.State.extend({
         context.fillRect(this.menu_left, this.menu_top, this.menu_width, this.menu_height);
 
         this.ui_entity.render(context);
-
-        context.drawImage(selector, this.menu_left + 3, this.menu_top + 25 + this.menu_choice * 10);
     }
 });
