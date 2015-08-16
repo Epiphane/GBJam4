@@ -191,6 +191,7 @@
                     this.tiles[j][i].sx = sx;
                     this.tiles[j][i].sy = sy;
                     this.tiles[j][i].persistent = true;
+                    this.tiles[j][i].blocking = false;
                 }
             }
         },
@@ -236,6 +237,7 @@
                         var sy = 12 + j % 4;
                         this.tiles[j][i] = Tile.create(sx, sy);
                         this.tiles[j][i].persistent = true;
+                        this.tiles[j][i].blocking = true;
                     }
                     // Figure out whether we need to continue a pattern
                     else if (!this.tiles[j] || typeof(this.tiles[j][i]) === 'undefined') {

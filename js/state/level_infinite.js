@@ -88,7 +88,7 @@ var InfiniteLevel = Level.extend({
         this.camera.dx = 1;
         this.camera.dy = 1.5;
 
-        if (this.gate.center()._sub(Juicy.Point.temp(this.camera.x + game.width / 2, this.camera.y + game.height / 4))._length() < 10) {
+        if (this.gate.center()._sub(Juicy.Point.temp(this.camera.x + game.width / 2, this.camera.y + game.height / 2))._length() < 10) {
             this.updateFunc = null;
 
             this.watching = this.player;
