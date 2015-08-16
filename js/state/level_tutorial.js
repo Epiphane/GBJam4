@@ -46,7 +46,7 @@ var TutorialLevel = Level.extend({
         pyramid.position.y = -80;
         pyramid.scale = Juicy.Point.create(2, 2);
     
-        this.objects.push(pyramid);
+        // this.objects.push(pyramid);
     },
 
     key_SPACE: function() {
