@@ -10,8 +10,6 @@ var LoadingState = Juicy.State.extend({
         this.loading.getComponent('ColoredSprite').setSheet('img/loading.png', 46, 12);
         this.loading.scale = Juicy.Point.create(2, 2);
         this.loading.position = Juicy.Point.create(30, 20);
-
-        console.log(this.loading.scale);
     },
 
     resolve: function(progress) {
