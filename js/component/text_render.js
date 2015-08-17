@@ -33,10 +33,12 @@
 
     window.TEXT = Juicy.Component.create('TextRender', {
         constructor: function(myEntity) {
-            this.animationTicks = -10;
+            this.animationTicks = 0;
             this.delayPerCharacter = 8;
+            this.animationMaxFrames = 10;
 
             this.font = fonts[0];
+            this.particles = new Juicy.Entity(myEntity.state, ['ParticleManager'])
 
             this.center = false;
             this.brightness = 0;
@@ -50,18 +52,32 @@
             if (typeof(info.font) === 'string') {
                 info.font = TEXT.FONTS[info.font]; // For super easy shorthand fonts ('BIG', 'SPECIAL')
             }
-            if (typeof(info.animate) === 'string') {
-                info.animate = TEXT.ANIMATIONS[info.animate]; // For super easy shorthand anims
-            }
 
             this.center         = !!info.center;
             this.brightness     = info.brightness || this.brightness;
             this.showBackground = info.showBackground || this.showBackground;
             this.offset         = info.offset || this.offset;
             this.animate        = info.animate || this.animate;
+            this.delayPerCharacter = info.delayPerCharacter || 2;
+            this.animationTicks -= info.initialDelay || 0;
 
             if (typeof(info.font) !== 'undefined') this.setFont(info.font);
             this.setText(info.text || this.text);
+
+            switch(this.brightness) {
+            case 0:
+                this.brightString = "DARK"
+                break;
+            case 1:
+                this.brightString = "LOW"
+                break;
+            case 2:
+                this.brightString = "MID"
+                break;
+            case 3:
+                this.brightString = "BRIGHT"
+                break;
+            }
 
             return this;
         },
@@ -69,7 +85,7 @@
         setText: function(text) {
             this.text = text;
             
-            // Tracks where each character is in its animation cycle
+            // Tracks where each character is in its animation  cycle
             this.characterAnim = Array(text.length);
             for (var ndx = 0; ndx < text.length; ndx++) {
                 this.characterAnim[ndx] = 0;
@@ -86,7 +102,13 @@
 
         update: function(dt) {
             this.animationTicks++;
-            // TODO: magic where we correctly update the characterAnim array.  Fun programming puzzle!
+            this.particles.getComponent('ParticleManager').update(dt);
+
+            for (var ndx = 0; ndx < this.characterAnim.length; ndx++) {
+                if (ndx < this.animationTicks / this.delayPerCharacter) {
+                    this.characterAnim[ndx]++;
+                }
+            }
         },
 
         render: function(context) {
@@ -94,13 +116,14 @@
                 return;
             }
 
+            this.particles.getComponent('ParticleManager').render(context);
+
             var drawPosition = this.offset.clone();
 
             // Go through each character of the string
             if (this.center) {
                 drawPosition.x -= this.text.length * this.font.width / 2;
             }
-            var startX = drawPosition.x;
 
             // Draw background for text
             if (this.showBackground) {
@@ -114,24 +137,20 @@
                 }
             }
 
-    // Text animation TODO stuff
-    /*
             switch (this.animate) {
             // NONE
-            case 0: 
+            case "NONE": 
                 this.normalRender(context, drawPosition);
                 break;
             // SLIDE
-            case 1:
-                // TODO
+            case "SLIDE":
+                this.slideRender(context, drawPosition);
                 break;
             // DRAMATIC
-            case 2:
-                this.dramaticRender();
+            case "DRAMATIC":
+                this.dramaticRender(context, drawPosition);
                 break;
             }
-    */
-            this.normalRender(context, drawPosition);
         },
 
         normalRender: function(context, drawPosition) {
@@ -147,24 +166,73 @@
             }
         },
 
-        // TODO: me
-        dramaticRender: function() {
+        slideRender: function(context, drawPosition) {
             for (var c = 0; c < this.text.length; c++) {
                 var charCode = this.text.charCodeAt(c);
 
-                var textTiming = c*16 - textObject.animationTicks*2 + 10;
 
-                if (textTiming == 4) {
+                if (charCode != 32) {
+                    var animFrame = this.characterAnim[c];
+
+                    if (animFrame == 1) {
+                        sfx.play('textBeep');
+
+                        var currNdx = c;
+                        var self = this;
+                        var startX = drawPosition.x;
+
+                        this.particles.getComponent('ParticleManager').spawnParticles({
+                            color: this.brightString, 
+                            size: 2, 
+                            howMany: 3, 
+                            timeToLive: function(particle, ndx) {
+                                return 0;
+                            },
+                            initParticle: function(particle) {
+                                particle.x = currNdx*self.font.width/8 + Math.random() * self.font.width + startX;
+                                particle.y = drawPosition.y + Math.random() * self.font.height;
+
+                                particle.dx = Math.random() * 1 - 0.5;
+                                particle.dy = Math.random() * 3 - 1.5;
+
+                                particle.startLife = 3;
+                                particle.life = particle.startLife;
+                            },
+                            updateParticle: function(particle) {
+                                particle.x += particle.dx;
+                                particle.y += particle.dy;
+                            }
+                        });
+                    }
+
+                    if (animFrame > 0) {
+                        var slideClip = Math.max(0, 4 - animFrame);
+                        this.drawCharacter(charCode, context, this.font, this.brightness, drawPosition, 0, slideClip);   
+                    }
+                }
+
+                drawPosition.x += this.font.width;
+            }
+        },
+
+        dramaticRender: function(context, drawPosition) {
+            for (var c = 0; c < this.text.length; c++) {
+                var charCode = this.text.charCodeAt(c);
+
+                var animFrame = this.characterAnim[c];
+
+                if (animFrame == 4) {
                     if (charCode != 32) {
                         sfx.play('textBonk');
                     }
                 }
 
-                if (textTiming == 8) {
+                if (animFrame == 6) {
                     var currNdx = c;
                     var self = this;
+                    var startX = drawPosition.x;
 
-                    this.ui_particles.getComponent('ParticleManager').spawnParticles({
+                    this.particles.getComponent('ParticleManager').spawnParticles({
                         color: "LIGHT", 
                         size: 2, 
                         howMany: 8, 
@@ -172,7 +240,7 @@
                             return 0;
                         },
                         initParticle: function(particle) {
-                            particle.x = currNdx*self.font.width + Math.random() * self.font.width + startX;
+                            particle.x = currNdx*self.font.width/8 + Math.random() * self.font.width + startX;
                             particle.y = drawPosition.y + Math.random() * self.font.height;
 
                             particle.dx = Math.random() * 2 - 1;
@@ -188,17 +256,17 @@
                     });
                 }
 
-                var shakeIt = (textTiming > -7);
-                var offset = Math.max(1, textTiming);
+                var shakeIt = (animFrame < 9 && animFrame > 5);
+                var offset = Math.max(1, 10 - animFrame*2);
 
-                if (textObject.animationTicks*2 > c*16) {
+                if (animFrame > 0) {
                     if (shakeIt) {
                         context.save();
                         context.translate(Math.random() * 2 - 1, Math.random() * 2 - 1);
                     }
                     if (charCode != 32) {
-                        this.drawCharacter(charCode, context, this.font, textObject.brightness-1, drawPosition, 0);
-                        this.drawCharacter(charCode, context, this.font, textObject.brightness, drawPosition, offset);
+                        this.drawCharacter(charCode, context, this.font, this.brightness-1, drawPosition, 0);
+                        this.drawCharacter(charCode, context, this.font, this.brightness, drawPosition, offset);
                     }
 
                     if (shakeIt) {
@@ -210,7 +278,7 @@
             }
         },
 
-        drawCharacter: function(charCode, context, font, brightness, drawPosition, offset) {
+        drawCharacter: function(charCode, context, font, brightness, drawPosition, offset, slideAmount) {
             if (charCode >= A && charCode <= Z) {
                 charCode -= A;
             }
@@ -228,8 +296,10 @@
                 charCode = 37;
             }
 
-            context.drawImage(font.font, charCode * font.width, brightness * font.height, font.width, font.height,
-                drawPosition.x + offset, drawPosition.y - offset, font.width, font.height);
+            var clip = slideAmount || 0;
+
+            context.drawImage(font.font, charCode * font.width, brightness * font.height, font.width - clip, font.height,
+                drawPosition.x + offset, drawPosition.y - offset, font.width - clip, font.height);
         },
     }, {
         FONTS: {

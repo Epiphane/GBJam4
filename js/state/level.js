@@ -56,6 +56,29 @@ var Level = Juicy.State.extend({
             this._countdown = false;
         }
 
+
+        this.subTitle = this.ui.addText({
+            text: this.subtitle(),
+            font: TEXT.FONTS.SMALL,
+            position: Juicy.Point.create(this.game_width/6, 32),
+            center: true,
+            brightness: 1,
+            animate: 'SLIDE',
+            delayPerCharacter: 0,
+            initialDelay: 80,
+        });
+
+        this.roomTitle = this.ui.addText({
+            text: this.placeName(),
+            font: TEXT.FONTS.BIG,
+            position: Juicy.Point.create(this.game_width/6, 20),
+            center: true,
+            brightness: 2,
+            animate: 'DRAMATIC',
+            delayPerCharacter: 8,
+        });
+
+
         // Camera info
         this.watching = this.player;
         this.camera = {
@@ -222,5 +245,13 @@ var Level = Juicy.State.extend({
 
         // Draw UI independent of Camera
         this.ui_entity.render(context);
-    }
+    },
+
+    placeName: function() {
+        return COOL_NAME();
+    },
+
+    subtitle: function() {
+       return COOL_PLACE_SUBTITLE(); 
+    },
 });

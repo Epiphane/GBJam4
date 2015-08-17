@@ -74,13 +74,13 @@ Juicy.Component.create('Player', {
                 return 0;
             },
             initParticle: function(particle) {
-                particle.x = self.entity.position.x + self.entity.width*Math.random()*0.6 + 4;
-                particle.y = self.entity.position.y + self.entity.height/2;
+                particle.x = self.entity.position.x + self.entity.width*Math.random()*0.35 + 4;
+                particle.y = self.entity.position.y + self.entity.height/2 * Math.random() * 0.8 + 5;
                 
                 particle.dx = -self.entity.getComponent('Physics').dx / 70;
                 particle.dy = -self.entity.getComponent('Physics').dy / 70;
 
-                particle.startLife = 20;
+                particle.startLife = 5 + Math.random() * 15;
                 particle.life = particle.startLife;
             },
             updateParticle: function(particle) {

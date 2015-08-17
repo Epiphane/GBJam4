@@ -17,16 +17,15 @@ var TutorialLevel = Level.extend({
         this.message = this.helper.getComponent('TextRender').set({
             text: 'HI THERE!',
             font: 'BIG',
-            animate: 'NONE',
+            animate: TEXT.ANIMATIONS.NORMAL,
             position: Juicy.Point.create(10, 10),
             showBackground: true,
             brightness: 3,
-            offset: Juicy.Point.create(14, -4)
         });
 
         this.ui.addText({
             text: 'PRESS SPACE TO SKIP',
-            animate: 'NONE',
+            animate: TEXT.ANIMATIONS.NORMAL,
             showBackground: true,
             brightness: 2,
             position: Juicy.Point.create(1)
