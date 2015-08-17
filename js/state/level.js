@@ -52,6 +52,18 @@ var Level = Juicy.State.extend({
             this._countdown = false;
         }
 
+
+        this.subTitle = this.ui.addText({
+            text: this.subtitle(),
+            font: TEXT.FONTS.SMALL,
+            position: Juicy.Point.create(this.game_width/6, 32),
+            center: true,
+            brightness: 1,
+            animate: 'SLIDE',
+            delayPerCharacter: 0,
+            initialDelay: 80,
+        });
+
         this.roomTitle = this.ui.addText({
             text: this.placeName(),
             font: TEXT.FONTS.BIG,
@@ -62,16 +74,6 @@ var Level = Juicy.State.extend({
             delayPerCharacter: 8,
         });
 
-        this.subTitle = this.ui.addText({
-            text: this.subtitle(),
-            font: TEXT.FONTS.SMALL,
-            position: Juicy.Point.create(this.game_width/6-1, 32),
-            center: true,
-            brightness: 1,
-            animate: 'DRAMATIC',
-            delayPerCharacter: 4,
-            initialDelay: 80,
-        });
 
         // Camera info
         this.watching = this.player;
@@ -245,6 +247,6 @@ var Level = Juicy.State.extend({
     },
 
     subtitle: function() {
-       return "PIZZA PARTY"  
+       return COOL_PLACE_SUBTITLE(); 
     },
 });
