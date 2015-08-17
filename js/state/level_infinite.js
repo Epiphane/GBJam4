@@ -100,7 +100,7 @@ var InfiniteLevel = Level.extend({
         this.camera.dy = 1.5;
 
         if (!this.gateOpen && this.gate.center()._sub(Juicy.Point.temp(this.camera.x + game.width / 2, this.camera.y + game.height / 2))._length() < 30) {
-            self.gateOpen = true;
+            this.gateOpen = true;
             this.camera.dx = 0.5;
             this.camera.dy = 1;
             var gateSprite = this.gate.getComponent('ColoredSprite');

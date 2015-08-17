@@ -122,6 +122,19 @@
             var gateSprite = this.gate.getComponent('ColoredSprite');
             gateSprite.setSheet('img/gate.png', 52, 48);
             gateSprite.runAnimation(8, 10, 0.2, true);
+        
+            this.levelLoaded = 0;
+        },
+
+        load: function(part) {
+            if (this.levelLoaded < 1) {
+                this.levelLoaded = Level.prototype.load.apply(this, arguments);
+            
+                return this.levelLoaded;
+            }
+            else {
+
+            }
         },
 
         init: function() {
