@@ -184,7 +184,7 @@
                 if (!this.tiles[j]) continue;
 
                 for (var i = x; i < x + w; i ++) {
-                    if (!this.tiles[j][i]) continue;
+                    if (!this.tiles[j][i]) this.tiles[j][i] = new Tile();
 
                     var sx = i % 4;
                     var sy = 16 + j % 4;
@@ -206,7 +206,7 @@
                 if (!this.tiles[j]) continue;
 
                 for (var i = x; i < x + w; i ++) {
-                    if (!this.tiles[j][i]) continue;
+                    if (!this.tiles[j][i]) this.tiles[j][i] = new Tile();
 
                     var sx = i % 4;
                     var sy = 12 + j % 4;
