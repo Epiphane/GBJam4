@@ -57,7 +57,7 @@
             this.brightness     = info.brightness || this.brightness;
             this.showBackground = info.showBackground || this.showBackground;
             this.offset         = info.offset || this.offset;
-            this.animate        = info.animate || this.animate;
+            this.animate        = info.animate || this.animate || 'NONE';
             this.delayPerCharacter = info.delayPerCharacter || 2;
             this.animationTicks -= info.initialDelay || 0;
 

@@ -15,6 +15,7 @@ var PauseState = Juicy.State.extend({
             font: 'BIG',
             brightness: 3,
             center: true,
+            animate: 'NONE',
             position: Juicy.Point.create(80, this.menu_top + 5)
         });
 
