@@ -50,8 +50,6 @@ var fontImg = new Image();
     fontImg.src = 'img/font.png';
 
 function startGame() {
-    Palette.set();
-
     Juicy.Game.setState(new LoadingState(new TitleScreen(), {
         load: function() {
             var completed = (loadingImg.complete ? 1 : 0) + 

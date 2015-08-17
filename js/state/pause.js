@@ -79,6 +79,9 @@ var PauseState = Juicy.State.extend({
         }
 
         this.menu_choice = 0;
+    },
+
+    init: function() {
         this.menu_items[this.menu_choice].text.brightness = 0;
     },
 
@@ -105,10 +108,6 @@ var PauseState = Juicy.State.extend({
 
     key_ENTER: function() {
         this.menu_items[this.menu_choice].oncomplete.apply(this);
-    },
-
-    init: function() {
-    
     },
     
     update: function(dt) { 

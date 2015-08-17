@@ -289,10 +289,10 @@
                 charCode -= _0;
                 charCode += 26; // To go to numbers
             }
-            if (charCode === exclaim) {
+            else if (charCode === exclaim) {
                 charCode = 36;
             }
-            if (charCode === question) {
+            else if (charCode === question) {
                 charCode = 37;
             }
 

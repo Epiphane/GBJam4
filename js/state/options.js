@@ -38,11 +38,9 @@
                     }
                 },
                 {
-                    text: 'Random Palette',
+                    text: 'Change Palette',
                     oncomplete: function() {
-                        Palette.set();
-
-                        this.updated = true;
+                        this.game.setState(new PaletteSelector(this));
                     }
                 },
             ];
