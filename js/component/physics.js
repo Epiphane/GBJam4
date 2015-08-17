@@ -40,7 +40,8 @@ Juicy.Component.create('Physics', {
 
         this.weight_modifier = 1;
 
-        if (this.dy > 0.1 && Math.abs(mindy) < 0.01) {
+        if (this.dy * dt > 0.1 && Math.abs(mindy) < 0.01) {
+            console.log(this.dy, mindy);
             this.dy = 0;
             this.onGround = true;
         }

@@ -51,13 +51,37 @@ var TutorialLevel = Level.extend({
         ];
 
         this.piece = new Juicy.Entity(this, ['ColoredSprite']);
-        this.piece.position = Juicy.Point.create(200, 288-40);
-        this.piece.getComponent('ColoredSprite').setSheet('img/spinningpiece2.png', 20, 20);
+        this.piece.position = Juicy.Point.create(200, 288-20);
+        this.piece.getComponent('ColoredSprite').setSheet('img/spinningpiece2.png', 24, 24).runAnimation(0, 7, 0.18, true);
+    
+        this.gate = new Juicy.Entity(this, ['Gate', 'ColoredSprite']);
+        this.gate.position = new Juicy.Point(640, 288-48);
+        var gateSprite = this.gate.getComponent('ColoredSprite');
+        gateSprite.setSheet('img/gate.png', 52, 48);
+        gateSprite.runAnimation(8, 10, 0.2, true);
+        this.gate.getComponent('Gate').onplayertouch = function() {
+            self.shake = 2;
+            self.updateFunc = self.endLevel;
+        };
+    },
+
+    endLevel: function(dt, game) {
+        this.complete = true;
+        localStorage.setItem('tutorial', 'true');
+
+        var dist = this.gate.center().sub(this.player.center());
+        this.player.position = this.player.position.add(dist.mult(1/8).free());
+
+        if (this.shake < 1) {
+            this.goToCity();
+        }
+
+        return false; // Do NOT update physics
     },
 
     goToCity: function() {
-        localStorage.setItem('tutorial', 'true');
         this.complete = true;
+
         this.game.setState(new CityLevel());
     },
 
@@ -78,6 +102,8 @@ var TutorialLevel = Level.extend({
                     next();
                 }
             });
+
+            this.tile_manager.persistTiles(40, 288, this.game_width * this.tile_manager.chunk_width, 8);
         }
     },
 
@@ -134,7 +160,11 @@ var TutorialLevel = Level.extend({
         },
         letsGo: {
             text: 'OK! Lets Go!!',
-            font: 'BIG'
+            font: 'BIG',
+            execute: function() {
+                this.objects.push(this.gate);
+                this.player.target = this.gate;
+            }
         }
     },
 

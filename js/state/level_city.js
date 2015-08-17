@@ -1,5 +1,5 @@
 (function() {
-    var playedCutScene = false;
+    var playedCutScene = localStorage.getItem('cutscene');
 
     var altar = Palette.loadImage('img/altar.png');
     var altar_context = altar.getContext('2d');
@@ -12,8 +12,6 @@
 
             this.pieces = JSON.parse(localStorage.getItem('altar'));
             if (this.pieces) {
-                playedCutScene = true;
-
                 var self = this;
                 altar.onload = function() {
                     self.onupdateimage();
@@ -117,7 +115,7 @@
 
             setTimeout(function() {
                 ivan_message.setText('');
-            }, 1000);
+            }, 3000);
 
             this.objects.push(this.ivan);
 
@@ -157,6 +155,7 @@
                 if (this.player.position.x > this.altar.position.x - 20) {
                     this.initCutScene();
                     playedCutScene = true;
+                    localStorage.setItem('cutscene', true);
                 }
             }
 

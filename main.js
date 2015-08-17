@@ -37,6 +37,7 @@ window.updateVolume(); // From state/options.js
 function newGame() {
     localStorage.removeItem('tutorial');
     localStorage.removeItem('altar');
+    localStorage.removeItem('cutscene');
 
     startGame();
 };
