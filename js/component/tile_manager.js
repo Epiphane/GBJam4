@@ -186,6 +186,8 @@
                 for (var i = x; i < x + w; i ++) {
                     if (!this.tiles[j][i]) this.tiles[j][i] = new Tile();
 
+                    this.removeObj(this.tiles[j][i]);
+                    
                     var sx = i % 4;
                     var sy = 16 + j % 4;
                     this.tiles[j][i].sx = sx;
@@ -207,6 +209,8 @@
 
                 for (var i = x; i < x + w; i ++) {
                     if (!this.tiles[j][i]) this.tiles[j][i] = new Tile();
+
+                    this.removeObj(this.tiles[j][i]);
 
                     var sx = i % 4;
                     var sy = 12 + j % 4;
@@ -233,6 +237,8 @@
                             this.tiles[j] = [];
                         }
 
+                        this.removeObj(this.tiles[j][i]);
+
                         var sx = i % 4;
                         var sy = 12 + j % 4;
                         this.tiles[j][i] = Tile.create(sx, sy);
@@ -243,6 +249,8 @@
                         if (!this.tiles[j]) {
                             this.tiles[j] = [];
                         }
+
+                        this.removeObj(this.tiles[j][i]);
 
                         this.tiles[j][i] = false;
                     }
@@ -309,7 +317,7 @@
             }
         },
 
-        buildChunk: function(chunk_x, chunk_y, solid) {
+        buildChunk: function(chunk_x, chunk_y, special) {
             if (!this.chunks[chunk_y]) {
                 this.chunks[chunk_y] = [];
             }
@@ -327,7 +335,12 @@
                 y: chunk_y
             };
 
-            this.generateChunk(chunk_x, chunk_y, solid);
+            if (special !== 'empty') {
+                chunk.context.fillStyle = Palette.getStyle('DARK');
+                chunk.context.fillRect(0, 0, this.chunk_width, this.chunk_height);
+            }
+
+            this.generateChunk(chunk_x, chunk_y, special);
 
             if (chunk_y * this.chunk_height > this.height) {
                 this.height = chunk_y * this.chunk_height;
@@ -379,6 +392,18 @@
             }
         },
 
+        removeObj: function(tile) {
+            if (!tile) return;
+
+            var obj = tile.obj;
+            if (obj !== false) {
+                this.objects[obj].count --;
+                if (this.objects[obj].count === 0) {
+                    console.log('Removed object ' + obj + ': ' + this.objects[obj].type);
+                }
+            }
+        },  
+
         removeCell: function(x, y) {
             x = Math.floor(x / TILE_SIZE);
             y = Math.floor(y / TILE_SIZE);
@@ -394,8 +419,6 @@
                 }
             }
 
-
-
             var chunk = this.getChunk(x * TILE_SIZE, y * TILE_SIZE);
             chunk.context.clearRect(x * TILE_SIZE - chunk.x * this.chunk_width, y * TILE_SIZE - chunk.y * this.chunk_height, TILE_SIZE, TILE_SIZE);
             
@@ -406,13 +429,7 @@
             if (this.tiles[y][x] === false) {
                 return 0;
             }
-            var obj = this.tiles[y][x].obj;
-            if (obj !== false) {
-                this.objects[obj].count --;
-                if (this.objects[obj].count === 0) {
-                    console.log('Removed object ' + obj + ': ' + this.objects[obj].type);
-                }
-            }
+            this.removeObj(this.tiles[y][x]);
             this.tiles[y][x] = false;
 
             var self = this;

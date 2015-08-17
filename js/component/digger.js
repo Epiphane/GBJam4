@@ -1,6 +1,8 @@
 Juicy.Component.create('Digger', {
     constructor: function() {
         this.speed = 100;
+
+        this.controlPause = 0;
     },
     left: function() {
         this._left = true;
@@ -32,19 +34,28 @@ Juicy.Component.create('Digger', {
         if (!physics)
             return;
 
-        physics.dx *= 0.4;
+        if (this.controlPause) {
+            this.controlPause -= dt;
 
-        if (this._left) {
-            physics.dx = -this.speed;
+            if (this.controlPause < 0) {
+                this.controlPause = 0;
+            }
         }
-        if (this._right) {
-            physics.dx = this.speed;
-        }
-        if (this._down) {
-            physics.weight_modifier = 4;
-        }
-        if (this._up) {
-            physics.weight_modifier = 0.75;
+        else {
+            physics.dx *= 0.4;
+
+            if (this._left) {
+                physics.dx = -this.speed;
+            }
+            if (this._right) {
+                physics.dx = this.speed;
+            }
+            if (this._down) {
+                physics.weight_modifier = 4;
+            }
+            if (this._up) {
+                physics.weight_modifier = 0.75;
+            }
         }
 
         // Dig first

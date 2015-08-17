@@ -33,7 +33,7 @@ sfx.load('textBeep', 'audio/text-beep');
 
 window.updateVolume(); // From state/options.js
 document.addEventListener('DOMContentLoaded', function() {
-    Palette.set(11);
+    Palette.set(3);
 
     var tutorial = localStorage.getItem('tutorial');
 

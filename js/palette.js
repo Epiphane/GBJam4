@@ -58,6 +58,10 @@
 
         for (var i = 0; i < Palette.onchange.length; i ++) {
             Palette.onchange[i](palettes[palette_id]);
+
+            if (Palette.onchange.complete) {
+                Palette.onchange.splice(i--, 1);
+            }
         }
     };
 

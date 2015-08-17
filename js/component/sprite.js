@@ -24,7 +24,9 @@ Juicy.Component.create('Sprite', {
             self.sheet_width   = this.width / self.sprite_width;
             self.sheet_height  = this.height / self.sprite_height;
 
-            entity.state.updated = true;
+            if (entity) {
+                entity.state.updated = true;
+            }
 
             if (self.onload) {
                 self.onload(this);
@@ -47,7 +49,7 @@ Juicy.Component.create('Sprite', {
 
         this.sprite_width  = swidth;
         this.sprite_height = sheight;
-        if (!this.entity.width || !this.entity.height) {
+        if (this.entity && (!this.entity.width || !this.entity.height)) {
             this.entity.width  = swidth;
             this.entity.height = sheight;
         }
