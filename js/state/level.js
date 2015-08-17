@@ -2,13 +2,15 @@ var Level = Juicy.State.extend({
     constructor: function(options) {
         options = options || {};
 
+        options.countdown = options.countdown || 3;
+
         // Initialize variables
         var self = this;
         this.game_width = (options.width || 4) * 80; // tiles per chunk
         this.game_height = (options.height || 30) + 1;
         this.dramaticPauseTime = 0.0;
         this.shake = 0;
-        this.song = options.song || 'lvl1';
+        this.song = options.song || ('lvl' + (Juicy.rand(2) + 1));
 
         // State variables
         this.loaded = false;
@@ -20,16 +22,13 @@ var Level = Juicy.State.extend({
         this.tile_manager = new Juicy.Components.TileManager(this.game_width);
         this.tiles = new Juicy.Entity(this, [ this.tile_manager ]);
 
-        // Random palette!
-        Palette.set(/* random */);
-
         // Create UI
         this.ui_entity = new Juicy.Entity(this, ['UI']);
         this.ui = this.ui_entity.getComponent('UI');
 
         // Create Player
         this.player = new Juicy.Entity(this, ['ColoredSprite', 'Player', 'Digger', 'Physics', 'Animations']);
-        this.player.position = new Juicy.Point(16, -40);        
+        this.player.position = new Juicy.Point(16, 240);        
         this.player.getComponent('ColoredSprite').setSheet('img/sawman-all.png', 20, 20);
         this.player.getComponent('Player').updateAnim('IDLE');
 
@@ -53,6 +52,27 @@ var Level = Juicy.State.extend({
             this._countdown = false;
         }
 
+        this.roomTitle = this.ui.addText({
+            text: this.placeName(),
+            font: TEXT.FONTS.BIG,
+            position: Juicy.Point.create(this.game_width/6, 20),
+            center: true,
+            brightness: 2,
+            animate: 'DRAMATIC',
+            delayPerCharacter: 8,
+        });
+
+        this.subTitle = this.ui.addText({
+            text: this.subtitle(),
+            font: TEXT.FONTS.SMALL,
+            position: Juicy.Point.create(this.game_width/6-1, 32),
+            center: true,
+            brightness: 1,
+            animate: 'DRAMATIC',
+            delayPerCharacter: 4,
+            initialDelay: 80,
+        });
+
         // Camera info
         this.watching = this.player;
         this.camera = {
@@ -74,19 +94,29 @@ var Level = Juicy.State.extend({
         delete this.tiles;
     },
 
+    load: function(piece) {
+        for (var i = 0; i < this.tile_manager.width / this.tile_manager.chunk_width; i ++) {
+            if (this.loadedChunkRow === this.game_height + 1) {
+                this.tile_manager.buildChunk(i, this.loadedChunkRow, 'solid');
+            }
+            else if (this.loadedChunkRow < 2) {
+                this.tile_manager.buildChunk(i, this.loadedChunkRow, 'empty');
+            }
+            else {
+                this.tile_manager.buildChunk(i, this.loadedChunkRow);
+            }
+        }
+
+        return (++this.loadedChunkRow / (this.game_height + 2));
+    },
+
     init: function() {
         var self = this;
         if (!this.loaded) {
-            var chunk_row = 0;
+            this.loadedChunkRow = 0;
             this.game.setState(new LoadingState(this, {
                 // Pre-build chunks down to self.game_height!!
-                load: function(piece) {
-                    for (var i = 0; i < self.tile_manager.width / self.tile_manager.chunk_width; i ++) {
-                        self.tile_manager.buildChunk(i, chunk_row, chunk_row === self.game_height - 1);
-                    }
-
-                    return (++chunk_row / self.game_height);
-                }
+                load: this.load.bind(this)
             }));
         }
 
@@ -208,5 +238,13 @@ var Level = Juicy.State.extend({
 
         // Draw UI independent of Camera
         this.ui_entity.render(context);
-    }
+    },
+
+    placeName: function() {
+        return COOL_NAME();
+    },
+
+    subtitle: function() {
+       return "PIZZA PARTY"  
+    },
 });

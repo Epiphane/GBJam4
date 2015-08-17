@@ -1,5 +1,5 @@
 var sfx = new Juicy.SFX();
-sfx.load('goal', 'audio/fx_jump.mp3');
+sfx.load('goal', 'audio/fx_jump');
 
 Juicy.Component.create('Goal', {
     constructor: function() {

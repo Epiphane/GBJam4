@@ -25,7 +25,7 @@ var InfiniteLevel = Level.extend({
 
         // Create gate to next level
         this.gate = new Juicy.Entity(this, ['ColoredSprite']);
-        this.gate.position = new Juicy.Point((this.game_width - 52) / 2, -48);
+        this.gate.position = new Juicy.Point((this.game_width - 52) / 2, 288-48);
         this.objects.push(this.gate);
 
         var gateSprite = this.gate.getComponent('ColoredSprite');
@@ -36,6 +36,7 @@ var InfiniteLevel = Level.extend({
                 self.updateFunc = self.panToGate;
 
                 self.player.target = self.gate;
+                self.target.remove = true;
 
                 gateSprite.runAnimation(8, 10, 0.2, true);
                 gateSprite.oncompleteanimation = null;
@@ -51,7 +52,7 @@ var InfiniteLevel = Level.extend({
     },
 
     moveGoal: function() {
-        this.target.position = new Juicy.Point(Juicy.rand(this.tile_manager.width - 100), -Juicy.rand(10, 80));
+        this.target.position = new Juicy.Point(Juicy.rand(this.tile_manager.width - 100), 288-Juicy.rand(10, 80));
     },
 
     getTarget: function() {

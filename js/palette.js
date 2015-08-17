@@ -28,6 +28,10 @@
             template.src = src;
             template.onload = function() {
                 Palette.applyPalette(this, img);
+
+                if (img.onload) {
+                    img.onload();
+                }
             };
 
         return img;

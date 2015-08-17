@@ -39,16 +39,13 @@
 
             this.font = fonts[0];
             this.particles = new Juicy.Entity(myEntity.state, ['ParticleManager'])
-        },
 
-        setText: function(text) {
-            this.text = text;
-            
-            // Tracks where each character is in its animation cycle
-            this.characterAnim = Array(text.length);
-            for (var ndx = 0; ndx < text.length; ndx++) {
-                this.characterAnim[ndx] = 0;
-            }
+            this.center = false;
+            this.brightness = 0;
+            this.showBackground = false;
+            this.offset = Juicy.Point.create();
+            this.animate = TEXT.ANIMATIONS.NONE;
+            this.text = '';
         },
 
         set: function(info) {
@@ -57,17 +54,27 @@
             }
 
             this.center         = !!info.center;
-            this.brightness     = info.brightness || 0;
-            this.showBackground = info.showBackground || false;
-            this.offset         = info.offset || Juicy.Point.create();
-            this.animate        = info.animate || TEXT.ANIMATIONS.DRAMATIC;
-            
+            this.brightness     = info.brightness || this.brightness;
+            this.showBackground = info.showBackground || this.showBackground;
+            this.offset         = info.offset || this.offset;
+            this.animate        = info.animate || this.animate;
             this.delayPerCharacter = info.delayPerCharacter || 2;
+            this.animationTicks -= info.initialDelay || 0;
 
-            this.setFont(info.font || TEXT.FONTS.SMALL);
-            this.setText(info.text || '');
+            if (typeof(info.font) !== 'undefined') this.setFont(info.font);
+            this.setText(info.text || this.text);
 
             return this;
+        },
+
+        setText: function(text) {
+            this.text = text;
+            
+            // Tracks where each character is in its animation  cycle
+            this.characterAnim = Array(text.length);
+            for (var ndx = 0; ndx < text.length; ndx++) {
+                this.characterAnim[ndx] = 0;
+            }
         },
 
         setFont: function(font) {
@@ -115,15 +122,15 @@
 
             switch (this.animate) {
             // NONE
-            case TEXT.ANIMATIONS.NORMAL: 
+            case "NONE": 
                 this.normalRender(context, drawPosition);
                 break;
             // SLIDE
-            case TEXT.ANIMATIONS.SLIDE:
+            case "SLIDE":
                 // TODO
                 break;
             // DRAMATIC
-            case TEXT.ANIMATIONS.DRAMATIC:
+            case "DRAMATIC":
                 this.dramaticRender(context, drawPosition);
                 break;
             }
@@ -182,8 +189,8 @@
                     });
                 }
 
-                var shakeIt = (animFrame < 9);
-                var offset = Math.max(1, animFrame);
+                var shakeIt = (animFrame < 9 && animFrame > 5);
+                var offset = Math.max(1, 10 - animFrame*2);
 
                 if (animFrame > 0) {
                     if (shakeIt) {

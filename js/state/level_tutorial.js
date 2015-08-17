@@ -10,12 +10,12 @@ var TutorialLevel = Level.extend({
         Level.call(this, options);
 
         this.helper = new Juicy.Entity(this, ['ColoredSprite', 'Follower', 'TextRender']);
-        this.helper.getComponent('ColoredSprite').setSheet('img/helper.png', 10, 14);
+        this.helper.getComponent('ColoredSprite').setSheet('img/helper.png', 12, 16);
         this.helper.getComponent('ColoredSprite').runAnimation(0, 11, 0.16, true);
         this.helper.position = this.player.position.sub(Juicy.Point.temp(10, 8));
         this.helper.getComponent('Follower').follow(this.player, Juicy.Point.create(-10, -8), true);
         this.message = this.helper.getComponent('TextRender').set({
-            text: 'HI THERE',
+            text: 'HI THERE!',
             font: 'BIG',
             animate: TEXT.ANIMATIONS.NORMAL,
             position: Juicy.Point.create(10, 10),
@@ -58,9 +58,14 @@ var TutorialLevel = Level.extend({
         ];
     },
 
-    key_SPACE: function() {
+    goToCity: function() {
+        localStorage.setItem('tutorial', 'true');
         this.complete = true;
-        this.game.setState(new InfiniteLevel());
+        this.game.setState(new CityLevel());
+    },
+
+    key_SPACE: function() {
+        this.goToCity();
     },
 
     init: function() {
@@ -92,7 +97,7 @@ var TutorialLevel = Level.extend({
 
     sayNice: function(whatToDoNext) {
         var niceTime = 1.5;
-        this.message.text = 'NICE';
+        this.message.text = 'NICE!!';
         this.message.brightness = 3;
         this.message.setFont('BIG');
 
@@ -128,9 +133,9 @@ var TutorialLevel = Level.extend({
         this.updateFunc = this.updateHelperOnly;
 
         this.queueMessages([
-            'HI THERE',
-            'IM IVAN',
-            'WELCOME TO QUICKSILVER',
+            'HI THERE!',
+            'IM IVAN!',
+            'WELCOME TO QUICKSILVER!',
             'LETS SHOW YOU THE ROPES'
         ], function() {
             self.updateFunc = self.pressDown;
@@ -170,8 +175,7 @@ var TutorialLevel = Level.extend({
         this.message.brightness = 3;
 
         if (this.countdown <= 1) {
-            this.complete = true;
-            game.setState(new InfiniteLevel());
+            this.goToCity();
         }
     }
 });
