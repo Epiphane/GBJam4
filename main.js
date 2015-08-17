@@ -40,6 +40,6 @@ document.addEventListener('DOMContentLoaded', function() {
         Juicy.Game.setState(new TutorialLevel()).run();
     }
     else {
-        Juicy.Game.setState(new CityLevel()).run();
+        Juicy.Game.setState(new BossLevel()).run();
     }
 }, false);

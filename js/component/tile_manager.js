@@ -218,7 +218,7 @@
             }
         },
 
-        generateChunk: function(x, y, solid) {
+        generateChunk: function(x, y, special) {
             var chunk = this.chunks[y][x];
 
             x *= this.chunk_width  / TILE_SIZE;
@@ -228,7 +228,7 @@
                 for (var j = y; j < y + this.chunk_height / TILE_SIZE; j ++) {
 
                     // Just put solid blocks here?
-                    if (solid) {
+                    if (special === 'solid') {
                         if (!this.tiles[j]) {
                             this.tiles[j] = [];
                         }
@@ -238,6 +238,13 @@
                         this.tiles[j][i] = Tile.create(sx, sy);
                         this.tiles[j][i].persistent = true;
                         this.tiles[j][i].blocking = true;
+                    }
+                    else if (special === 'empty') {
+                        if (!this.tiles[j]) {
+                            this.tiles[j] = [];
+                        }
+
+                        this.tiles[j][i] = false;
                     }
                     // Figure out whether we need to continue a pattern
                     else if (!this.tiles[j] || typeof(this.tiles[j][i]) === 'undefined') {

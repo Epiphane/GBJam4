@@ -2,6 +2,8 @@ var Level = Juicy.State.extend({
     constructor: function(options) {
         options = options || {};
 
+        options.countdown = options.countdown || 3;
+
         // Initialize variables
         var self = this;
         this.game_width = (options.width || 4) * 80; // tiles per chunk
@@ -26,7 +28,7 @@ var Level = Juicy.State.extend({
 
         // Create Player
         this.player = new Juicy.Entity(this, ['ColoredSprite', 'Player', 'Digger', 'Physics', 'Animations']);
-        this.player.position = new Juicy.Point(16, -40);        
+        this.player.position = new Juicy.Point(16, 240);        
         this.player.getComponent('ColoredSprite').setSheet('img/sawman-all.png', 20, 20);
         this.player.getComponent('Player').updateAnim('IDLE');
 
@@ -73,10 +75,18 @@ var Level = Juicy.State.extend({
 
     load: function(piece) {
         for (var i = 0; i < this.tile_manager.width / this.tile_manager.chunk_width; i ++) {
-            this.tile_manager.buildChunk(i, this.loadedChunkRow, this.loadedChunkRow === this.game_height - 1);
+            if (this.loadedChunkRow === this.game_height + 1) {
+                this.tile_manager.buildChunk(i, this.loadedChunkRow, 'solid');
+            }
+            else if (this.loadedChunkRow < 2) {
+                this.tile_manager.buildChunk(i, this.loadedChunkRow, 'empty');
+            }
+            else {
+                this.tile_manager.buildChunk(i, this.loadedChunkRow);
+            }
         }
 
-        return (++this.loadedChunkRow / this.game_height);
+        return (++this.loadedChunkRow / (this.game_height + 2));
     },
 
     init: function() {
