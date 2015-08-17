@@ -49,7 +49,12 @@
             this.save();
         },
         addPiece: function(i, j) {
-            this.pieces[i][j] = true;
+            if (i > 11 || j > 10) {
+                // ALTAR IS REBUIL (?)
+            }
+            else {
+                this.pieces[i][j] = true;
+            }
 
             Palette.set(Palette.current);
         },
@@ -286,4 +291,20 @@
             }
         },
     });
+    window.addAltarPiece = function() {
+        var broken = false;
+        for (var i = 0; i < 11; i ++) {    
+            for (var j = 0; j < 10; j ++) {
+                if (!altarComponent.pieces[i][j]) {
+                    broken = true;
+                    break;
+                }
+            }
+            if (broken) {
+                break;
+            }
+        }
+
+        altarComponent.addPiece(i,j);
+    };
 })();
