@@ -9,18 +9,19 @@ var TutorialLevel = Level.extend({
 
         Level.call(this, options);
 
-        this.helper = new Juicy.Entity(this, ['ColoredSprite', 'Follower', 'TextRender']);
-        this.helper.getComponent('ColoredSprite').setSheet('img/helper.png', 12, 16);
-        this.helper.getComponent('ColoredSprite').runAnimation(0, 11, 0.16, true);
-        this.helper.position = this.player.position.sub(Juicy.Point.temp(10, 8));
-        this.helper.getComponent('Follower').follow(this.player, Juicy.Point.create(-10, -8), true);
-        this.message = this.helper.getComponent('TextRender').set({
-            text: 'HI THERE!',
-            font: 'BIG',
-            animate: TEXT.ANIMATIONS.NORMAL,
+        this.ivan = new Juicy.Entity(this, ['ColoredSprite', 'Follower', 'TextRender']);
+        this.ivan.getComponent('ColoredSprite').setSheet('img/helper.png', 12, 16);
+        this.ivan.getComponent('ColoredSprite').runAnimation(0, 11, 0.16, true);
+        this.ivan.position = this.player.position.sub(Juicy.Point.temp(10, 8));
+        this.ivan.getComponent('Follower').follow(this.player, Juicy.Point.create(-10, -8), true);
+        var ivan_message = this.ivan_message = this.ivan.getComponent('TextRender').set({
+            text: 'Welcome to town!',
+            font: 'SMALL',
+            animate: 'NONE',
             position: Juicy.Point.create(10, 10),
             showBackground: true,
             brightness: 3,
+            offset: Juicy.Point.create(14, -4)
         });
 
         this.ui.addText({
@@ -31,21 +32,13 @@ var TutorialLevel = Level.extend({
             position: Juicy.Point.create(1)
         });
 
-        this.objects.push(this.helper);
+        this.objects.push(this.ivan);
 
         this._blink = 2;
         this.countdown = 5;
 
-        this.initIntro();
-
-        var pyramid = new Juicy.Entity(this, ['ColoredSprite']);
-        pyramid.getComponent('ColoredSprite').setSheet('img/altar.png', 40, 80);
-        pyramid.getComponent('ColoredSprite').runAnimation(0, 3, 0.32, true);
-        pyramid.position.x = 40;
-        pyramid.position.y = -80;
-        pyramid.scale = Juicy.Point.create(2, 2);
-    
-        // this.objects.push(pyramid);
+        this.say('hello');
+        this.updateFunc = function() { return null; };
 
         var self = this;
         this.pauseMenuItems = [
@@ -56,6 +49,10 @@ var TutorialLevel = Level.extend({
                 }
             }
         ];
+
+        this.piece = new Juicy.Entity(this, ['ColoredSprite']);
+        this.piece.position = Juicy.Point.create(200, 288-40);
+        this.piece.getComponent('ColoredSprite').setSheet('img/spinningpiece2.png', 20, 20);
     },
 
     goToCity: function() {
@@ -84,62 +81,82 @@ var TutorialLevel = Level.extend({
         }
     },
 
+    speech: {
+        hello: {
+            text: 'HI THERE!',
+            font: 'BIG',
+            next: 'down'
+        },
+        down: {
+            text: '\2',
+            font: 'SPECIAL',
+            nextKey: 'ivan'
+        },
+        ivan: {
+            text: 'IM IVAN!',
+            font: 'BIG',
+            nextKey: 'welcome',
+            brightness: 3
+        },
+        welcome: {
+            text: 'WELCOME TO QUICKSILVER!',
+            font: 'SMALL',
+            nextKey: 'ropes'
+        },
+        ropes: {
+            text: 'LETS SHOW YOU THE ROPES',
+            font: 'SMALL',
+            nextKey: function() {
+                this.updateFunc = this.pressDown;
+            }
+        },
+        nice: {
+            text: 'NICE!',
+            font: 'BIG',
+            brightness: 3
+        },
+        hmm: {
+            text: 'Hmmmm',
+            font: 'SMALL',
+            brightness: 3,
+            next: 'letsGetOut'
+        },
+        letsGetOut: {
+            text: 'Lets get outta here',
+            next: 'weNeedDoor'
+        },
+        weNeedDoor: {
+            text: 'Grab that part!',
+            execute: function() {
+                this.objects.push(this.piece);
+                this.player.target = this.piece;
+            }
+        },
+        letsGo: {
+            text: 'OK! Lets Go!!',
+            font: 'BIG'
+        }
+    },
+
+    getTarget: function() {
+        this.speech.nice.next = 'letsGo';
+        this.piece.remove = true;
+        sfx.play('goal');
+
+        this.player.target = this.gate;
+
+        this.say('nice');
+    },
+
     update: function(dt, game) {
         this._blink -= dt;
         if (this._blink <= 0) this._blink = 1.9;
 
-        if (this.message.font.name === 'SPECIAL') {
-            this.message.brightness = Math.floor(this._blink);
+        if (this.ivan_message.font.name === 'SPECIAL') {
+            this.ivan_message.brightness = Math.floor(this._blink);
         }
 
         Level.prototype.update.apply(this, arguments);
-    },
-
-    sayNice: function(whatToDoNext) {
-        var niceTime = 1.5;
-        this.message.text = 'NICE!!';
-        this.message.brightness = 3;
-        this.message.setFont('BIG');
-
-        this.updateFunc = function(dt) {
-                niceTime -= dt;
-                if (niceTime < 0) {
-                    this.updateFunc = whatToDoNext;
-                }
-            };
-    },
-
-    queueMessage: function(text, next) {
-        var self = this;
-        return function() {
-            self.message.text = text;
-            self.message.animationTicks = -10;
-
-            self.nextMessage = next;
-        };
-    },
-
-    queueMessages: function(messages, oncomplete) {
-        var next = oncomplete;
-        for (var i = messages.length - 1; i >= 0; i --) {
-            next = this.queueMessage(messages[i], next);
-        }
-
-        return next;
-    },
-
-    initIntro: function() {
-        var self = this;
-        this.updateFunc = this.updateHelperOnly;
-
-        this.queueMessages([
-            'HI THERE!',
-            'IM IVAN!',
-            'WELCOME TO QUICKSILVER!',
-            'LETS SHOW YOU THE ROPES'
-        ], function() {
-            self.updateFunc = self.pressDown;
-        })();
     },
 
     updateHelperOnly: function(dt, game) {
@@ -147,11 +164,17 @@ var TutorialLevel = Level.extend({
     },
 
     pressDown: function(dt, game) {
-        this.message.text = '\2';
-        this.message.setFont('SPECIAL');
+        this.ivan_message.set({
+            text: '\2',
+            font: 'SPECIAL'
+        });
 
         if (game.keyDown('DOWN')) {
-            this.sayNice(this.pressRightUp);
+            this.updateFunc = false;
+            this.speech.nice.next = function() {
+                this.updateFunc = this.pressRightUp;
+            }
+            this.say('nice');
 
             return true;
         }
@@ -160,19 +183,25 @@ var TutorialLevel = Level.extend({
     },
 
     pressRightUp: function(dt, game) {
-        this.message.text = '\1\0';
-        this.message.setFont('SPECIAL');
+        this.ivan_message.set({
+            text: '\1\0',
+            font: 'SPECIAL'
+        });
 
         if (this.player.getComponent('Physics').dy < -20) {
-            this.sayNice(this.countdownToGame);
+            this.updateFunc = false;
+            this.speech.nice.next = 'hmm';
+            this.say('nice');
         }
     },
 
     countdownToGame: function(dt, game) {
         this.countdown -= dt;
-        this.message.setFont('BIG');
-        this.message.text = Math.floor(this.countdown) + '';
-        this.message.brightness = 3;
+        this.ivan_message.set({
+            font: 'BIG',
+            text: Math.floor(this.countdown) + '',
+            brightness: 3
+        });
 
         if (this.countdown <= 1) {
             this.goToCity();

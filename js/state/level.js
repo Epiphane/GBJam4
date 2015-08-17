@@ -19,6 +19,7 @@ var Level = Juicy.State.extend({
         this.gateOpen = false;
         this.updateFunc = null;
         this.objects = [];
+        this.speechTime = options.speechTime || 2;
 
         // Create Tile Manager
         this.tile_manager = new Juicy.Components.TileManager(this.game_width);
@@ -57,29 +58,6 @@ var Level = Juicy.State.extend({
         else {
             this._countdown = false;
         }
-
-
-        this.subTitle = this.ui.addText({
-            text: this.subtitle(),
-            font: TEXT.FONTS.SMALL,
-            position: Juicy.Point.create(this.game_width/6, 32),
-            center: true,
-            brightness: 1,
-            animate: 'SLIDE',
-            delayPerCharacter: 0,
-            initialDelay: 80,
-        });
-
-        this.roomTitle = this.ui.addText({
-            text: this.placeName(),
-            font: TEXT.FONTS.BIG,
-            position: Juicy.Point.create(this.game_width/6, 20),
-            center: true,
-            brightness: 2,
-            animate: 'DRAMATIC',
-            delayPerCharacter: 8,
-        });
-
 
         // Camera info
         this.watching = this.player;
@@ -131,13 +109,68 @@ var Level = Juicy.State.extend({
         music.play(this.song);
     },
 
+    say: function(dialog) {
+        dialog = this.speech[dialog];
+        if (!dialog) {
+            this.updateFunc = null;
+            return;
+        }
+
+        this.ivan_message.set(dialog);
+
+        if (dialog.execute) {
+            dialog.execute.call(this);
+        }
+
+
+        if (dialog.next) {
+            var next = dialog.next;
+            if (next && typeof(next) === 'string') {
+                var nextDialog = next;
+                var self = this;
+                next = function() {
+                    self.say(nextDialog);
+                };
+            }
+
+            this.wait(this.speechTime, next);
+        }
+        else if (dialog.nextKey) {
+            var next = dialog.nextKey;
+            if (next && typeof(next) === 'string') {
+                var nextDialog = next;
+                var self = this;
+                next = function() {
+                    self.say(nextDialog);
+                };
+            }
+
+            this.updateFunc = function() { return false; };
+            this.key_DOWN = function() {
+                this.key_DOWN = false;
+
+                next.call(this);
+            };
+        }
+    },
+
+    wait: function(time, callback) {
+        var self = this;
+        setTimeout(function() {
+            callback.call(self);
+        }, time * 1000);
+    },
+
     key_ESC: function() {
         this.game.setState(new PauseState(this));
     },
 
     key_SPACE: function() {
+        this.initPlaceName();
+    },
+
+    initPlaceName: function() {
         this.ui.clearText();
-        
 
         this.subTitle = this.ui.addText({
             text: this.subtitle(),

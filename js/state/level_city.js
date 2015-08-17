@@ -137,39 +137,6 @@
             }
         },
 
-        say: function(dialog) {
-            dialog = this.speech[dialog];
-            if (!dialog) {
-                this.updateFunc = null;
-                return;
-            }
-
-            this.ivan_message.set(dialog);
-
-            if (dialog.execute) {
-                dialog.execute.call(this);
-            }
-
-            var next = dialog.next;
-            if (next && typeof(next) === 'string') {
-                var nextDialog = next;
-                var self = this;
-                next = function() {
-                    self.say(nextDialog);
-                };
-            }
-
-            if (next) {
-                this.wait(2, next);
-            }
-        },
-
-        wait: function(time, callback) {
-            setTimeout(function() {
-                callback.call(this);
-            }, 2000);
-        },
-
         getTarget: function() {}, // Ignore
 
         endLevel: function(dt, game) {

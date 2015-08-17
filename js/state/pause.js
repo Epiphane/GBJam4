@@ -33,17 +33,17 @@ var PauseState = Juicy.State.extend({
                 }
             },
             {
+                text: 'New Game',
+                oncomplete: function() {
+                    this.prevState.cleanup();
+                    newGame();
+                }
+            },
+            {
                 text: 'Back to town',
                 oncomplete: function() {
                     this.prevState.cleanup();
                     this.game.setState(new CityLevel());
-                }
-            },
-            {
-                text: 'Tutorial',
-                oncomplete: function() {
-                    this.prevState.cleanup();
-                    this.game.setState(new TutorialLevel());
                 }
             },
             {

@@ -41,6 +41,8 @@ var InfiniteLevel = Level.extend({
                 gateSprite.runAnimation(8, 10, 0.2, true);
                 gateSprite.oncompleteanimation = null;
             };
+
+        this.initPlaceName();
     },
 
     completeLevel: function() {
