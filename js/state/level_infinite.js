@@ -36,6 +36,7 @@ var InfiniteLevel = Level.extend({
                 self.updateFunc = self.panToGate;
 
                 self.player.target = self.gate;
+                self.target.remove = true;
 
                 gateSprite.runAnimation(8, 10, 0.2, true);
                 gateSprite.oncompleteanimation = null;
