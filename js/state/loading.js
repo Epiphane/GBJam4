@@ -8,9 +8,12 @@ var LoadingState = Juicy.State.extend({
 
         this.loading = new Juicy.Entity(this, ['ColoredSprite']);
         this.loading.getComponent('ColoredSprite').setSheet('img/loading.png', 46, 12);
-        this.loading.scale = Juicy.Point.create(2);
+        this.loading.scale = Juicy.Point.create(2, 2);
         this.loading.position = Juicy.Point.create(30, 20);
+
+        console.log(this.loading.scale);
     },
+
     resolve: function(progress) {
         if (progress === 1) {
             this.nextState.loaded = true;
@@ -19,6 +22,7 @@ var LoadingState = Juicy.State.extend({
 
         this.progress = progress;
     },
+
     update: function(dt) {
         var self = this;
         var promise = self.load(this.calls);
@@ -32,6 +36,7 @@ var LoadingState = Juicy.State.extend({
             };
         }
     },
+
     render: function(context) {
         context.strokeStyle = 'rgba(' + Palette.get('LIGHT').join(',') + ')';
         context.rect(10, this.game.height / 2 - 10, this.game.width - 20, 20);
