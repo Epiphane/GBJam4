@@ -59,9 +59,14 @@ var TutorialLevel = Level.extend({
         ];
     },
 
-    key_SPACE: function() {
+    goToCity: function() {
+        localStorage.setItem('tutorial', 'true');
         this.complete = true;
         this.game.setState(new CityLevel());
+    },
+
+    key_SPACE: function() {
+        this.goToCity();
     },
 
     init: function() {
@@ -171,8 +176,7 @@ var TutorialLevel = Level.extend({
         this.message.brightness = 3;
 
         if (this.countdown <= 1) {
-            this.complete = true;
-            game.setState(new CityLevel());
+            this.goToCity();
         }
     }
 });

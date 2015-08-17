@@ -34,5 +34,12 @@ window.updateVolume(); // From state/options.js
 document.addEventListener('DOMContentLoaded', function() {
     Palette.set(11);
 
-    Juicy.Game.setState(new TutorialLevel()).run();
+    var tutorial = localStorage.getItem('tutorial');
+
+    if (!tutorial) {
+        Juicy.Game.setState(new TutorialLevel()).run();
+    }
+    else {
+        Juicy.Game.setState(new CityLevel()).run();
+    }
 }, false);
