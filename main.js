@@ -24,6 +24,7 @@ music.load('lvl1', 'audio/music_cave_in');
 music.load('lvl2', 'audio/music_particles');
 music.load('quake', 'audio/music_quake');
 music.load('city', 'audio/music_industrial');
+music.load('title', 'audio/music_quicksilver');
 
 var sfx = new Juicy.SFX();
 sfx.load('goal', 'audio/fx_jump');

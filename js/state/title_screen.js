@@ -16,6 +16,8 @@ var TitleScreen = Juicy.State.extend({
             animate: 'DRAMATIC',
             delayPerCharacter: 8,
         });
+
+        music.play('title');
     },
 
     render: function(context) {
@@ -29,6 +31,7 @@ var TitleScreen = Juicy.State.extend({
     },
 
     key_SPACE: function() {
+        music.stop('title');
         this.game.setState(new CityLevel());        
     },
 })

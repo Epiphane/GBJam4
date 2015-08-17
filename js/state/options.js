@@ -1,7 +1,7 @@
 (function() {
     var volume = JSON.parse(localStorage.getItem('volume')) || {
-        music: 3,
-        sfx: 4
+        music: 4,
+        sfx: 3
     };
 
     window.updateVolume = function() {
