@@ -25,7 +25,7 @@ var TutorialLevel = Level.extend({
 
         this.ui.addText({
             text: 'PRESS SPACE TO SKIP',
-            animate: TEXT.ANIMATIONS.NORMAL,
+            animate: 'SLIDE',
             showBackground: true,
             brightness: 2,
             position: Juicy.Point.create(1)
