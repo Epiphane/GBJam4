@@ -151,11 +151,12 @@ var Level = Juicy.State.extend({
             }
 
             this.updateFunc = function() { return false; };
-            this.key_DOWN = function() {
-                this.key_DOWN = false;
+            var self = this;
+            this.game.on('key', dialog.keys || ['SPACE'], function() {
+                self.key_DOWN = false;
 
-                next.call(this);
-            };
+                next.call(self);
+            });
         }
     },
 

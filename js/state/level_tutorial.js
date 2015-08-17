@@ -25,7 +25,7 @@ var TutorialLevel = Level.extend({
         });
 
         this.ui.addText({
-            text: 'PRESS SPACE TO SKIP',
+            text: 'PRESS ESCAPE TO SKIP',
             animate: 'SLIDE',
             showBackground: true,
             brightness: 2,
@@ -37,15 +37,14 @@ var TutorialLevel = Level.extend({
         this._blink = 2;
         this.countdown = 5;
 
-        this.say('hello');
-        this.updateFunc = function() { return null; };
-
         var self = this;
         this.pauseMenuItems = [
             {
                 text: 'Skip Tutorial',
                 oncomplete: function() {
-                    self.key_SPACE();
+                    self.endLevel();
+
+                    self.cleanup();
                 }
             }
         ];
@@ -85,25 +84,16 @@ var TutorialLevel = Level.extend({
         this.game.setState(new CityLevel());
     },
 
-    key_SPACE: function() {
-        this.goToCity();
-    },
-
     init: function() {
         Level.prototype.init.apply(this, arguments);
 
         if (this.loaded) {
             var self = this;
-            this.game.on('key', ['UP', 'DOWN', 'LEFT', 'RIGHT'], function() {
-                if (self.nextMessage) {
-                    var next = self.nextMessage;
-                    self.nextMessage = false;
-
-                    next();
-                }
-            });
 
             this.tile_manager.persistTiles(40, 288, this.game_width * this.tile_manager.chunk_width, 8);
+
+            this.say('hello');
+            this.updateFunc = function() { return null; };
         }
     },
 
@@ -111,11 +101,6 @@ var TutorialLevel = Level.extend({
         hello: {
             text: 'HI THERE!',
             font: 'BIG',
-            next: 'down'
-        },
-        down: {
-            text: '\2',
-            font: 'SPECIAL',
             nextKey: 'ivan'
         },
         ivan: {

@@ -1,9 +1,13 @@
 (function() {
-    var playedCutScene = localStorage.getItem('cutscene');
+    var playedCutScene = false;
 
-    var altar = Palette.loadImage('img/altar.png');
-    var altar_context = altar.getContext('2d');
-    var altarComponent = new (Juicy.Component.extend({
+    window.resetAltar = function() {
+        localStorage.removeItem('altar');
+
+        var altarComponent = new AltarComponent();
+    }
+
+    var AltarComponent = Juicy.Component.extend({
         constructor: function() {
             var self = this;
             Palette.onchange.push(function() {
@@ -12,6 +16,7 @@
 
             this.pieces = JSON.parse(localStorage.getItem('altar'));
             if (this.pieces) {
+                playedCutScene = true;
                 var self = this;
                 altar.onload = function() {
                     self.onupdateimage();
@@ -62,7 +67,11 @@
         render: function(context) {
             context.drawImage(altar, 120, 0, 40, 40, 0, 0, 40, 40);
         }
-    }))();
+    });
+
+    var altar = Palette.loadImage('img/altar.png');
+    var altar_context = altar.getContext('2d');
+    var altarComponent = new AltarComponent();
 
     window.CityLevel = Level.extend({
         constructor: function(options) {
