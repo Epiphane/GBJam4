@@ -1,4 +1,6 @@
 (function() {
+    var playedCutScene = false;
+
     var altar = Palette.loadImage('img/altar.png');
     var altar_context = altar.getContext('2d');
     var altarComponent = new (Juicy.Component.extend({
@@ -8,13 +10,24 @@
                 self.onupdateimage();
             });
 
-            this.pieces = [];
-            for (var i = 0; i < 11; i ++) {
-                var row = [];    
-                for (var j = 0; j < 10; j ++) {
-                    row.push(true);
+            this.pieces = JSON.parse(localStorage.getItem('altar'));
+            if (this.pieces) {
+                playedCutScene = true;
+
+                var self = this;
+                altar.onload = function() {
+                    self.onupdateimage();
                 }
-                this.pieces.push(row);
+            }
+            else {
+                this.pieces = [];
+                for (var i = 0; i < 11; i ++) {
+                    var row = [];    
+                    for (var j = 0; j < 10; j ++) {
+                        row.push(true);
+                    }
+                    this.pieces.push(row);
+                }
             }
         },
         onupdateimage: function() {
@@ -25,23 +38,28 @@
                     }
                 }
             }
+
+            this.save();
         },
         removePiece: function(i, j) {
             this.pieces[i][j] = false;
 
             altar_context.clearRect(129 + i * 2, j * 4, 2, 4);
+
+            this.save();
         },
         addPiece: function(i, j) {
             this.pieces[i][j] = true;
 
             Palette.set(Palette.current);
         },
+        save: function() {
+            localStorage.setItem('altar', JSON.stringify(this.pieces));
+        },
         render: function(context) {
             context.drawImage(altar, 120, 0, 40, 40, 0, 0, 40, 40);
         }
     }))();
-
-    var playedCutScene = false;
 
     window.CityLevel = Level.extend({
         constructor: function(options) {
@@ -256,6 +274,8 @@
                 execute: function() {
                     this.ivan.getComponent('Follower').follow(this.player, Juicy.Point.create(-10, -8), true);
                     this.player.target = this.gate;
+
+                    localStorage.setItem('cutscene', 'true');
 
                     var self = this;
                     this.gate.getComponent('Gate').onplayertouch = function() {
