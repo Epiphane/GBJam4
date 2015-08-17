@@ -77,10 +77,15 @@ var Level = Juicy.State.extend({
     cleanup: function() {
         this.tile_manager.cleanup();
         music.stop(this.song);
-        delete this.tiles;
+        this.tiles = null;
     },
 
     load: function(piece) {
+        var cleanupProgress = this.tile_manager.cleanupLastManager();
+        if (cleanupProgress < 1) {
+            return cleanupProgress;
+        }
+
         for (var i = 0; i < this.tile_manager.width / this.tile_manager.chunk_width; i ++) {
             if (this.loadedChunkRow === this.game_height + 1) {
                 this.tile_manager.buildChunk(i, this.loadedChunkRow, 'solid');

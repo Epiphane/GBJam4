@@ -76,75 +76,94 @@
             options.song = options.song || 'city';
 
             Level.call(this, options);
-
-            // Create tha birds
-            this.birds = new Juicy.Entity(this, ['BirdManager']);
-            this.objects.push(this.birds);
-
-            this.altar = new Juicy.Entity(this, [altarComponent]);
-            this.altar.position.x = 400;
-            this.altar.position.y = 288-80;
-            this.altar.scale = Juicy.Point.create(2, 2);
-            this.objects.push(this.altar);
-
-            this.gate = new Juicy.Entity(this, ['Gate', 'ColoredSprite']);
-            this.gate.position = new Juicy.Point(640, 288-48);
-            this.objects.push(this.gate);
-
-            if (playedCutScene) {
-                this.gate.getComponent('Gate').onplayertouch = function() {
-                    self.shake = 2;
-                    self.updateFunc = self.endLevel;
-                };
-            }
-
-            this.ivan = new Juicy.Entity(this, ['ColoredSprite', 'Follower', 'TextRender']);
-            this.ivan.getComponent('ColoredSprite').setSheet('img/helper.png', 12, 16);
-            this.ivan.getComponent('ColoredSprite').runAnimation(0, 11, 0.16, true);
-            this.ivan.position = this.player.position.sub(Juicy.Point.temp(10, 8));
-            this.ivan.getComponent('Follower').follow(this.player, Juicy.Point.create(-10, -8), true);
-            var ivan_message = this.ivan_message = this.ivan.getComponent('TextRender').set({
-                text: 'Welcome to town!',
-                font: 'SMALL',
-                animate: 'NONE',
-                position: Juicy.Point.create(10, 10),
-                showBackground: true,
-                brightness: 3,
-                offset: Juicy.Point.create(14, -4)
-            });
-
-            setTimeout(function() {
-                ivan_message.setText('');
-            }, 3000);
-
-            this.objects.push(this.ivan);
-
-            var gateSprite = this.gate.getComponent('ColoredSprite');
-            gateSprite.setSheet('img/gate.png', 52, 48);
-            gateSprite.runAnimation(8, 10, 0.2, true);
         
             this.levelLoaded = 0;
+            this.loaded = 0;
         },
 
         load: function(part) {
             if (this.levelLoaded < 1) {
                 this.levelLoaded = Level.prototype.load.apply(this, arguments);
-            
-                return this.levelLoaded;
+                
+                if (this.levelLoaded === 1) {
+                    return 0.9;
+                }
+                else {
+                    return this.levelLoaded;
+                }
             }
             else {
+                if (this.loaded === 0) {
+                    // Create tha birds
+                    this.birds = new Juicy.Entity(this, ['BirdManager']);
+                    this.objects.push(this.birds);
+                }
+                else if (this.loaded === 1) {
+                    // Create tha altar
+                    this.altar = new Juicy.Entity(this, [altarComponent]);
+                    this.altar.position.x = 400;
+                    this.altar.position.y = 288-80;
+                    this.altar.scale = Juicy.Point.create(2, 2);
+                    this.objects.push(this.altar);
+                }
+                else if (this.loaded === 2) {
+                    // Create tha gate
+                    this.gate = new Juicy.Entity(this, ['Gate', 'ColoredSprite']);
+                    this.gate.position = new Juicy.Point(640, 288-48);
+                    this.objects.push(this.gate);
 
+                    if (playedCutScene) {
+                        this.gate.getComponent('Gate').onplayertouch = function() {
+                            self.shake = 2;
+                            self.updateFunc = self.endLevel;
+                        };
+                    }
+                }
+                else if (this.loaded === 3) {
+                    this.ivan = new Juicy.Entity(this, ['ColoredSprite', 'Follower', 'TextRender']);
+                    this.ivan.getComponent('ColoredSprite').setSheet('img/helper.png', 12, 16);
+                    this.ivan.getComponent('ColoredSprite').runAnimation(0, 11, 0.16, true);
+                    this.ivan.position = this.player.position.sub(Juicy.Point.temp(10, 8));
+                    this.ivan.getComponent('Follower').follow(this.player, Juicy.Point.create(-10, -8), true);
+                    
+                    this.objects.push(this.ivan);
+                }
+                else if (this.loaded === 4) {
+                    this.ivan_message = this.ivan.getComponent('TextRender').set({
+                        text: 'Welcome to town!',
+                        font: 'SMALL',
+                        animate: 'NONE',
+                        position: Juicy.Point.create(10, 10),
+                        showBackground: true,
+                        brightness: 3,
+                        offset: Juicy.Point.create(14, -4)
+                    });
+                }
+                else if (this.loaded === 5) {
+                    this.tile_manager.persistTiles(0, 288, this.game_width * this.tile_manager.TILE_SIZE, 32);
+                    this.tile_manager.blockTiles  (0, 288, 56, 16);
+                    this.tile_manager.blockTiles  (104, 288, 312, 16);
+                    this.tile_manager.blockTiles  (464, 288, 496, 16);
+                }
+                else if (this.loaded === 6) {
+                    var gateSprite = this.gate.getComponent('ColoredSprite');
+                    gateSprite.setSheet('img/gate.png', 52, 48);
+                    gateSprite.runAnimation(8, 10, 0.2, true);
+                }
+
+                var objectsToLoad = 7;
+                return (++this.loaded) / objectsToLoad;
             }
         },
 
         init: function() {
             Level.prototype.init.apply(this, arguments);
 
-            if (this.loaded) {
-                this.tile_manager.persistTiles(0, 288, this.game_width * this.tile_manager.TILE_SIZE, 32);
-                this.tile_manager.blockTiles  (0, 288, 56, 16);
-                this.tile_manager.blockTiles  (104, 288, 312, 16);
-                this.tile_manager.blockTiles  (464, 288, 496, 16);
+            if (this.loaded) {       
+                var self = this;         
+                setTimeout(function() {
+                    self.ivan_message.setText('');
+                }, 3000);
             }
         },
 

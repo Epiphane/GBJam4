@@ -42,7 +42,7 @@ var LoadingState = Juicy.State.extend({
         context.stroke();
 
         context.fillStyle = 'rgba(' + Palette.get('LIGHT').join(',') + ')';
-        context.fillRect(12, this.game.height / 2 - 8, (this.game.width - 24) * this.progress, 16);
+        context.fillRect(12, this.game.height / 2 - 8, Math.round((this.game.width - 24) * this.progress), 16);
     
         this.loading.render(context);
     }
