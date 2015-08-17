@@ -513,7 +513,6 @@
         },
 
         render: function(context, x, y, w, h) {
-            return;
             var chunk_x = Math.floor(x / this.chunk_width);
             var chunk_y = Math.floor(y / this.chunk_height);
 

@@ -73,7 +73,7 @@ var Level = Juicy.State.extend({
 
     load: function(piece) {
         for (var i = 0; i < this.tile_manager.width / this.tile_manager.chunk_width; i ++) {
-            this.tile_manager.buildChunk(i, this.loadedChunkRow, this.loadedChunkRow === self.game_height - 1);
+            this.tile_manager.buildChunk(i, this.loadedChunkRow, this.loadedChunkRow === this.game_height - 1);
         }
 
         return (++this.loadedChunkRow / this.game_height);
@@ -83,7 +83,6 @@ var Level = Juicy.State.extend({
         var self = this;
         if (!this.loaded) {
             this.loadedChunkRow = 0;
-            Palette.set(/* random */);
             this.game.setState(new LoadingState(this, {
                 // Pre-build chunks down to self.game_height!!
                 load: this.load.bind(this)

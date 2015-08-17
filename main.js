@@ -31,5 +31,7 @@ sfx.load('textBonk', 'audio/text-impact.wav');
 
 window.updateVolume(); // From state/options.js
 document.addEventListener('DOMContentLoaded', function() {
+    Palette.set(11);
+
     Juicy.Game.setState(new TutorialLevel()).run();
 }, false);

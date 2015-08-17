@@ -50,7 +50,7 @@
             options.width = 2;
             options.height = 2;
             options.countdown = false;
-            options.song = 'quake';
+            options.song = options.song || 'quake';
 
             Level.call(this, options);
 
@@ -74,7 +74,7 @@
             this.ivan.position = this.player.position.sub(Juicy.Point.temp(10, 8));
             this.ivan.getComponent('Follower').follow(this.player, Juicy.Point.create(-10, -8), true);
             this.ivan_message = this.ivan.getComponent('TextRender').set({
-                text: 'OH NO!',
+                text: '',
                 font: 'BIG',
                 animate: 'NONE',
                 position: Juicy.Point.create(10, 10),
@@ -88,45 +88,15 @@
             var gateSprite = this.gate.getComponent('ColoredSprite');
             gateSprite.setSheet('img/gate.png', 52, 48);
             gateSprite.runAnimation(8, 10, 0.2, true);
+        },
 
-            var badDudes = 0;
-            var destroyShrine = Juicy.Component.extend({
-                constructor: function(i, j) {
-                    this.toDelete_i = i;
-                    this.toDelete_j = j;
-                    this.destroyedAltar = false;
-                },
-                update: function(dt, game) {
-                    this.entity.position.y -= 250 * dt;
+        init: function() {
+            Level.prototype.init.apply(this, arguments);
 
-                    if (!this.destroyedAltar && this.entity.position.y < pyramid.position.y + this.toDelete_j * 4) {
-                        altarComponent.removePiece(this.toDelete_i, this.toDelete_j);
-
-                        this.destroyedAltar = true;
-                    }
-
-                    if (this.entity.position.y < -200) {
-                        this.entity.remove = true;
-                        badDudes --;
-
-                        if (badDudes === 0) {
-                            self.say('weNeedHelp');
-                        }
-                    }
-                }
-            });
-
-            // Create Saw enemies
-            for (var i = 0; i < 86; i ++) {
-                var xval = 44 * ((i / 11) % 1);
-                var yToDelete = Math.floor(i / 11);
-                badDude = new Juicy.Entity(this, ['ColoredSprite', new destroyShrine(i % 11, yToDelete)]);
-                badDude.position = new Juicy.Point(48 + xval, options.height * this.tile_manager.chunk_height + 10 * (i / 8) * (i % 3));        
-                badDude.getComponent('ColoredSprite').setSheet('img/sawman-all.png', 20, 20);
-                badDude.getComponent('ColoredSprite').runAnimation(4, 7, 0.016, true);
-                this.objects.push(badDude);
-
-                badDudes ++;
+            if (this.loaded) {
+                this.tile_manager.persistTiles(0, 0, this.game_width * this.tile_manager.TILE_SIZE, 32);
+                this.tile_manager.blockTiles  (40, 0, 16, 16);
+                this.tile_manager.blockTiles  (104, 0, 192, 16);
             }
         },
 
@@ -225,16 +195,58 @@
             }
 
             return false; // Do NOT update physics
-        },
+        }
+    });
 
-        init: function() {
-            Level.prototype.init.apply(this, arguments);
+    window.CityCutScene = CityLevel.extend({
+        constructor: function(options) {
+            options = options || {};
 
-            if (this.loaded) {
-                this.tile_manager.persistTiles(0, 0, this.game_width * this.tile_manager.TILE_SIZE, 32);
-                this.tile_manager.blockTiles  (40, 0, 16, 16);
-                this.tile_manager.blockTiles  (104, 0, 192, 16);
+            options.song = options.song || 'quake';
+
+            CityLevel.call(this, options);
+
+            var badDudes = 0;
+            var destroyShrine = Juicy.Component.extend({
+                constructor: function(i, j) {
+                    this.toDelete_i = i;
+                    this.toDelete_j = j;
+                    this.destroyedAltar = false;
+                },
+                update: function(dt, game) {
+                    this.entity.position.y -= 250 * dt;
+
+                    if (!this.destroyedAltar && this.entity.position.y < pyramid.position.y + this.toDelete_j * 4) {
+                        altarComponent.removePiece(this.toDelete_i, this.toDelete_j);
+
+                        this.destroyedAltar = true;
+                    }
+
+                    if (this.entity.position.y < -200) {
+                        this.entity.remove = true;
+                        badDudes --;
+
+                        if (badDudes === 0) {
+                            self.say('weNeedHelp');
+                        }
+                    }
+                }
+            });
+
+            // Create Saw enemies
+            for (var i = 0; i < 86; i ++) {
+                var xval = 44 * ((i / 11) % 1);
+                var yToDelete = Math.floor(i / 11);
+                badDude = new Juicy.Entity(this, ['ColoredSprite', new destroyShrine(i % 11, yToDelete)]);
+                badDude.position = new Juicy.Point(48 + xval, 700 + 10 * (i / 8) * (i % 3));        
+                badDude.getComponent('ColoredSprite').setSheet('img/sawman-all.png', 20, 20);
+                badDude.getComponent('ColoredSprite').runAnimation(4, 7, 0.016, true);
+                this.objects.push(badDude);
+
+                badDudes ++;
             }
+
+            this.shake = 3;
         }
     });
 })();
