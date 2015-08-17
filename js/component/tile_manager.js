@@ -367,23 +367,33 @@
             for (var chunk_y = 0; chunk_y < this.chunks.length; chunk_y ++) {
                 for (var chunk_x = 0; chunk_x < this.chunks[chunk_y].length; chunk_x ++) {
                     var chunk = this.chunks[chunk_y][chunk_x];
+                    var filled = false;
 
                     for (var tile_x = 0; tile_x < this.chunk_width / TILE_SIZE; tile_x ++) {
                         for (var tile_y = 0; tile_y < this.chunk_height / TILE_SIZE; tile_y ++) {
                             var tile = this.tiles[tile_y + chunk_y * this.chunk_height / TILE_SIZE]
                                                  [tile_x + chunk_x * this.chunk_width  / TILE_SIZE];
-                            if (tile !== false && tile.drawn) {
-                                var opacity = tile.drawn;
-
-                                if (opacity === 1) {
-                                    chunk.context.drawImage(tile_img, tile.sx * TILE_SIZE, tile.sy * TILE_SIZE, TILE_SIZE, TILE_SIZE,
-                                                            tile_x * TILE_SIZE, tile_y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
+                            if (tile !== false) {
+                                if (!filled) {
+                                    chunk.context.fillStyle = Palette.getStyle('DARK');
+                                    chunk.context.fillRect(0, 0, this.chunk_width, this.chunk_height);
+                                
+                                    filled = true;
                                 }
-                                else {
-                                    var img = tile_mid_img;
-                                    if (opacity < 0.5) img = tile_low_img;
-                                    chunk.context.drawImage(img, tile.sx * TILE_SIZE, tile.sy * TILE_SIZE, TILE_SIZE, TILE_SIZE,
-                                                           tile_x * TILE_SIZE, tile_y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
+
+                                if (tile.drawn) {
+                                    var opacity = tile.drawn;
+
+                                    if (opacity === 1) {
+                                        chunk.context.drawImage(tile_img, tile.sx * TILE_SIZE, tile.sy * TILE_SIZE, TILE_SIZE, TILE_SIZE,
+                                                                tile_x * TILE_SIZE, tile_y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
+                                    }
+                                    else {
+                                        var img = tile_mid_img;
+                                        if (opacity < 0.5) img = tile_low_img;
+                                        chunk.context.drawImage(img, tile.sx * TILE_SIZE, tile.sy * TILE_SIZE, TILE_SIZE, TILE_SIZE,
+                                                               tile_x * TILE_SIZE, tile_y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
+                                    }
                                 }
                             }
                         }
