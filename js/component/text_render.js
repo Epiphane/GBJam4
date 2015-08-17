@@ -33,10 +33,12 @@
 
     window.TEXT = Juicy.Component.create('TextRender', {
         constructor: function(myEntity) {
-            this.animationTicks = -10;
+            this.animationTicks = 0;
             this.delayPerCharacter = 8;
+            this.animationMaxFrames = 10;
 
             this.font = fonts[0];
+            this.particles = new Juicy.Entity(myEntity.state, ['ParticleManager'])
         },
 
         setText: function(text) {
@@ -53,15 +55,14 @@
             if (typeof(info.font) === 'string') {
                 info.font = TEXT.FONTS[info.font]; // For super easy shorthand fonts ('BIG', 'SPECIAL')
             }
-            if (typeof(info.animate) === 'string') {
-                info.animate = TEXT.ANIMATIONS[info.animate]; // For super easy shorthand anims
-            }
 
             this.center         = !!info.center;
             this.brightness     = info.brightness || 0;
             this.showBackground = info.showBackground || false;
             this.offset         = info.offset || Juicy.Point.create();
-            this.animate        = info.animate || TEXT.ANIMATIONS.NONE;
+            this.animate        = info.animate || TEXT.ANIMATIONS.DRAMATIC;
+            
+            this.delayPerCharacter = info.delayPerCharacter || 2;
 
             this.setFont(info.font || TEXT.FONTS.SMALL);
             this.setText(info.text || '');
@@ -79,7 +80,12 @@
 
         update: function(dt) {
             this.animationTicks++;
-            // TODO: magic where we correctly update the characterAnim array.  Fun programming puzzle!
+
+            for (var ndx = 0; ndx < this.characterAnim.length; ndx++) {
+                if (ndx < this.animationTicks / this.delayPerCharacter) {
+                    this.characterAnim[ndx]++;
+                }
+            }
         },
 
         render: function(context) {
@@ -107,24 +113,20 @@
                 }
             }
 
-    // Text animation TODO stuff
-    /*
             switch (this.animate) {
             // NONE
-            case 0: 
+            case TEXT.ANIMATIONS.NORMAL: 
                 this.normalRender(context, drawPosition);
                 break;
             // SLIDE
-            case 1:
+            case TEXT.ANIMATIONS.SLIDE:
                 // TODO
                 break;
             // DRAMATIC
-            case 2:
-                this.dramaticRender();
+            case TEXT.ANIMATIONS.DRAMATIC:
+                this.dramaticRender(context, drawPosition);
                 break;
             }
-    */
-            this.normalRender(context, drawPosition);
         },
 
         normalRender: function(context, drawPosition) {
@@ -140,24 +142,23 @@
             }
         },
 
-        // TODO: me
-        dramaticRender: function() {
+        dramaticRender: function(context, drawPosition) {
             for (var c = 0; c < this.text.length; c++) {
                 var charCode = this.text.charCodeAt(c);
 
-                var textTiming = c*16 - textObject.animationTicks*2 + 10;
+                var animFrame = this.characterAnim[c];
 
-                if (textTiming == 4) {
+                if (animFrame == 4) {
                     if (charCode != 32) {
                         sfx.play('textBonk');
                     }
                 }
 
-                if (textTiming == 8) {
+                if (animFrame == 8) {
                     var currNdx = c;
                     var self = this;
 
-                    this.ui_particles.getComponent('ParticleManager').spawnParticles({
+                    this.particles.getComponent('ParticleManager').spawnParticles({
                         color: "LIGHT", 
                         size: 2, 
                         howMany: 8, 
@@ -181,17 +182,17 @@
                     });
                 }
 
-                var shakeIt = (textTiming > -7);
-                var offset = Math.max(1, textTiming);
+                var shakeIt = (animFrame < 9);
+                var offset = Math.max(1, animFrame);
 
-                if (textObject.animationTicks*2 > c*16) {
+                if (animFrame > 0) {
                     if (shakeIt) {
                         context.save();
                         context.translate(Math.random() * 2 - 1, Math.random() * 2 - 1);
                     }
                     if (charCode != 32) {
-                        this.drawCharacter(charCode, context, this.font, textObject.brightness-1, drawPosition, 0);
-                        this.drawCharacter(charCode, context, this.font, textObject.brightness, drawPosition, offset);
+                        this.drawCharacter(charCode, context, this.font, this.brightness-1, drawPosition, 0);
+                        this.drawCharacter(charCode, context, this.font, this.brightness, drawPosition, offset);
                     }
 
                     if (shakeIt) {
