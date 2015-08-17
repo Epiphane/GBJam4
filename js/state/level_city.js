@@ -41,47 +41,60 @@
         }
     }))();
 
+    var playedCutScene = false;
+
     window.CityLevel = Level.extend({
         constructor: function(options) {
             var self = this;
 
             // Set tutorial specific options
             options = options || {};
-            options.width = 2;
+            options.width = 6;
             options.height = 2;
             options.countdown = false;
-            options.song = options.song || 'quake';
+            options.song = options.song || 'city';
 
             Level.call(this, options);
 
-            this.player.position.x = 140;
+            // Create tha birds
+            this.birds = new Juicy.Entity(this, ['BirdManager']);
+            this.objects.push(this.birds);
 
-            var pyramid = this.altar = new Juicy.Entity(this, [altarComponent]);
-            // pyramid.getComponent('ColoredSprite').setSheet('img/altar.png', 40, 80);
-            // pyramid.getComponent('ColoredSprite').runAnimation(0, 3, 0.32, true);
-            pyramid.position.x = 40;
-            pyramid.position.y = -80;
-            pyramid.scale = Juicy.Point.create(2, 2);
-            this.objects.push(pyramid);
+            this.altar = new Juicy.Entity(this, [altarComponent]);
+            this.altar.position.x = 400;
+            this.altar.position.y = -80;
+            this.altar.scale = Juicy.Point.create(2, 2);
+            this.objects.push(this.altar);
 
             this.gate = new Juicy.Entity(this, ['Gate', 'ColoredSprite']);
-            this.gate.position = new Juicy.Point(180, -48);
+            this.gate.position = new Juicy.Point(640, -48);
             this.objects.push(this.gate);
+
+            if (playedCutScene) {
+                this.gate.getComponent('Gate').onplayertouch = function() {
+                    self.shake = 2;
+                    self.updateFunc = self.endLevel;
+                };
+            }
 
             this.ivan = new Juicy.Entity(this, ['ColoredSprite', 'Follower', 'TextRender']);
             this.ivan.getComponent('ColoredSprite').setSheet('img/helper.png', 10, 14);
             this.ivan.getComponent('ColoredSprite').runAnimation(0, 11, 0.16, true);
             this.ivan.position = this.player.position.sub(Juicy.Point.temp(10, 8));
             this.ivan.getComponent('Follower').follow(this.player, Juicy.Point.create(-10, -8), true);
-            this.ivan_message = this.ivan.getComponent('TextRender').set({
-                text: '',
-                font: 'BIG',
+            var ivan_message = this.ivan_message = this.ivan.getComponent('TextRender').set({
+                text: 'Welcome to town!',
+                font: 'SMALL',
                 animate: 'NONE',
                 position: Juicy.Point.create(10, 10),
                 showBackground: true,
                 brightness: 3,
                 offset: Juicy.Point.create(14, -4)
             });
+
+            setTimeout(function() {
+                ivan_message.setText('');
+            }, 1000);
 
             this.objects.push(this.ivan);
 
@@ -95,18 +108,18 @@
 
             if (this.loaded) {
                 this.tile_manager.persistTiles(0, 0, this.game_width * this.tile_manager.TILE_SIZE, 32);
-                this.tile_manager.blockTiles  (40, 0, 16, 16);
-                this.tile_manager.blockTiles  (104, 0, 192, 16);
+                this.tile_manager.blockTiles  (0, 0, 56, 16);
+                this.tile_manager.blockTiles  (104, 0, 312, 16);
+                this.tile_manager.blockTiles  (464, 0, 496, 16);
             }
         },
 
         say: function(dialog) {
+            dialog = this.speech[dialog];
             if (!dialog) {
                 this.updateFunc = null;
                 return;
             }
-
-            dialog = this.speech[dialog];
 
             this.ivan_message.set(dialog);
 
@@ -117,8 +130,9 @@
             var next = dialog.next;
             if (next && typeof(next) === 'string') {
                 var nextDialog = next;
+                var self = this;
                 next = function() {
-                    this.say(nextDialog);
+                    self.say(nextDialog);
                 };
             }
 
@@ -128,17 +142,87 @@
         },
 
         wait: function(time, callback) {
-            var timeleft = time;
+            setTimeout(function() {
+                callback.call(this);
+            }, 2000);
+        },
 
-            this.updateFunc = function(dt) {
-                timeleft -= dt;
+        getTarget: function() {}, // Ignore
 
-                if (timeleft < 0) {
-                    this.updateFunc = null;
+        endLevel: function(dt, game) {
+            var dist = this.gate.center().sub(this.player.center());
+            this.player.position = this.player.position.add(dist.mult(1/8).free());
 
-                    callback.call(this);
+            if (this.shake < 0.5) {
+                this.complete = true;
+
+                this.game.setState(new InfiniteLevel());
+            }
+
+            return false; // Do NOT update physics
+        },
+
+        update: function() {
+            if (!playedCutScene) {
+                if (this.player.position.x > this.altar.position.x - 20) {
+                    this.initCutScene();
+                    playedCutScene = true;
                 }
             }
+
+            Level.prototype.update.apply(this, arguments);
+        },
+
+        initCutScene: function() {
+            music.stop(this.song);
+            this.song = 'quake';
+            music.play(this.song);
+
+            var self = this;
+
+            var badDudes = 0;
+            var destroyShrine = Juicy.Component.extend({
+                constructor: function(i, j) {
+                    this.toDelete_i = i;
+                    this.toDelete_j = j;
+                    this.destroyedAltar = false;
+                },
+                update: function(dt, game) {
+                    this.entity.position.y -= 250 * dt;
+
+                    if (!this.destroyedAltar && this.entity.position.y < self.altar.position.y + this.toDelete_j * 4) {
+                        altarComponent.removePiece(this.toDelete_i, this.toDelete_j);
+
+                        this.destroyedAltar = true;
+                    }
+
+                    if (this.entity.position.y < -200) {
+                        this.entity.remove = true;
+                        badDudes --;
+
+                        if (badDudes === 0) {
+                            self.say('weNeedHelp');
+                        }
+                    }
+                }
+            });
+
+            // Create Saw enemies
+            for (var i = 0; i < 86; i ++) {
+                var xval = 44 * ((i / 11) % 1);
+                var yToDelete = Math.floor(i / 11);
+                badDude = new Juicy.Entity(this, ['ColoredSprite', new destroyShrine(i % 11, yToDelete)]);
+                badDude.position = new Juicy.Point(this.altar.position.x + 8 + xval, 700 + 10 * (i / 8) * (i % 3));        
+                badDude.getComponent('ColoredSprite').setSheet('img/sawman-all.png', 20, 20);
+                badDude.getComponent('ColoredSprite').runAnimation(4, 7, 0.016, true);
+                this.objects.push(badDude);
+
+                badDudes ++;
+            }
+
+            this.shake = 3;
+
+            this.ivan_message.setText('OH NO!!');
         },
 
         speech: {
@@ -181,72 +265,5 @@
                 }
             }
         },
-
-        getTarget: function() {}, // Ignore
-
-        endLevel: function(dt, game) {
-            var dist = this.gate.center().sub(this.player.center());
-            this.player.position = this.player.position.add(dist.mult(1/8).free());
-
-            if (this.shake < 0.5) {
-                this.complete = true;
-
-                this.game.setState(new InfiniteLevel());
-            }
-
-            return false; // Do NOT update physics
-        }
-    });
-
-    window.CityCutScene = CityLevel.extend({
-        constructor: function(options) {
-            options = options || {};
-
-            options.song = options.song || 'quake';
-
-            CityLevel.call(this, options);
-
-            var badDudes = 0;
-            var destroyShrine = Juicy.Component.extend({
-                constructor: function(i, j) {
-                    this.toDelete_i = i;
-                    this.toDelete_j = j;
-                    this.destroyedAltar = false;
-                },
-                update: function(dt, game) {
-                    this.entity.position.y -= 250 * dt;
-
-                    if (!this.destroyedAltar && this.entity.position.y < pyramid.position.y + this.toDelete_j * 4) {
-                        altarComponent.removePiece(this.toDelete_i, this.toDelete_j);
-
-                        this.destroyedAltar = true;
-                    }
-
-                    if (this.entity.position.y < -200) {
-                        this.entity.remove = true;
-                        badDudes --;
-
-                        if (badDudes === 0) {
-                            self.say('weNeedHelp');
-                        }
-                    }
-                }
-            });
-
-            // Create Saw enemies
-            for (var i = 0; i < 86; i ++) {
-                var xval = 44 * ((i / 11) % 1);
-                var yToDelete = Math.floor(i / 11);
-                badDude = new Juicy.Entity(this, ['ColoredSprite', new destroyShrine(i % 11, yToDelete)]);
-                badDude.position = new Juicy.Point(48 + xval, 700 + 10 * (i / 8) * (i % 3));        
-                badDude.getComponent('ColoredSprite').setSheet('img/sawman-all.png', 20, 20);
-                badDude.getComponent('ColoredSprite').runAnimation(4, 7, 0.016, true);
-                this.objects.push(badDude);
-
-                badDudes ++;
-            }
-
-            this.shake = 3;
-        }
     });
 })();
