@@ -32,6 +32,10 @@ var Level = Juicy.State.extend({
         this.player.getComponent('ColoredSprite').setSheet('img/sawman-all.png', 20, 20);
         this.player.getComponent('Player').updateAnim('IDLE');
 
+        // Create Background
+        this.backdrop = new Juicy.Entity(this, ['ColoredSprite']);
+        this.backdrop.getComponent('ColoredSprite').setSheet('img/backdrop.png', 160, 144);
+
         // Particle Manager
         this.particles = new Juicy.Entity(this, ['ParticleManager']);
 
@@ -251,6 +255,7 @@ var Level = Juicy.State.extend({
     render: function(context) {
 
         context.save();
+        this.backdrop.render(context);
         context.translate(-Math.round(this.camera.x + Math.sin(this.shake * 100)), -Math.round(this.camera.y));
 
         this.tiles.render(context, this.camera.x, this.camera.y, this.game.width, this.game.height);
