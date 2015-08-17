@@ -37,10 +37,11 @@ document.addEventListener('DOMContentLoaded', function() {
 
     var tutorial = localStorage.getItem('tutorial');
 
-    if (!tutorial) {
+    Juicy.Game.setState(new TitleScreen()).run();
+    /*if (!tutorial) {
         Juicy.Game.setState(new TutorialLevel()).run();
     }
     else {
         Juicy.Game.setState(new CityLevel()).run();
-    }
+    }*/
 }, false);
