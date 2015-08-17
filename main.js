@@ -33,16 +33,18 @@ sfx.load('textBonk', 'audio/text-impact');
 sfx.load('textBeep', 'audio/text-beep');
 
 window.updateVolume(); // From state/options.js
-document.addEventListener('DOMContentLoaded', function() {
-    Palette.set(3);
 
-    var tutorial = localStorage.getItem('tutorial');
+function newGame() {
+    localStorage.removeItem('tutorial');
+    localStorage.removeItem('altar');
+
+    startGame();
+};
+
+function startGame() {
+    Palette.set();
 
     Juicy.Game.setState(new TitleScreen()).run();
-    /*if (!tutorial) {
-        Juicy.Game.setState(new TutorialLevel()).run();
-    }
-    else {
-        Juicy.Game.setState(new CityLevel()).run();
-    }*/
-}, false);
+}
+
+document.addEventListener('DOMContentLoaded', startGame, false);

@@ -33,5 +33,14 @@ var TitleScreen = Juicy.State.extend({
     key_SPACE: function() {
         music.stop('title');
         this.game.setState(new CityLevel());        
+
+        var tutorial = localStorage.getItem('tutorial');
+
+        if (!tutorial) {
+            Juicy.Game.setState(new TutorialLevel()).run();
+        }
+        else {
+            Juicy.Game.setState(new CityLevel()).run();
+        }     
     },
 })
