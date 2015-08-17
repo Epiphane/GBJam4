@@ -128,6 +128,32 @@ var Level = Juicy.State.extend({
     key_ESC: function() {
         this.game.setState(new PauseState(this));
     },
+
+    key_SPACE: function() {
+        this.ui.clearText();
+        
+
+        this.subTitle = this.ui.addText({
+            text: this.subtitle(),
+            font: TEXT.FONTS.SMALL,
+            position: Juicy.Point.create(this.game_width/6, 32),
+            center: true,
+            brightness: 1,
+            animate: 'SLIDE',
+            delayPerCharacter: 0,
+            initialDelay: 80,
+        });
+
+        this.roomTitle = this.ui.addText({
+            text: this.placeName(),
+            font: TEXT.FONTS.BIG,
+            position: Juicy.Point.create(this.game_width/6, 20),
+            center: true,
+            brightness: 2,
+            animate: 'DRAMATIC',
+            delayPerCharacter: 8,
+        });
+    },
     
     update: function(dt, game) {
         if (this.shake > 0) {
