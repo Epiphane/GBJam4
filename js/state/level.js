@@ -8,7 +8,7 @@ var Level = Juicy.State.extend({
         this.game_height = (options.height || 30) + 1;
         this.dramaticPauseTime = 0.0;
         this.shake = 0;
-        this.song = options.song || 'lvl1';
+        this.song = options.song || ('lvl' + (Juicy.rand(2) + 1));
 
         // State variables
         this.loaded = false;
