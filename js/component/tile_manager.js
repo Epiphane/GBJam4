@@ -433,6 +433,14 @@
                     particle.dy = -dy / dist + Math.random()*2;
                     particle.startLife = 5;
                     particle.life = particle.startLife;
+
+                    if (dy < -0.1) {
+                        particle.y -= 8;
+                    }
+
+                    if (dx < -0.1) {
+                        particle.x -= 8;
+                    }
                 },
                 updateParticle: function(particle) {
                     particle.x += particle.dx;
