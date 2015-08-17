@@ -22,6 +22,8 @@ var music = new Juicy.Music();
 music.load('tutorial', 'audio/music_tutorial');
 music.load('lvl1', 'audio/music_cave_in');
 music.load('lvl2', 'audio/music_particles');
+music.load('quake', 'audio/music_quake');
+music.load('city', 'audio/music_industrial');
 
 var sfx = new Juicy.SFX();
 sfx.load('goal', 'audio/fx_jump');
@@ -30,5 +32,7 @@ sfx.load('textBonk', 'audio/text-impact');
 
 window.updateVolume(); // From state/options.js
 document.addEventListener('DOMContentLoaded', function() {
+    Palette.set(11);
+
     Juicy.Game.setState(new TutorialLevel()).run();
 }, false);
