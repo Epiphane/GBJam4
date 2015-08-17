@@ -42,10 +42,25 @@ function newGame() {
     startGame();
 };
 
+var loadingImg = new Image();
+    loadingImg.src = 'img/loading.png';
+var titleScreenImg = new Image();
+    titleScreenImg.src = 'img/titlescreen-shine.png';
+var fontImg = new Image();
+    fontImg.src = 'img/font.png';
+
 function startGame() {
     Palette.set();
 
-    Juicy.Game.setState(new TitleScreen()).run();
+    Juicy.Game.setState(new LoadingState(new TitleScreen(), {
+        load: function() {
+            var completed = (loadingImg.complete ? 1 : 0) + 
+                            (titleScreenImg.complete ? 1 : 0) + 
+                            (fontImg.complete ? 1 : 0);
+
+            return completed / 3;
+        }
+    })).run();
 }
 
 document.addEventListener('DOMContentLoaded', startGame, false);

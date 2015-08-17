@@ -45,4 +45,4 @@ var TitleScreen = Juicy.State.extend({
             Juicy.Game.setState(new CityLevel()).run();
         }     
     },
-})
+});
