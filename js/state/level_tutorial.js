@@ -10,7 +10,7 @@ var TutorialLevel = Level.extend({
         Level.call(this, options);
 
         this.helper = new Juicy.Entity(this, ['ColoredSprite', 'Follower', 'TextRender']);
-        this.helper.getComponent('ColoredSprite').setSheet('img/helper.png', 10, 14);
+        this.helper.getComponent('ColoredSprite').setSheet('img/helper.png', 12, 16);
         this.helper.getComponent('ColoredSprite').runAnimation(0, 11, 0.16, true);
         this.helper.position = this.player.position.sub(Juicy.Point.temp(10, 8));
         this.helper.getComponent('Follower').follow(this.player, Juicy.Point.create(-10, -8), true);

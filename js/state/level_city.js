@@ -85,12 +85,12 @@
 
             this.altar = new Juicy.Entity(this, [altarComponent]);
             this.altar.position.x = 400;
-            this.altar.position.y = -80;
+            this.altar.position.y = 288-80;
             this.altar.scale = Juicy.Point.create(2, 2);
             this.objects.push(this.altar);
 
             this.gate = new Juicy.Entity(this, ['Gate', 'ColoredSprite']);
-            this.gate.position = new Juicy.Point(640, -48);
+            this.gate.position = new Juicy.Point(640, 288-48);
             this.objects.push(this.gate);
 
             if (playedCutScene) {
@@ -101,7 +101,7 @@
             }
 
             this.ivan = new Juicy.Entity(this, ['ColoredSprite', 'Follower', 'TextRender']);
-            this.ivan.getComponent('ColoredSprite').setSheet('img/helper.png', 10, 14);
+            this.ivan.getComponent('ColoredSprite').setSheet('img/helper.png', 12, 16);
             this.ivan.getComponent('ColoredSprite').runAnimation(0, 11, 0.16, true);
             this.ivan.position = this.player.position.sub(Juicy.Point.temp(10, 8));
             this.ivan.getComponent('Follower').follow(this.player, Juicy.Point.create(-10, -8), true);
@@ -130,10 +130,10 @@
             Level.prototype.init.apply(this, arguments);
 
             if (this.loaded) {
-                this.tile_manager.persistTiles(0, 0, this.game_width * this.tile_manager.TILE_SIZE, 32);
-                this.tile_manager.blockTiles  (0, 0, 56, 16);
-                this.tile_manager.blockTiles  (104, 0, 312, 16);
-                this.tile_manager.blockTiles  (464, 0, 496, 16);
+                this.tile_manager.persistTiles(0, 288, this.game_width * this.tile_manager.TILE_SIZE, 32);
+                this.tile_manager.blockTiles  (0, 288, 56, 16);
+                this.tile_manager.blockTiles  (104, 288, 312, 16);
+                this.tile_manager.blockTiles  (464, 288, 496, 16);
             }
         },
 
@@ -219,7 +219,7 @@
                         this.destroyedAltar = true;
                     }
 
-                    if (this.entity.position.y < -200) {
+                    if (this.entity.position.y < 0) {
                         this.entity.remove = true;
                         badDudes --;
 
@@ -235,7 +235,7 @@
                 var xval = 44 * ((i / 11) % 1);
                 var yToDelete = Math.floor(i / 11);
                 badDude = new Juicy.Entity(this, ['ColoredSprite', new destroyShrine(i % 11, yToDelete)]);
-                badDude.position = new Juicy.Point(this.altar.position.x + 8 + xval, 700 + 10 * (i / 8) * (i % 3));        
+                badDude.position = new Juicy.Point(this.altar.position.x + 8 + xval, 988 + 10 * (i / 8) * (i % 3));        
                 badDude.getComponent('ColoredSprite').setSheet('img/sawman-all.png', 20, 20);
                 badDude.getComponent('ColoredSprite').runAnimation(4, 7, 0.016, true);
                 this.objects.push(badDude);
