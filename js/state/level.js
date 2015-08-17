@@ -2,7 +2,9 @@ var Level = Juicy.State.extend({
     constructor: function(options) {
         options = options || {};
 
-        options.countdown = options.countdown || 3;
+        if (typeof(options.countdown) === 'undefined') {
+            options.countdown = options.countdown || 3;
+        }
 
         // Initialize variables
         var self = this;
@@ -256,7 +258,7 @@ var Level = Juicy.State.extend({
 
         context.save();
         this.backdrop.render(context);
-        context.translate(-Math.round(this.camera.x + Math.sin(this.shake * 100)), -Math.round(this.camera.y));
+        context.translate(-Math.round(this.camera.x + 2 * Math.sin(this.shake * 100)), -Math.round(this.camera.y));
 
         this.tiles.render(context, this.camera.x, this.camera.y, this.game.width, this.game.height);
 

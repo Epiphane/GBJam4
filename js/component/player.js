@@ -13,6 +13,8 @@ Juicy.Component.create('Player', {
         this.lives = 3;
         this.health = 100;
         this.baseDmg = 20;
+
+        this.controlPause = 0;
     },
     
     loseLife: function() {
@@ -60,11 +62,25 @@ Juicy.Component.create('Player', {
         }
     },
 
+    getHit: function() {
+        this.invincible = 1;
+        var digger = this.entity.getComponent('Digger');
+        digger.controlPause = 0.25;
+    },
+
     update: function(dt, game) {
         var digger = this.entity.getComponent('Digger');
         var newDirection = 'IDLE';
 
         var self = this;
+
+        if (this.invincible > 0) {
+            this.invincible -= dt;
+
+            if (this.invincible < 0) {
+                this.invincible = 0;
+            }
+        }
 
         this.entity.state.particles.getComponent('ParticleManager').spawnParticles({
             color: "LIGHT", 
