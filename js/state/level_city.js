@@ -96,7 +96,7 @@
             }
 
             this.ivan = new Juicy.Entity(this, ['ColoredSprite', 'Follower', 'TextRender']);
-            this.ivan.getComponent('ColoredSprite').setSheet('img/helper.png', 10, 14);
+            this.ivan.getComponent('ColoredSprite').setSheet('img/helper.png', 12, 16);
             this.ivan.getComponent('ColoredSprite').runAnimation(0, 11, 0.16, true);
             this.ivan.position = this.player.position.sub(Juicy.Point.temp(10, 8));
             this.ivan.getComponent('Follower').follow(this.player, Juicy.Point.create(-10, -8), true);
