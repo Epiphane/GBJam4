@@ -59,7 +59,7 @@ Juicy.Component.create('BirdManager', {
         var newBurd = new Juicy.Entity(this.entity.state, ['ColoredSprite']);
 
         // Choose random Y
-        newBurd.position = new Juicy.Point(-4, 238 + Math.round(-Math.random() * 20));
+        newBurd.position = new Juicy.Point(-4, 208 + Math.round(-Math.random() * 20));
 
         newBurd.getComponent('ColoredSprite').setSheet('img/dumb-bird.png', 25, 11);
         newBurd.getComponent('ColoredSprite').flipped = true;

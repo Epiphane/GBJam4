@@ -413,6 +413,49 @@
             }
         },
 
+        illuminate: function(x, y, r) {
+            x = Math.floor(x / TILE_SIZE);
+            y = Math.floor(y / TILE_SIZE);
+            r = Math.floor(r / TILE_SIZE);
+
+            var r2 = r * r;
+
+            for (var dy = -r; dy <= r; dy ++) {
+                if (!this.tiles[y + dy]) continue;
+                var tile_y = y + dy;
+
+                for (var dx = -r; dx <= r; dx ++) {
+                    var tile_x = x + dx;
+
+                    var tile = this.tiles[tile_y][tile_x];
+                    if (tile && tile.drawn < 1 && dx * dx + dy * dy < r2) {
+                        var opacity = 1.5 - (dx * dx + dy * dy) / r2;
+                        if (opacity > 1) opacity = 1;
+
+                        if (tile.drawn < opacity) {
+                            tile.drawn = opacity;
+
+                            var localTileX = tile_x % (this.chunk_width  / TILE_SIZE);
+                            var localTileY = tile_y % (this.chunk_height / TILE_SIZE);
+
+                            var chunk = this.getChunk(tile_x * TILE_SIZE, tile_y * TILE_SIZE);
+
+                            if (opacity === 1) {
+                                chunk.context.drawImage(tile_img, tile.sx * TILE_SIZE, tile.sy * TILE_SIZE, TILE_SIZE, TILE_SIZE,
+                                                        localTileX * TILE_SIZE, localTileY * TILE_SIZE, TILE_SIZE, TILE_SIZE);
+                            }
+                            else {
+                                var img = tile_mid_img;
+                                if (opacity < 0.5) img = tile_low_img;
+                                chunk.context.drawImage(img, tile.sx * TILE_SIZE, tile.sy * TILE_SIZE, TILE_SIZE, TILE_SIZE,
+                                                       localTileX * TILE_SIZE, localTileY * TILE_SIZE, TILE_SIZE, TILE_SIZE);
+                            }
+                        }
+                    }
+                }
+            }
+        },
+
         removeObj: function(tile, digger) {
             if (!tile) return;
 

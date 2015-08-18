@@ -23,6 +23,7 @@ var Level = Juicy.State.extend({
         this.updateFunc = null;
         this.objects = [];
         this.speechTime = options.speechTime || 2;
+        this.timeouts = [];
 
         // Create Tile Manager
         this.tile_manager = new Juicy.Components.TileManager(this.game_width);
@@ -86,6 +87,10 @@ var Level = Juicy.State.extend({
         });
     },
 
+    timeout: function(callback, time) {
+        this.timeouts.push([callback, time]);
+    },
+
     cleanup: function() {
         this.tile_manager.cleanup();
         music.stop(this.song);
@@ -133,6 +138,7 @@ var Level = Juicy.State.extend({
             return;
         }
 
+        sfx.play('quack');
         this.ivan_message.set(dialog);
 
         if (dialog.execute) {
@@ -150,7 +156,7 @@ var Level = Juicy.State.extend({
                 };
             }
 
-            this.wait(dialog.time || this.speechTime, next);
+            this.timeout(next, dialog.time || this.speechTime);
         }
         else if (dialog.nextKey) {
             var next = dialog.nextKey;
@@ -170,13 +176,6 @@ var Level = Juicy.State.extend({
                 next.call(self);
             });
         }
-    },
-
-    wait: function(time, callback) {
-        var self = this;
-        setTimeout(function() {
-            callback.call(self);
-        }, time * 1000);
     },
 
     gameOver: function() {
@@ -210,6 +209,17 @@ var Level = Juicy.State.extend({
     },
     
     update: function(dt, game) {
+        for (var i = 0; i < this.timeouts.length; i ++) {
+            var timeout = this.timeouts[i];
+
+            timeout[1] -= dt;
+            if (timeout[1] < 0) {
+                timeout[0]();
+
+                this.timeouts.splice(i--, 1);
+            }
+        }
+
         if (this.shake > 0) {
             this.shake -= dt;
 
