@@ -7,7 +7,7 @@ Juicy.Component.create('Digger', {
     },
     destroyObject: function(type) {
         if (type === 'BLOCK') {
-            this.energy += 20;
+            this.energy += 200;
             sfx.play('fuel');
         }
     },
