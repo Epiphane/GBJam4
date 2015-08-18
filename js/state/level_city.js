@@ -126,6 +126,7 @@
                     this.objects.push(this.gate);
 
                     if (playedCutScene) {
+                        var self = this;
                         this.gate.getComponent('Gate').onplayertouch = function() {
                             self.shake = 2;
                             self.updateFunc = self.endLevel;
@@ -220,6 +221,7 @@
             this.camera.y = this.player.position.y = 288 - 80;
 
             var nBadDudes = 0;
+            var playedSound = false;
             var destroyShrine = Juicy.Component.extend({
                 constructor: function(i, j) {
                     this.toDelete_i = i;
@@ -231,6 +233,12 @@
 
                     if (!this.destroyedAltar && this.entity.position.y < self.altar.position.y + this.toDelete_j * 4) {
                         altarComponent.removePiece(this.toDelete_i, this.toDelete_j);
+
+                        if (!playedSound) {
+                            playedSound = true;
+
+                            sfx.play('explode');
+                        }
 
                         this.destroyedAltar = true;
                     }
