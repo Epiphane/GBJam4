@@ -129,7 +129,7 @@ Juicy.Component.create('Enemy', {
                 this.entity.getComponent('ColoredSprite').clearRect();
                 this.entity.getComponent('ColoredSprite').clearRect();
                 this.entity.getComponent('ColoredSprite').clearRect();
-                this.entity.getComponent('ColoredSprite').clearRect();
+//                 this.entity.getComponent('ColoredSprite').clearRect();
             // }
 
                 sfx.play('ouch_boss');

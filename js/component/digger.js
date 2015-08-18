@@ -4,6 +4,7 @@ Juicy.Component.create('Digger', {
 
         this.controlPause = 0;
         this.energy = this.max_energy = 2000;
+        this.badDig = false;
     },
     destroyObject: function(type) {
         if (type === 'BLOCK') {
@@ -26,7 +27,7 @@ Juicy.Component.create('Digger', {
     forCollisionBox: function(callback) {
         var tile_manager = this.entity.state.tile_manager;
         var center = Juicy.Point.create(this.entity.width / 2, this.entity.height / 2);
-        var pad = 5;
+        var pad = this.badDig ? 1.5 : 5;
         for (var x = -pad; x <= this.entity.width + pad; x += tile_manager.TILE_SIZE) {
             for (var y = -pad; y <= this.entity.height + pad; y += tile_manager.TILE_SIZE) {
                 if (center.distance(Juicy.Point.temp(x, y)) > 10) continue;
@@ -94,20 +95,22 @@ Juicy.Component.create('Digger', {
             blocksRekt += tile_manager.removeCell(pos.x, pos.y, self);
         });
 
-        // Slow down and shoot upwards
-        var MAX_UP = 0;
-        var upward = blocksRekt * 2 + (this._up && physics.onGround ? 160 : 0);
-        if (this._up || (physics.dy - upward > MAX_UP)) {
-            physics.dy -= upward;
-        }
-        else if (physics.dy > MAX_UP && physics.dy - upward < MAX_UP) {
-            physics.dy = MAX_UP;
-        }
+        if (!this.badDig) {
+            // Slow down and shoot upwards
+            var MAX_UP = 0;
+            var upward = blocksRekt * 2 + (this._up && physics.onGround ? 160 : 0);
+            if (this._up || (physics.dy - upward > MAX_UP)) {
+                physics.dy -= upward;
+            }
+            else if (physics.dy > MAX_UP && physics.dy - upward < MAX_UP) {
+                physics.dy = MAX_UP;
+            }
 
-        this._up = this._down = this._left = this._right = false;
+            this._up = this._down = this._left = this._right = false;
 
-        if (this.energy > this.max_energy) {
-            this.energy = this.max_energy;
+            if (this.energy > this.max_energy) {
+                this.energy = this.max_energy;
+            }
         }
     },
     // render: function(context) {

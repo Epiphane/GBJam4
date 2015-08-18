@@ -79,20 +79,41 @@ var BossLevel = Level.extend({
         for (var ndx = 0; ndx < this.drones.length; ndx++) {
             var drone = this.drones[ndx];
 
-            var diff = this.player.position.sub(drone.position);
-            var normalDiff = diff.mult(1/diff.length());
+            drone.offRailsTimer--;
+            if (drone.offRailsTimer <= 0) {
 
-            var dronePhysics = drone.getComponent('Physics');
+                if (drone.offRails) {
+                    drone.offRailsTimer = Math.random() * 200 + 300;
+                }
+                else {
+                    drone.offRailsTimer = Math.random() * 200 + 20;
+                }
 
-            dronePhysics.dx += normalDiff.x * 150 - 75;
-            dronePhysics.dy += normalDiff.y * 150 - 75;
+
+                drone.offRails = !drone.offRails;
+                drone.offRailsDx = Math.random() * 1 - 0.5;
+                drone.offRailsDy = Math.random() * 1 - 0.5;
+            }
+
+            if (drone.offRails) {
+                drone.position.x += drone.offRailsDx;
+                drone.position.y += drone.offRailsDy;
+            }
+            else {
+                var diff = this.player.position.sub(drone.position);
+                var normalDiff = diff.mult(1/diff.length());
+
+                drone.position.x += normalDiff.x * 0.4;
+                drone.position.y += normalDiff.y * 0.7;
+
+            }
 
             if (this.player.testCollision(drone) && !this.boss.remove) {
                 var physics = this.player.getComponent('Physics');
                 var directionToPlayer = drone.center().sub(this.player.center());
 
-                physics.dx = Math.random() * 120 - 60;
-                physics.dy = Math.random() * 120 - 60;
+                physics.dx += Math.random() * 120 - 60;
+                physics.dy += Math.random() * 120 - 60;
                 if (directionToPlayer.x > 0)
                     physics.dx *= -1;
                 if (directionToPlayer.y > 0)
@@ -110,8 +131,14 @@ var BossLevel = Level.extend({
 
     newDrone: function() {
         var newDrone = new Juicy.Entity(this, ['ColoredSprite', 'Digger', 'Physics']);
-        newDrone.getComponent('ColoredSprite').setSheet('img/helper.png', 12, 16);
+        newDrone.getComponent('ColoredSprite').setSheet('img/bad-drone.png', 6, 8);
+        newDrone.getComponent('ColoredSprite').runAnimation(0, 11, 0.16, true);
+
         newDrone.position = this.boss.position.clone();
+        newDrone.getComponent('Digger').badDig = true;
+        newDrone.getComponent('Physics').nah = true;
+
+        newDrone.offRailsTimer = Math.random() * 200;
 
         this.objects.push(newDrone);
         this.drones.push(newDrone);

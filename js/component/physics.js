@@ -7,6 +7,10 @@ Juicy.Component.create('Physics', {
     },
 
     update: function(dt, input) {
+        if (this.nah) {
+            return
+        }
+
         var tile_manager = this.entity.state.tile_manager;
         var center       = this.entity.center();
         var width        = new Juicy.Point(this.entity.width - 1,  0);
