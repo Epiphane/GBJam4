@@ -6,6 +6,9 @@ var Level = Juicy.State.extend({
             options.countdown = options.countdown || 3;
         }
 
+        this.healthBar = Palette.loadImage('img/health_bar.png');
+        this.energy = Palette.loadImage('img/energy.png');
+
         // Initialize variables
         var self = this;
         this.game_width = (options.width || 4) * 80; // tiles per chunk
@@ -46,13 +49,13 @@ var Level = Juicy.State.extend({
         if (options.countdown !== false) {
             this._countdown = options.countdown - 0.01;
             this.countdownText = this.ui.addText({
-                text: Math.ceil(this._countdown) + '',
-                font: TEXT.FONTS.BIG,
-                position: Juicy.Point.create(80, 10),
+                text: '' + Math.floor(options.countdown),
+                font: 'BIG',
+                position: Juicy.Point.create(80, 40),
                 center: true,
                 brightness: 3,
-                noBG: true,
-                animate: TEXT.ANIMATIONS.DRAMATIC
+                animate: 'SLIDE',
+                delayPerCharacter: 0
             });
         }
         else {
@@ -72,15 +75,29 @@ var Level = Juicy.State.extend({
 
         if (this.camera.x < 0) 
             this.camera.x = 0;
+
+        this.roomTitle = this.ui.addText({
+            text: '',
+            font: TEXT.FONTS.BIG,
+            position: Juicy.Point.create(5, 5),
+            brightness: 2,
+            animate: 'DRAMATIC',
+            delayPerCharacter: 8,
+        });
     },
 
     cleanup: function() {
         this.tile_manager.cleanup();
         music.stop(this.song);
-        delete this.tiles;
+        this.tiles = null;
     },
 
     load: function(piece) {
+        var cleanupProgress = this.tile_manager.cleanupLastManager();
+        if (cleanupProgress < 1) {
+            return cleanupProgress;
+        }
+
         for (var i = 0; i < this.tile_manager.width / this.tile_manager.chunk_width; i ++) {
             if (this.loadedChunkRow === this.game_height + 1) {
                 this.tile_manager.buildChunk(i, this.loadedChunkRow, 'solid');
@@ -133,7 +150,7 @@ var Level = Juicy.State.extend({
                 };
             }
 
-            this.wait(this.speechTime, next);
+            this.wait(dialog.time || this.speechTime, next);
         }
         else if (dialog.nextKey) {
             var next = dialog.nextKey;
@@ -146,11 +163,12 @@ var Level = Juicy.State.extend({
             }
 
             this.updateFunc = function() { return false; };
-            this.key_DOWN = function() {
-                this.key_DOWN = false;
+            var self = this;
+            this.game.on('key', dialog.keys || ['SPACE'], function() {
+                self.key_DOWN = false;
 
-                next.call(this);
-            };
+                next.call(self);
+            });
         }
     },
 
@@ -161,37 +179,34 @@ var Level = Juicy.State.extend({
         }, time * 1000);
     },
 
+    gameOver: function() {
+        var timeout = 2;
+
+        this.update = function(dt, game) {
+            this.ui_entity.update(dt);
+
+            if (timeout > 1.8 && timeout - dt <= 1.8) {
+                this.ui.addText({
+                    text: 'OUT OF FUEL!',
+                    font: 'BIG',
+                    animate: 'DRAMATIC',
+                    position: Juicy.Point.create(80, 40),
+                    center: true,
+                    brightness: 3,
+                    showBackground: true
+                });
+            }
+
+            timeout -= dt;
+            if (timeout < 0) {
+                this.complete = true;
+                this.game.setState(new CityLevel());
+            }
+        };
+    },
+
     key_ESC: function() {
         this.game.setState(new PauseState(this));
-    },
-
-    key_SPACE: function() {
-        this.initPlaceName();
-    },
-
-    initPlaceName: function() {
-        this.ui.clearText();
-
-        this.subTitle = this.ui.addText({
-            text: this.subtitle(),
-            font: TEXT.FONTS.SMALL,
-            position: Juicy.Point.create(this.game_width/6, 32),
-            center: true,
-            brightness: 1,
-            animate: 'SLIDE',
-            delayPerCharacter: 0,
-            initialDelay: 80,
-        });
-
-        this.roomTitle = this.ui.addText({
-            text: this.placeName(),
-            font: TEXT.FONTS.BIG,
-            position: Juicy.Point.create(this.game_width/6, 20),
-            center: true,
-            brightness: 2,
-            animate: 'DRAMATIC',
-            delayPerCharacter: 8,
-        });
     },
     
     update: function(dt, game) {
@@ -217,13 +232,20 @@ var Level = Juicy.State.extend({
                 }
 
                 this._countdown = nextCountdown;
+                if (this._countdown <= 0) {
+                    this.countdownText.set({
+                        delayPerCharacter: 0,
+                        text: 'GO',
+                        center: true,
+                        animate: 'NONE'
+                    });
+                    sfx.play('jump');
+                }
 
                 shouldUpdate = false; // Don't update game yet
             }
             else if (this._countdown > -0.5) {
                 this._countdown -= dt;
-
-                this.countdownText.setText('GO');
 
                 if (this._countdown <= -0.5) {
                     this.countdownText.remove = true;
@@ -288,7 +310,6 @@ var Level = Juicy.State.extend({
     },
 
     render: function(context) {
-
         context.save();
         this.backdrop.render(context);
         context.translate(-Math.round(this.camera.x + 2 * Math.sin(this.shake * 100)), -Math.round(this.camera.y));
@@ -303,6 +324,18 @@ var Level = Juicy.State.extend({
         this.player.render(context);
 
         context.restore();
+
+        var pEnergy = this.player.getComponent('Digger').energy;
+        var pMaxEnergy = this.player.getComponent('Digger').max_energy;
+        context.fillStyle = Palette.getStyle('LOW');
+        context.fillRect(0, 0, 160, 17);
+        context.fillStyle = Palette.getStyle('DARK');
+        context.fillRect(72, 1, 90, 15);
+        context.fillRect(1, 1, 68, 15);
+        context.drawImage(this.energy, 74, 3);
+        for (var i = 0; i < pEnergy * 9 / pMaxEnergy; i ++) {
+            context.drawImage(this.healthBar, 87 + i * 8, 3);
+        }
 
         // Draw UI independent of Camera
         this.ui_entity.render(context);

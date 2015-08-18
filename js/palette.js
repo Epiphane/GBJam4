@@ -37,6 +37,10 @@
         return img;
     };
 
+    Palette.numPalettes = function() {
+        return palettes.length;
+    };
+
     Palette.set = function(palette_id) {
         if (typeof(palette_id) === 'undefined') {
             palette_id = Juicy.rand(palettes.length);

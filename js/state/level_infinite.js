@@ -13,8 +13,7 @@ var InfiniteLevel = Level.extend({
 
         // Create coins!
         this.target = new Juicy.Entity(this, ['ColoredSprite', 'Goal']);
-        this.target.getComponent('ColoredSprite').setSheet('img/doge-coin.png', 32, 32);
-        this.target.getComponent('ColoredSprite').runAnimation(0, 7, 0.2, true);
+        this.target.getComponent('ColoredSprite').setSheet('img/spinningpiece2.png', 24, 24).runAnimation(0, 7, 0.18, true);
         this.objects.push(this.target);
         this.moveGoal();
 
@@ -32,17 +31,38 @@ var InfiniteLevel = Level.extend({
         gateSprite.setSheet('img/gate.png', 52, 48);
         gateSprite.runAnimation(0, 7, -1, false);
         gateSprite.oncompleteanimation = function() {
-                self.gateOpen = true;
                 self.updateFunc = self.panToGate;
 
                 self.player.target = self.gate;
                 self.target.remove = true;
-
-                gateSprite.runAnimation(8, 10, 0.2, true);
-                gateSprite.oncompleteanimation = null;
             };
 
+        this.shouldbuild = true;
+
         this.initPlaceName();
+    },
+
+    key_SPACE: function() {
+        this.initPlaceName();
+    },
+
+    initPlaceName: function() {
+        if (this.subTitle) {
+            this.subTitle.setText(this.subtitle());
+        }
+        else {
+            this.subTitle = this.ui.addText({
+                text: this.subtitle(),
+                font: TEXT.FONTS.SMALL,
+                position: Juicy.Point.create(5, 20),
+                brightness: 2,
+                animate: 'SLIDE',
+                delayPerCharacter: 0,
+                initialDelay: 80,
+            });
+        }
+
+        this.roomTitle.setText(this.placeName());
     },
 
     completeLevel: function() {
@@ -54,6 +74,12 @@ var InfiniteLevel = Level.extend({
     },
 
     moveGoal: function() {
+        if (this.shouldbuild) {
+            this.target.getComponent('ColoredSprite').setSheet('img/spinningpiece2.png', 24, 24);
+        }
+        else {
+            this.target.getComponent('ColoredSprite').setSheet('img/spinningpiece1.png', 20, 20);
+        }
         this.target.position = new Juicy.Point(Juicy.rand(this.tile_manager.width - 100), 288-Juicy.rand(10, 80));
     },
 
@@ -62,7 +88,12 @@ var InfiniteLevel = Level.extend({
             this.target.getComponent('Goal').asplode();
             this.moveGoal();
 
-            this.gate.getComponent('ColoredSprite').goNextFrame();
+            if (this.shouldbuild) {
+                this.gate.getComponent('ColoredSprite').goNextFrame();
+            }
+            this.shouldbuild = !this.shouldbuild;
+
+            this.shake = 0.4
         }
         else if (this.updateFunc !== this.checkGate) {
             this.updateFunc = this.checkGate;
@@ -90,6 +121,15 @@ var InfiniteLevel = Level.extend({
         this.watching = this.gate;
         this.camera.dx = 1;
         this.camera.dy = 1.5;
+
+        if (!this.gateOpen && this.gate.center()._sub(Juicy.Point.temp(this.camera.x + game.width / 2, this.camera.y + game.height / 2))._length() < 30) {
+            this.gateOpen = true;
+            this.camera.dx = 0.5;
+            this.camera.dy = 1;
+            var gateSprite = this.gate.getComponent('ColoredSprite');
+                gateSprite.runAnimation(8, 10, 0.2, true);
+                gateSprite.oncompleteanimation = null;
+        }
 
         if (this.gate.center()._sub(Juicy.Point.temp(this.camera.x + game.width / 2, this.camera.y + game.height / 2))._length() < 10) {
             this.updateFunc = null;

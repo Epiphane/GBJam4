@@ -9,7 +9,7 @@ Juicy.Component.create('BirdManager', {
         // Update existing burds
         for (var ndx = this.burds.length - 1; ndx >= 0; ndx--) {
             var burd = this.burds[ndx];
-            burd.position.x += dt*20;
+            burd.position.x += dt*60;
             burd.getComponent('ColoredSprite').update(dt);
 
             if (this.entity.state.player.testCollision(burd)) {
@@ -59,7 +59,7 @@ Juicy.Component.create('BirdManager', {
         var newBurd = new Juicy.Entity(this.entity.state, ['ColoredSprite']);
 
         // Choose random Y
-        newBurd.position = new Juicy.Point(-4, Math.round(-Math.random() * 20 - 50));
+        newBurd.position = new Juicy.Point(-4, 238 + Math.round(-Math.random() * 20));
 
         newBurd.getComponent('ColoredSprite').setSheet('img/dumb-bird.png', 25, 11);
         newBurd.getComponent('ColoredSprite').flipped = true;

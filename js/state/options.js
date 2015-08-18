@@ -1,7 +1,7 @@
 (function() {
     var volume = JSON.parse(localStorage.getItem('volume')) || {
-        music: 3,
-        sfx: 4
+        music: 4,
+        sfx: 3
     };
 
     window.updateVolume = function() {
@@ -38,11 +38,9 @@
                     }
                 },
                 {
-                    text: 'Random Palette',
+                    text: 'Change Palette',
                     oncomplete: function() {
-                        Palette.set();
-
-                        this.updated = true;
+                        this.game.setState(new PaletteSelector(this));
                     }
                 },
             ];

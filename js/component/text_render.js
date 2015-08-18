@@ -59,7 +59,8 @@
             this.offset         = info.offset || this.offset;
             this.animate        = info.animate || this.animate || 'NONE';
             this.delayPerCharacter = info.delayPerCharacter || 2;
-            this.animationTicks -= info.initialDelay || 0;
+            this.initialDelay   = info.initialDelay || 0;
+            this.animationTicks-= this.initialDelay;
 
             if (typeof(info.font) !== 'undefined') this.setFont(info.font);
             this.setText(info.text || this.text);
@@ -90,6 +91,9 @@
             for (var ndx = 0; ndx < text.length; ndx++) {
                 this.characterAnim[ndx] = 0;
             }
+
+            this.animationTicks = 0;
+            this.animationTicks-= this.initialDelay;
         },
 
         setFont: function(font) {
@@ -289,10 +293,10 @@
                 charCode -= _0;
                 charCode += 26; // To go to numbers
             }
-            if (charCode === exclaim) {
+            else if (charCode === exclaim) {
                 charCode = 36;
             }
-            if (charCode === question) {
+            else if (charCode === question) {
                 charCode = 37;
             }
 

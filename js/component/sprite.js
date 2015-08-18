@@ -35,6 +35,7 @@ Juicy.Component.create('Sprite', {
     },
 
     setImageSrc: function(url) {
+        this.image.complete = false;
         this.image.src = url;
     },
 
@@ -136,12 +137,12 @@ Juicy.Component.create('Sprite', {
         var scaleAdjustY = (dheight * this.scale - dheight) * 3;
         
         if (this.scale == 1) {
-             context.drawImage(this.image, sx, sy, this.sprite_width, this.sprite_height,
-                                      dx, dy, dwidth, dheight);
+            context.drawImage(this.image, sx, sy, this.sprite_width, this.sprite_height,
+                              dx, dy, dwidth, dheight);
         }
         else {
             context.drawImage(this.image, sx, sy, this.sprite_width, this.sprite_height,
-                                      dx - 0.5, dy - scaleAdjustY/3 + 0.125, dwidth * this.scale, dheight * this.scale);            
+                              dx - 0.5, dy - scaleAdjustY/3 + 0.125, dwidth * this.scale, dheight * this.scale);            
         }
         context.restore();
     }

@@ -10,23 +10,29 @@ Juicy.Component.create('Player', {
         this.arrow = document.createElement('canvas');
         this.arrow_context = this.arrow.getContext('2d');
 
-        this.lives = 3;
-        this.health = 100;
+        this.health = 8;
         this.baseDmg = 20;
 
         this.controlPause = 0;
     },
     
     loseLife: function() {
-        this.lives -= 1;
+        this.health -= 1;
         // Call death animation + sound?
 
-        if (this.lives == 0) {
+        if (this.health == 0) {
             this.RIP();
         }
     },
 
+    getHit: function() {
+        this.invincible = 1;
+        var digger = this.entity.getComponent('Digger');
+        digger.controlPause = 0.25;
+    },
+
     RIP: function() {
+        this.entity.state.gameOver();
         // probably call some game.setState(gameover) or something
         // idfk i have no idea what im doing
     },
@@ -34,6 +40,7 @@ Juicy.Component.create('Player', {
     startIdleAnim: function() {
         this.entity.getComponent('ColoredSprite').runAnimation(8, 19, 0.16, true);
     },
+
     updateAnim: function(newDirection) {
         if (this.direction == newDirection) {
             return;
@@ -62,15 +69,13 @@ Juicy.Component.create('Player', {
         }
     },
 
-    getHit: function() {
-        this.invincible = 1;
-        var digger = this.entity.getComponent('Digger');
-        digger.controlPause = 0.25;
-    },
-
     update: function(dt, game) {
         var digger = this.entity.getComponent('Digger');
         var newDirection = 'IDLE';
+
+        if (digger.energy < 0) {
+            this.RIP();
+        }
 
         var self = this;
 
@@ -191,9 +196,10 @@ Juicy.Component.create('Player', {
             vert.free();
         }
 
+        var color = Palette.get('MID');
         for (var i = -arrow_width; i <= arrow_width; i ++) {
             for (var j = -arrow_width; j <= arrow_width; j ++) {
-                castPixels(center.add(i, j), Palette.get('MID'));
+                castPixels(center.add(i, j), color);
             }
         }
         step.free();

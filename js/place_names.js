@@ -16,7 +16,7 @@ function randFromArray(array) {
 function COOL_NAME() {
     var result = "";
     
-    while (result.length < Math.random() * 4 + 5) {
+    while (result.length < Math.random() * 4 + 4) {
         switch(randomRange(0, 4)) {
         case 0:
             result += randFromArray(LONE_CONSONANTS);
@@ -121,7 +121,7 @@ var PLACE_SECOND_WORD = [
     "VILLAGE",
     "PLANET",
     "KINGDOM",
-    "3 BEDROOM APARTMENT ABOVE JC PENNYS",
+    "APARTMENT ABOVE JC PENNYS",
     "LEVEL",
     "FACTORY",
     "CREVICE",
@@ -140,7 +140,7 @@ var PLACE_SECOND_WORD = [
     "HALLOWS",
     "KEEP",
     "DUNGEON",
-    "PARKING LOT OUTSIDE OF DENNY'S",
+    "PARKING LOT BEHIND DENNYS",
     "TEMPLE",
     "UNDERBELLY",
     "WOMB",

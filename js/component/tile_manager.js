@@ -109,7 +109,6 @@
             Palette.applyPalette(this, tile_low_img);
         };
 
-    var _pool_Tile = [];
     var Tile = function(sx, sy, obj) {
         this.sx = sx;
         this.sy = sy;
@@ -119,24 +118,10 @@
         this.blocking   = false;
     }
 
-    Tile.create = function(sx, sy, obj) {
-        // if (_pool_Tile.length > 0) {
-        //     var tile = _pool_Tile.shift();
-        //     tile.sx = sx;
-        //     tile.sy = sy;
-        //     tile.obj = obj || false;
-        //     tile.drawn = false;
+    Tile.create = function(sx, sy, obj) { return new Tile(sx, sy, obj); };
 
-        //     return tile;
-        // }
-        // else {
-            return new Tile(sx, sy, obj);
-        // }
-    }
-
-    Tile.prototype.free = function() { };//_pool_Tile.push(this); };
-
-    window.currentTileManager = null;
+    var currentTileManager = null;
+    var lastTileManager = null;
     Palette.onchange.push(function() {
         if (currentTileManager) {
             currentTileManager.onPaletteChange();
@@ -158,20 +143,46 @@
             this.chunk_height = 144;
 
             currentTileManager = this;
+
+            this.cleanedUp = 0;
         },
 
         cleanup: function() {
-            currentTileManager = null;
+            lastTileManager = this;
+            return;
+        },
 
-            for (var i = 0; i < this.tiles.length; i ++) {
-                for (var j = 0; j < this.tiles[i].length; j ++) {
-                    if (this.tiles[i][j]) {
-                        this.tiles[i][j].free();
-                        delete this.tiles[i][j];
-                    }
-                }
-                delete this.tiles[i];
+        cleanupLastManager: function() {
+            if (!lastTileManager) return 1;
+
+            return lastTileManager.progressiveCleanup();
+        },
+        //     currentTileManager = null;
+
+        //     for (var i = 0; i < this.tiles.length; i ++) {
+        //         for (var j = 0; j < this.tiles[i].length; j ++) {
+        //             if (this.tiles[i][j]) {
+        //                 delete this.tiles[i][j];
+        //             }
+        //         }
+        //         delete this.tiles[i];
+        //     }
+        // },
+
+        progressiveCleanup: function() {
+            var cleanup = 0;
+            while (cleanup < 10  && this.cleanedUp < this.tiles.length) {
+                this.tiles[this.cleanedUp] = null;
+
+                cleanup ++;
+                this.cleanedUp ++;
             }
+
+            if (this.cleanedUp === this.tiles.length) {
+                lastTileManager = null; // Throw me awayyyy
+            }
+
+            return this.cleanedUp / this.tiles.length;
         },
 
         persistTiles: function(x, y, w, h) {
@@ -402,19 +413,19 @@
             }
         },
 
-        removeObj: function(tile) {
+        removeObj: function(tile, digger) {
             if (!tile) return;
 
             var obj = tile.obj;
             if (obj !== false) {
                 this.objects[obj].count --;
-                if (this.objects[obj].count === 0) {
-                    console.log('Removed object ' + obj + ': ' + this.objects[obj].type);
+                if (digger && this.objects[obj].count === 0) {
+                    digger.destroyObject(this.objects[obj].type);
                 }
             }
         },  
 
-        removeCell: function(x, y) {
+        removeCell: function(x, y, digger) {
             x = Math.floor(x / TILE_SIZE);
             y = Math.floor(y / TILE_SIZE);
 
@@ -439,7 +450,7 @@
             if (this.tiles[y][x] === false) {
                 return 0;
             }
-            this.removeObj(this.tiles[y][x]);
+            this.removeObj(this.tiles[y][x], digger);
             this.tiles[y][x] = false;
 
             var self = this;

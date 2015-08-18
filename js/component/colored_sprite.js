@@ -18,7 +18,11 @@
                 // Color the image
                 Palette.applyPalette(self.template, self.image);
                 self.onupdateimage();
+
+                self.ready = true;
             }
+
+            this.ready = false;
 
             this.clearRects = false;
             this.rectsRemaining = 0;
@@ -26,6 +30,7 @@
         },
 
         setImageSrc: function(url) {
+            this.ready = false;
             this.template.src = url;
         },
 
@@ -92,5 +97,13 @@
                 this.context.clearRect(i + x * this.clearSize, y * this.clearSize, this.clearSize, this.clearSize);
             }
         },
+
+        render: function() {
+            if (!this.ready) {
+                return;
+            }
+
+            Juicy.Components.Sprite.prototype.render.apply(this, arguments);
+        }
     });
 })();
