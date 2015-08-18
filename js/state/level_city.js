@@ -17,7 +17,7 @@
             });
 
             this.pieces = JSON.parse(localStorage.getItem('altar'));
-            if (this.pieces) {
+            if (this.pieces && this.pieces.length === 10) {
                 playedCutScene = true;
                 var self = this;
                 altar.onload = function() {
@@ -27,7 +27,7 @@
             else {
                 playedCutScene = false;
                 this.pieces = [];
-                for (var i = 0; i < 11; i ++) {
+                for (var i = 0; i < 10; i ++) {
                     var row = [];    
                     for (var j = 0; j < 10; j ++) {
                         row.push(true);
@@ -40,7 +40,7 @@
             for (var i = 0; i < this.pieces.length; i ++) {
                 for (var j = 0; j < this.pieces[0].length; j ++) {
                     if (!this.pieces[i][j]) {
-                        altar_context.clearRect(129 + i * 2, j * 4, 2, 4);
+                        altar_context.clearRect(120 + i * 4, 4 + j * 2, 4, 2);
                     }
                 }
             }
@@ -50,12 +50,12 @@
         removePiece: function(i, j) {
             this.pieces[i][j] = false;
 
-            altar_context.clearRect(129 + i * 2, j * 4, 2, 4);
+            altar_context.clearRect(120 + i * 4, 4 + j * 2, 4, 2);
 
             this.save();
         },
         addPiece: function(i, j) {
-            if (i > 11 || j > 10) {
+            if (i > 10 || j > 10) {
                 // ALTAR IS REBUIL (?)
             }
             else {
@@ -257,9 +257,9 @@
             // Create Saw enemies
             this.badDudes = [];
             for (var i = 0; i < 86; i ++) {
-                var xval = 44 * ((i / 11) % 1);
-                var yToDelete = Math.floor(i / 11);
-                badDude = new Juicy.Entity(this, ['ColoredSprite', new destroyShrine(i % 11, yToDelete)]);
+                var xval = 44 * ((i / 10) % 1);
+                var yToDelete = Math.floor(i / 10);
+                badDude = new Juicy.Entity(this, ['ColoredSprite', new destroyShrine(i % 10, yToDelete)]);
                 badDude.position = new Juicy.Point(this.altar.position.x + 8 + xval, 988 + 10 * (i / 8) * (i % 3));        
                 badDude.getComponent('ColoredSprite').setSheet('img/sawman-all.png', 20, 20);
                 badDude.getComponent('ColoredSprite').runAnimation(4, 7, 0.016, true);
