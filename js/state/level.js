@@ -138,7 +138,7 @@ var Level = Juicy.State.extend({
                 };
             }
 
-            this.wait(this.speechTime, next);
+            this.wait(dialog.time || this.speechTime, next);
         }
         else if (dialog.nextKey) {
             var next = dialog.nextKey;

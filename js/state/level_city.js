@@ -7,6 +7,8 @@
         var altarComponent = new AltarComponent();
     }
 
+    var altar = Palette.loadImage('img/altar.png');
+    var altar_context = altar.getContext('2d');
     var AltarComponent = Juicy.Component.extend({
         constructor: function() {
             var self = this;
@@ -15,7 +17,6 @@
             });
 
             this.pieces = JSON.parse(localStorage.getItem('altar'));
-            console.log(this.pieces);
             if (this.pieces) {
                 playedCutScene = true;
                 var self = this;
@@ -24,6 +25,7 @@
                 }
             }
             else {
+                playedCutScene = false;
                 this.pieces = [];
                 for (var i = 0; i < 11; i ++) {
                     var row = [];    
@@ -70,8 +72,6 @@
         }
     });
 
-    var altar = Palette.loadImage('img/altar.png');
-    var altar_context = altar.getContext('2d');
     var altarComponent = new AltarComponent();
 
     window.CityLevel = Level.extend({
@@ -194,7 +194,6 @@
 
         update: function() {
             if (!playedCutScene) {
-                console.log('ay');
                 if (this.player.position.x > this.altar.position.x - 20) {
                     this.initCutScene();
                     playedCutScene = true;
@@ -206,9 +205,6 @@
         },
 
         initCutScene: function() {
-            music.stop(this.song);
-            this.song = 'quake';
-            music.play(this.song);
 
             var self = this;
 
@@ -274,12 +270,17 @@
                 text: 'Whats that?',
                 execute: function() {
                     this.shake = 3;
+
+                    music.stop(this.song);
+                    this.song = 'quake';
+                    music.play(this.song);
                 },
                 next: 'ohNo'
             },
             ohNo: {
                 font: 'BIG',
                 text: 'OH NO!!!',
+                time: 4,
                 execute: function() {
                     this.shake = 5;
                     while (this.badDudes.length > 0) {
@@ -291,6 +292,7 @@
                 font: 'SMALL',
                 text: 'The altar!!!',
                 next: 'helpRestore',
+                time: 3,
                 execute: function() {
                     this.ivan.getComponent('Follower').follow(this.altar, Juicy.Point.create(20, 44), true);
                 }

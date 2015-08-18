@@ -38,7 +38,7 @@ function newGame() {
     localStorage.removeItem('tutorial');
     resetAltar();
 
-    startGame();
+    location.reload();
 };
 
 var loadingImg = new Image();
