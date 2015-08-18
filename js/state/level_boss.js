@@ -12,7 +12,7 @@ var BossLevel = Level.extend({
 
         this.particles = new Juicy.Entity(this, ['ParticleManager'])
 
-        this.boss = new Juicy.Entity(this, ['ColoredSprite', 'Enemy']);
+        this.boss = new Juicy.Entity(this, ['ColoredSprite', 'Enemy', 'Boss']);
         this.boss.getComponent('ColoredSprite').setSheet('img/buzz_boss.png', 32, 24).runAnimation(0, 11, 0.1, true);
         this.boss.position.y = 288 - 60;
         this.boss.position.x = 240;
@@ -20,6 +20,7 @@ var BossLevel = Level.extend({
         this.objects.push(this.boss);
 
         this.boss.getComponent('ColoredSprite').clearRect();
+        this.boss.getComponent('Boss').setBoss('SUN');
 
         this.asplosion = new Juicy.Components.ColoredSprite();
         this.asplosion.setSheet('img/explosion.png', 20, 20);
@@ -41,6 +42,28 @@ var BossLevel = Level.extend({
         this.player.target = this.boss;
     },
 
+    beatLevel: function() {
+        this.ui.addText({
+            text: 'Artifact acquired!',
+            font: 'BIG',
+            animate: 'DRAMATIC',
+            position: Juicy.Point.create(80, 40),
+            center: true,
+            brightness: 3,
+            showBackground: true
+        });
+
+        // TODO make it inaccessible
+        addAltarPiece();
+
+        this.updateFunc = function() { return false; };
+
+        var self = this;
+        this.timeout(function() {
+            self.completeLevel();
+        }, 2);
+    },
+
     completeLevel: function() {
         this.complete = true;
         this.game.setState(new CityLevel());
@@ -51,8 +74,9 @@ var BossLevel = Level.extend({
     update: function(dt, game) {
         this.particles.update(dt);
 
-        if (this.boss.remove) {
+        Level.prototype.update.call(this, dt, game);
 
+        if (this.boss.remove) {
             for (var ndx = 0; ndx < this.drones.length; ndx++) {
                 var drone = this.drones[ndx];
                 drone.remove = true;
@@ -72,54 +96,65 @@ var BossLevel = Level.extend({
 
                 this.asplosionsLeft --;
             }
+            else if (this.asplosionsLeft === 0) {
+                var artifact = this.boss.getComponent('Boss').getArtifact();
+                this.objects.splice(0, 0, artifact);
+
+                this.player.target = artifact;
+                this.getTarget = function() {
+                    this.player.target = null;
+                    this.beatLevel();
+                }
+
+                this.asplosionsLeft = -1;
+            }
         }
+        else {
+            for (var ndx = 0; ndx < this.drones.length; ndx++) {
+                var drone = this.drones[ndx];
 
-        Level.prototype.update.call(this, dt, game);
+                drone.offRailsTimer--;
+                if (drone.offRailsTimer <= 0) {
 
-        for (var ndx = 0; ndx < this.drones.length; ndx++) {
-            var drone = this.drones[ndx];
+                    if (drone.offRails) {
+                        drone.offRailsTimer = Math.random() * 200 + 300;
+                    }
+                    else {
+                        drone.offRailsTimer = Math.random() * 200 + 20;
+                    }
 
-            drone.offRailsTimer--;
-            if (drone.offRailsTimer <= 0) {
+
+                    drone.offRails = !drone.offRails;
+                    drone.offRailsDx = Math.random() * 1 - 0.5;
+                    drone.offRailsDy = Math.random() * 1 - 0.5;
+                }
 
                 if (drone.offRails) {
-                    drone.offRailsTimer = Math.random() * 200 + 300;
+                    drone.position.x += drone.offRailsDx;
+                    drone.position.y += drone.offRailsDy;
                 }
                 else {
-                    drone.offRailsTimer = Math.random() * 200 + 20;
+                    var diff = this.player.position.sub(drone.position);
+                    var normalDiff = diff.mult(1/diff.length());
+
+                    drone.position.x += normalDiff.x * 0.4;
+                    drone.position.y += normalDiff.y * 0.7;
+
                 }
 
+                if (this.player.testCollision(drone) && !this.boss.remove) {
+                    var physics = this.player.getComponent('Physics');
+                    var directionToPlayer = drone.center().sub(this.player.center());
 
-                drone.offRails = !drone.offRails;
-                drone.offRailsDx = Math.random() * 1 - 0.5;
-                drone.offRailsDy = Math.random() * 1 - 0.5;
-            }
+                    physics.dx += Math.random() * 120 - 60;
+                    physics.dy += Math.random() * 120 - 60;
+                    if (directionToPlayer.x > 0)
+                        physics.dx *= -1;
+                    if (directionToPlayer.y > 0)
+                        physics.dy *= -1;
 
-            if (drone.offRails) {
-                drone.position.x += drone.offRailsDx;
-                drone.position.y += drone.offRailsDy;
-            }
-            else {
-                var diff = this.player.position.sub(drone.position);
-                var normalDiff = diff.mult(1/diff.length());
-
-                drone.position.x += normalDiff.x * 0.4;
-                drone.position.y += normalDiff.y * 0.7;
-
-            }
-
-            if (this.player.testCollision(drone) && !this.boss.remove) {
-                var physics = this.player.getComponent('Physics');
-                var directionToPlayer = drone.center().sub(this.player.center());
-
-                physics.dx += Math.random() * 120 - 60;
-                physics.dy += Math.random() * 120 - 60;
-                if (directionToPlayer.x > 0)
-                    physics.dx *= -1;
-                if (directionToPlayer.y > 0)
-                    physics.dy *= -1;
-
-                this.player.getComponent('Digger').energy -= 5;
+                    this.player.getComponent('Digger').energy -= 5;
+                }
             }
         }
     },

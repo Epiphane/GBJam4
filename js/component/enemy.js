@@ -112,56 +112,52 @@ Juicy.Component.create('Enemy', {
             // In here, test further for this.weakPoint
             var directionToPlayer = this.entity.center().sub(player.center());
 
-            // if (!player.getComponent('Player').invincible) {
-                if (this.weakPoint == 'ALL') {
-                    this.health -= player.baseDmg * Math.abs(player.getComponent('Physics').dy/70) * 500;
+            if (this.weakPoint == 'ALL') {
+                this.health -= player.baseDmg * Math.abs(player.getComponent('Physics').dy/70) * 500;
+            }
+
+            physics.dx = 400;
+            physics.dy = Math.abs(physics.dy);
+            if (directionToPlayer.x > 0)
+                physics.dx *= -1;
+            if (directionToPlayer.y > 0)
+                physics.dy *= -1;
+
+            player.getComponent('Player').getHit();
+
+            this.entity.getComponent('ColoredSprite').clearRect();
+            this.entity.getComponent('ColoredSprite').clearRect();
+            this.entity.getComponent('ColoredSprite').clearRect();
+
+            sfx.play('ouch_boss');
+            this.spawnDrone();
+
+            this.entity.state.particles.getComponent('ParticleManager').spawnParticles({
+                color: "MID", 
+                size: 3, 
+                howMany: 20, 
+                timeToLive: function(particle, ndx) {
+                    return ndx * 2;
+                },
+                initParticle: function(particle) {
+                    particle.x = self.entity.position.x + self.entity.width*Math.random()*0.6 + 4;
+                    particle.y = self.entity.position.y + self.entity.height/2;
+
+                    particle.dx = Math.random() * 4 - 2;
+                    particle.dy = Math.random() * 4 - 2;
+
+                    particle.startLife = 20;
+                    particle.life = particle.startLife;
+                },
+                updateParticle: function(particle) {
+                    particle.x += particle.dx;
+                    particle.y += particle.dy;
+
+                    particle.dy += 0.04;
+                    particle.dx *= 0.9
+                    particle.dy *= 0.9
                 }
-
-                physics.dx = 800;
-                physics.dy = Math.abs(physics.dy);
-                if (directionToPlayer.x > 0)
-                    physics.dx *= -1;
-                if (directionToPlayer.y > 0)
-                    physics.dy *= -1;
-
-                player.getComponent('Player').getHit();
-
-                this.entity.getComponent('ColoredSprite').clearRect();
-                this.entity.getComponent('ColoredSprite').clearRect();
-                this.entity.getComponent('ColoredSprite').clearRect();
-//                 this.entity.getComponent('ColoredSprite').clearRect();
-            // }
-
-                sfx.play('ouch_boss');
-                this.spawnDrone();
-
-                this.entity.state.particles.getComponent('ParticleManager').spawnParticles({
-                    color: "MID", 
-                    size: 3, 
-                    howMany: 20, 
-                    timeToLive: function(particle, ndx) {
-                        return ndx * 2;
-                    },
-                    initParticle: function(particle) {
-                        particle.x = self.entity.position.x + self.entity.width*Math.random()*0.6 + 4;
-                        particle.y = self.entity.position.y + self.entity.height/2;
-
-                        particle.dx = Math.random() * 4 - 2;
-                        particle.dy = Math.random() * 4 - 2;
-
-                        particle.startLife = 20;
-                        particle.life = particle.startLife;
-                    },
-                    updateParticle: function(particle) {
-                        particle.x += particle.dx;
-                        particle.y += particle.dy;
-
-                        particle.dy += 0.04;
-                        particle.dx *= 0.9
-                        particle.dy *= 0.9
-                    }
-                });
-
+            });
         }
 
         if (this.entity.getComponent('ColoredSprite').sectionsRemaining() <= 20) {

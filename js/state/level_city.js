@@ -1,6 +1,6 @@
 (function() {
     window.resetAltar = function() {
-        localStorage.setItem('altarState', -1);
+        localStorage.setItem('altarState', altarState = -1);
         animateAltar();
     }
 
@@ -172,7 +172,7 @@
             if (this.shake < 0.5) {
                 this.complete = true;
 
-                this.game.setState(new InfiniteLevel());
+                this.game.setState(new PreBossLevel());
             }
 
             return false; // Do NOT update physics
