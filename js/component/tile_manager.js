@@ -157,17 +157,6 @@
 
             return lastTileManager.progressiveCleanup();
         },
-        //     currentTileManager = null;
-
-        //     for (var i = 0; i < this.tiles.length; i ++) {
-        //         for (var j = 0; j < this.tiles[i].length; j ++) {
-        //             if (this.tiles[i][j]) {
-        //                 delete this.tiles[i][j];
-        //             }
-        //         }
-        //         delete this.tiles[i];
-        //     }
-        // },
 
         progressiveCleanup: function() {
             var cleanup = 0;
@@ -185,7 +174,7 @@
             return this.cleanedUp / this.tiles.length;
         },
 
-        persistTiles: function(x, y, w, h) {
+        setTiles: function(x, y, w, h, cb) {
             x = Math.floor(x / TILE_SIZE);
             y = Math.floor(y / TILE_SIZE);
             w = Math.floor(w / TILE_SIZE);
@@ -198,39 +187,57 @@
                     if (!this.tiles[j][i]) this.tiles[j][i] = new Tile();
 
                     this.removeObj(this.tiles[j][i]);
-                    
-                    var sx = i % 4;
-                    var sy = 16 + j % 4;
-                    this.tiles[j][i].sx = sx;
-                    this.tiles[j][i].sy = sy;
-                    this.tiles[j][i].persistent = true;
-                    this.tiles[j][i].blocking = false;
+
+                    cb.call(this, this.tiles[j][i], i, j);
                 }
             }
         },
 
+        persistTiles: function(x, y, w, h) {
+            this.setTiles(x, y, w, h, function(tile, i, j) {
+                var sx = i % 4;
+                var sy = 16 + j % 4;
+                tile.sx = sx;
+                tile.sy = sy;
+                tile.persistent = true;
+                tile.blocking = false;
+            });
+        },
+
         blockTiles: function(x, y, w, h) {
-            x = Math.floor(x / TILE_SIZE);
-            y = Math.floor(y / TILE_SIZE);
-            w = Math.floor(w / TILE_SIZE);
-            h = Math.floor(h / TILE_SIZE);
-        
-            for (var j = y; j < y + h; j ++) {
-                if (!this.tiles[j]) continue;
+            this.setTiles(x, y, w, h, function(tile, i, j) {
+                var sx = i % 4;
+                var sy = 12 + j % 4;
+                this.tiles[j][i].sx = sx;
+                this.tiles[j][i].sy = sy;
+                this.tiles[j][i].persistent = true;
+                this.tiles[j][i].blocking = true;
+            });
+        },
 
-                for (var i = x; i < x + w; i ++) {
-                    if (!this.tiles[j][i]) this.tiles[j][i] = new Tile();
+        addHealthPack: function(x, y) {
+            var i = Math.floor(x / TILE_SIZE);
+            var j = Math.floor(y / TILE_SIZE);
 
-                    this.removeObj(this.tiles[j][i]);
+            var preset = presets.BLOCK;
 
-                    var sx = i % 4;
-                    var sy = 12 + j % 4;
-                    this.tiles[j][i].sx = sx;
-                    this.tiles[j][i].sy = sy;
-                    this.tiles[j][i].persistent = true;
-                    this.tiles[j][i].blocking = true;
+            var object_ndx = this.objects.length;
+            var object_size = 0;
+            var object = { name: preset.name };
+
+            for (var p_i = 0; p_i < preset.width; p_i ++) {
+                for (var p_j = 0; p_j < preset.height; p_j ++) {
+                    this.tiles[p_j + j][p_i + i] = Tile.create(preset.start[0] + p_i, preset.start[1] + p_j);
+
+                    this.tiles[p_j + j][p_i + i].obj = object_ndx
+                    object_size ++;
                 }
             }
+
+            this.objects.push({
+                count: Math.floor(object_size * 0.95),
+                type: preset.name
+            });
         },
 
         generateChunk: function(x, y, special) {

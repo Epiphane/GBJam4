@@ -83,7 +83,7 @@
                     this.gate.position = new Juicy.Point(640, 288-48);
                     this.objects.push(this.gate);
 
-                    if (altarState === -1) {
+                    if (altarState !== -1) {
                         var self = this;
                         this.gate.getComponent('Gate').onplayertouch = function() {
                             self.shake = 2;
@@ -112,11 +112,16 @@
                     });
                 }
                 else if (this.loaded === 5) {
-                    this.tile_manager.persistTiles(0, 288, this.game_width * this.tile_manager.TILE_SIZE, 32);
-                    this.tile_manager.blockTiles  (0, 288, 56, 16);
-                    this.tile_manager.blockTiles  (104, 288, 312, 16);
-                    this.tile_manager.blockTiles  (464, 288, 496, 16);
-                    this.tile_manager.blockTiles  (480, 248, 64, 16);
+                    this.tile_manager.persistTiles  (0, 288, this.game_width * this.tile_manager.TILE_SIZE, 32);
+                    this.tile_manager.blockTiles    (0, 288, 56, 16);
+                    this.tile_manager.blockTiles    (104, 288, 296, 16);
+                    this.tile_manager.blockTiles    (480, 288, 464, 16);
+                    this.tile_manager.blockTiles    (496, 248, 48, 16);
+                    for (var x = 360; x <= 386; x += 8) {
+                        for (var y = 288-32; y < 288; y += 8) {
+                            this.tile_manager.addHealthPack (x, y);
+                        }
+                    }
                 }
                 else if (this.loaded === 6) {
                     this.tile_manager.illuminate  (450, 288, 500);
