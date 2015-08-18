@@ -118,7 +118,7 @@ var TutorialLevel = Level.extend({
             text: 'LETS SHOW YOU THE ROPES',
             font: 'SMALL',
             nextKey: function() {
-                this.updateFunc = this.pressDown;
+                this.pressDown();
             }
         },
         nice: {
@@ -185,17 +185,20 @@ var TutorialLevel = Level.extend({
             font: 'SPECIAL'
         });
 
-        if (game.keyDown('DOWN')) {
-            this.updateFunc = false;
-            this.speech.nice.next = function() {
-                this.updateFunc = this.pressRightUp;
+        var self = this;
+        this.updateFunc = function(dt, game) {
+            if (game.keyDown('DOWN')) {
+                self.updateFunc = false;
+                self.speech.nice.next = function() {
+                    self.pressRightUp();
+                }
+                self.say('nice');
+
+                return true;
             }
-            this.say('nice');
 
-            return true;
+            return false; // Do NOT update game
         }
-
-        return false; // Do NOT update game
     },
 
     pressRightUp: function(dt, game) {
@@ -204,10 +207,12 @@ var TutorialLevel = Level.extend({
             font: 'SPECIAL'
         });
 
-        if (this.player.getComponent('Physics').dy < -20) {
-            this.updateFunc = false;
-            this.speech.nice.next = 'hmm';
-            this.say('nice');
+        this.updateFunc = function(dt, game) {
+            if (this.player.getComponent('Physics').dy < -20) {
+                this.updateFunc = false;
+                this.speech.nice.next = 'hmm';
+                this.say('nice');
+            }
         }
     },
 

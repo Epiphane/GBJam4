@@ -33,6 +33,7 @@ var sfx = new Juicy.SFX();
 sfx.load('goal', 'audio/fx_collectable');
 sfx.load('jump', 'audio/fx_jump');
 sfx.load('fuel', 'audio/fx_fuel');
+sfx.load('explode', 'audio/fx_explode');
 sfx.load('quack', 'audio/fx_creature');
 sfx.load('textBonk', 'audio/text-impact');
 sfx.load('textBeep', 'audio/text-beep');
