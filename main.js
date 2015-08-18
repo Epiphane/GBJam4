@@ -56,7 +56,7 @@ var fontImg = new Image();
     fontImg.src = 'img/font.png';
 
 function startGame() {
-    Juicy.Game.setState(new LoadingState(new BossLevel(), {
+    Juicy.Game.setState(new LoadingState(new TitleScreen(), {
         load: function() {
             var completed = (loadingImg.complete ? 1 : 0) + 
                             (titleScreenImg.complete ? 1 : 0) + 
