@@ -1,3 +1,4 @@
+
 Juicy.Component.create('Enemy', {
     constructor: function(myEntity) {
         this.speed = 200;
@@ -59,6 +60,35 @@ Juicy.Component.create('Enemy', {
         sfx.play('textBonk');
 
         this.entity.remove = true;
+
+        var self = this;
+
+        this.entity.state.particles.getComponent('ParticleManager').spawnParticles({
+            color: "LIGHT", 
+            size: 3, 
+            howMany: 800, 
+            timeToLive: function(particle, ndx) {
+                return ndx / 2;
+            },
+            initParticle: function(particle) {
+                particle.x = self.entity.position.x + self.entity.width*Math.random();
+                particle.y = self.entity.position.y + self.entity.height/2;
+                
+                particle.dx = Math.random() * 6 - 3;
+                particle.dy = Math.random() * 6 - 3;
+
+                particle.startLife = 20;
+                particle.life = particle.startLife;
+            },
+            updateParticle: function(particle) {
+                particle.x += particle.dx;
+                particle.y += particle.dy;
+
+                        particle.dy += 0.14;
+                particle.dx *= 0.99
+                particle.dy *= 0.99
+            }
+        });
     },
 
     update: function(dt, game) {
@@ -73,43 +103,21 @@ Juicy.Component.create('Enemy', {
 
         var self = this;
 
-        // this.entity.state.particles.getComponent('ParticleManager').spawnParticles({
-        //     color: "LIGHT", 
-        //     size: 1, 
-        //     howMany: 1, 
-        //     timeToLive: function(particle, ndx) {
-        //         return 0;
-        //     },
-        //     initParticle: function(particle) {
-        //         particle.x = self.entity.position.x + self.entity.width*Math.random()*0.6 + 4;
-        //         particle.y = self.entity.position.y + self.entity.height/2;
-                
-        //         particle.dx = -self.entity.getComponent('Physics').dx / 70;
-        //         particle.dy = -self.entity.getComponent('Physics').dy / 70;
-
-        //         particle.startLife = 20;
-        //         particle.life = particle.startLife;
-        //     },
-        //     updateParticle: function(particle) {
-        //         particle.x += particle.dx;
-        //         particle.y += particle.dy;
-        //     }
-        // });
-
         this.updateAnim(newDirection);
 
         var player = this.entity.state.player;
+        var physics = player.getComponent('Physics');
+
         if (player.testCollision(this.entity)) {
             // In here, test further for this.weakPoint
             var directionToPlayer = this.entity.center().sub(player.center());
 
             // if (!player.getComponent('Player').invincible) {
                 if (this.weakPoint == 'ALL') {
-                    this.health -= player.baseDmg * Math.abs(player.getComponent('Physics').dy/70);
+                    this.health -= player.baseDmg * Math.abs(player.getComponent('Physics').dy/70) * 500;
                 }
 
-                var physics = player.getComponent('Physics');
-                physics.dx = 80;
+                physics.dx = 800;
                 physics.dy = Math.abs(physics.dy);
                 if (directionToPlayer.x > 0)
                     physics.dx *= -1;
@@ -119,11 +127,46 @@ Juicy.Component.create('Enemy', {
                 player.getComponent('Player').getHit();
 
                 this.entity.getComponent('ColoredSprite').clearRect();
+                this.entity.getComponent('ColoredSprite').clearRect();
+                this.entity.getComponent('ColoredSprite').clearRect();
+                this.entity.getComponent('ColoredSprite').clearRect();
             // }
+
+                sfx.play('ouch_boss');
+
+                this.entity.state.particles.getComponent('ParticleManager').spawnParticles({
+                    color: "MID", 
+                    size: 3, 
+                    howMany: 20, 
+                    timeToLive: function(particle, ndx) {
+                        return ndx * 2;
+                    },
+                    initParticle: function(particle) {
+                        particle.x = self.entity.position.x + self.entity.width*Math.random()*0.6 + 4;
+                        particle.y = self.entity.position.y + self.entity.height/2;
+
+                        particle.dx = Math.random() * 4 - 2;
+                        particle.dy = Math.random() * 4 - 2;
+
+                        particle.startLife = 20;
+                        particle.life = particle.startLife;
+                    },
+                    updateParticle: function(particle) {
+                        particle.x += particle.dx;
+                        particle.y += particle.dy;
+
+                        particle.dy += 0.04;
+                        particle.dx *= 0.9
+                        particle.dy *= 0.9
+                    }
+                });
+
         }
 
         if (this.entity.getComponent('ColoredSprite').sectionsRemaining() <= 20) {
             this.die(); // TODO: WRITE ME!!!
+            physics.dx *= 0.2;
+            physics.dy *= 0.2; // Slow down the player so they see the pretty fireworks :3
         }
     }
 });

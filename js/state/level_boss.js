@@ -2,13 +2,15 @@ var BossLevel = Level.extend({
     constructor: function(options) {
         options = options || {};
 
-        options.width = 2;
+        options.width = 4;
         options.height = 1;
 
         var self = this;
 
         // Level.apply(this, arguments);
         Level.call(this, options);
+
+        this.particles = new Juicy.Entity(this, ['ParticleManager'])
 
         this.boss = new Juicy.Entity(this, ['ColoredSprite', 'Enemy']);
         this.boss.getComponent('ColoredSprite').setSheet('img/buzz_boss.png', 32, 24).runAnimation(0, 11, 0.1, true);
@@ -33,6 +35,8 @@ var BossLevel = Level.extend({
             this.tile_manager.blockTiles(0, 0, 8, (this.game_height + 1) * this.tile_manager.chunk_height);
             this.tile_manager.blockTiles(this.game_width * this.tile_manager.TILE_SIZE - 8, 0, 8, (this.game_height + 1) * this.tile_manager.chunk_height);
         }
+
+        this.player.target = this.boss;
     },
 
     completeLevel: function() {
@@ -43,9 +47,11 @@ var BossLevel = Level.extend({
     getTarget: function() {}, // Ignore
 
     update: function(dt, game) {
+        this.particles.update(dt);
+
         if (this.boss.remove) {
             if (this.asplosionsLeft > 0) {
-                dt /= 2;
+                dt /= 4;
                 sfx.play('textBonk');
 
                 if (this.asplosionsLeft % 3) {
@@ -61,5 +67,10 @@ var BossLevel = Level.extend({
         }
 
         Level.prototype.update.call(this, dt, game);
-    }
+    },
+
+    render: function(context) {
+        Level.prototype.render.call(this, context);
+        this.particles.render(context);
+    },
 });
