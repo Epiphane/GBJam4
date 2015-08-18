@@ -6,6 +6,9 @@ var Level = Juicy.State.extend({
             options.countdown = options.countdown || 3;
         }
 
+        this.healthBar = Palette.loadImage('img/health_bar.png');
+        this.energy = Palette.loadImage('img/energy.png');
+
         // Initialize variables
         var self = this;
         this.game_width = (options.width || 4) * 80; // tiles per chunk
@@ -272,7 +275,6 @@ var Level = Juicy.State.extend({
     },
 
     render: function(context) {
-
         context.save();
         this.backdrop.render(context);
         context.translate(-Math.round(this.camera.x + 2 * Math.sin(this.shake * 100)), -Math.round(this.camera.y));
@@ -287,6 +289,18 @@ var Level = Juicy.State.extend({
         this.player.render(context);
 
         context.restore();
+
+        var pEnergy = this.player.getComponent('Player').energy;
+        var pMaxEnergy = this.player.getComponent('Player').max_energy;
+        context.fillStyle = Palette.getStyle('LOW');
+        context.fillRect(0, 0, 160, 17);
+        context.fillStyle = Palette.getStyle('DARK');
+        context.fillRect(72, 1, 90, 15);
+        context.fillRect(1, 1, 68, 15);
+        context.drawImage(this.energy, 74, 3);
+        for (var i = 0; i < pEnergy * 9 / pMaxEnergy; i ++) {
+            context.drawImage(this.healthBar, 87 + i * 8, 3);
+        }
 
         // Draw UI independent of Camera
         this.ui_entity.render(context);

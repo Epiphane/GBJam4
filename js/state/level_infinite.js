@@ -54,8 +54,8 @@ var InfiniteLevel = Level.extend({
             this.subTitle = this.ui.addText({
                 text: this.subtitle(),
                 font: TEXT.FONTS.SMALL,
-                position: Juicy.Point.create(10, 20),
-                brightness: 1,
+                position: Juicy.Point.create(5, 20),
+                brightness: 2,
                 animate: 'SLIDE',
                 delayPerCharacter: 0,
                 initialDelay: 80,
@@ -69,7 +69,7 @@ var InfiniteLevel = Level.extend({
             this.roomTitle = this.ui.addText({
                 text: this.placeName(),
                 font: TEXT.FONTS.BIG,
-                position: Juicy.Point.create(10, 10),
+                position: Juicy.Point.create(5, 5),
                 brightness: 2,
                 animate: 'DRAMATIC',
                 delayPerCharacter: 8,

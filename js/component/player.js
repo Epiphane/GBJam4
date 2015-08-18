@@ -10,20 +10,26 @@ Juicy.Component.create('Player', {
         this.arrow = document.createElement('canvas');
         this.arrow_context = this.arrow.getContext('2d');
 
-        this.lives = 3;
-        this.health = 100;
+        this.health = 8;
+        this.energy = this.max_energy = 100;
         this.baseDmg = 20;
 
         this.controlPause = 0;
     },
     
     loseLife: function() {
-        this.lives -= 1;
+        this.health -= 1;
         // Call death animation + sound?
 
-        if (this.lives == 0) {
+        if (this.health == 0) {
             this.RIP();
         }
+    },
+
+    getHit: function() {
+        this.invincible = 1;
+        var digger = this.entity.getComponent('Digger');
+        digger.controlPause = 0.25;
     },
 
     RIP: function() {
@@ -60,12 +66,6 @@ Juicy.Component.create('Player', {
         else if (this.direction == 'UP') {
             sprite.runAnimation(4, 7, 0.016, true);
         }
-    },
-
-    getHit: function() {
-        this.invincible = 1;
-        var digger = this.entity.getComponent('Digger');
-        digger.controlPause = 0.25;
     },
 
     update: function(dt, game) {
