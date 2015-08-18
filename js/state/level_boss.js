@@ -166,8 +166,8 @@ var BossLevel = Level.extend({
 
     newDrone: function() {
         var newDrone = new Juicy.Entity(this, ['ColoredSprite', 'Digger', 'Physics']);
-        newDrone.getComponent('ColoredSprite').setSheet('img/bad-drone.png', 6, 8);
-        newDrone.getComponent('ColoredSprite').runAnimation(0, 11, 0.16, true);
+        newDrone.getComponent('ColoredSprite').setSheet('img/bad-drone.png', 8, 8);
+        newDrone.getComponent('ColoredSprite').runAnimation(0, 3, 0.016, true);
 
         newDrone.position = this.boss.position.clone();
         newDrone.getComponent('Digger').badDig = true;
