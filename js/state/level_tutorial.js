@@ -6,8 +6,13 @@ var TutorialLevel = Level.extend({
         options.height = 3;
         options.countdown = false;
         options.song = 'tutorial';
+        options.backdrop = false;
 
         Level.call(this, options);
+
+        this.showEnergy = false;
+
+        this.player.getComponent('Digger').energy = 1000;
 
         this.ivan = new Juicy.Entity(this, ['ColoredSprite', 'Follower', 'TextRender']);
         this.ivan.getComponent('ColoredSprite').setSheet('img/helper.png', 12, 16);
@@ -24,21 +29,21 @@ var TutorialLevel = Level.extend({
             offset: Juicy.Point.create(14, -4)
         });
 
-        this.ui.addText({
+        this.esc = this.ui.addText({
             text: 'PRESS ESCAPE TO SKIP',
             animate: 'SLIDE',
             showBackground: true,
             brightness: 2,
-            position: Juicy.Point.create(1, 18)
+            position: Juicy.Point.create(1, 2)
         });
 
-        this.ui.addText({
+        this.spc = this.ui.addText({
             text: 'PRESS SPACE TO CONTINUE',
             animate: 'SLIDE',
             showBackground: true,
             brightness: 2,
             initialDelay: 50,
-            position: Juicy.Point.create(1, 24)
+            position: Juicy.Point.create(1, 8)
         });
 
         this.objects.push(this.ivan);
@@ -48,6 +53,14 @@ var TutorialLevel = Level.extend({
 
         var self = this;
         this.pauseMenuItems = [
+            {
+                text: 'Restart Tutorial',
+                oncomplete: function() {
+                    self.game.setState(new TutorialLevel());
+
+                    self.cleanup();
+                }
+            },
             {
                 text: 'Skip Tutorial',
                 oncomplete: function() {
@@ -102,14 +115,13 @@ var TutorialLevel = Level.extend({
             var self = this;
 
             this.tile_manager.persistTiles(40, 288, this.game_width * this.tile_manager.chunk_width, 8);
+            this.tile_manager.blockTiles(40, 288, 160, 8);
 
             if (!this.started) {
                 this.say('hello');
                 this.updateFunc = function() { return null; };
 
                 this.started = true;
-
-                this.roomTitle.setText('Tutorial');
             }
         }
     },
@@ -124,7 +136,12 @@ var TutorialLevel = Level.extend({
             text: 'IM IVAN!',
             font: 'BIG',
             nextKey: 'welcome',
-            brightness: 3
+            brightness: 3,
+            execute: function() {
+                this.spc.remove = this.esc.remove = true;
+
+                this.roomTitle.setText('Tutorial');
+            }
         },
         welcome: {
             text: 'WELCOME TO QUICKSILVER!',
@@ -132,7 +149,7 @@ var TutorialLevel = Level.extend({
             nextKey: 'ropes'
         },
         ropes: {
-            text: 'LETS SHOW YOU THE ROPES',
+            text: 'HERES HOW YOU PLAY',
             font: 'SMALL',
             nextKey: function() {
                 this.pressDown();
@@ -143,11 +160,54 @@ var TutorialLevel = Level.extend({
             font: 'BIG',
             brightness: 3
         },
+        watchFuel: {
+            text: 'Pressing up uses fuel',
+            font: 'SMALL',
+            time: 2,
+            execute: function() {
+                this.updateFunc = function() { return false; };
+            },
+            next: 'watchYourFuel'
+        },
+        watchYourFuel: {
+            text: 'So be careful!',
+            font: 'SMALL',
+            next: 'thisShouldHelp',
+            execute: function() {
+                this.showEnergy = true;
+            }
+        },
+        thisShouldHelp: {
+            text: 'These refill your tank!',
+            execute: function() {
+                for (var i = 0; i < 4; i ++) {
+                    for (var j = 0; j < 4; j ++) {
+                        this.tile_manager.addHealthPack(this.player.position.x + i * 8, this.player.position.y + 40 + j * 8);
+                    }
+                }
+            },
+            next: function() {
+                this.updateFunc = false;
+
+                var self = this;
+                this.timeout(function() {
+                    self.say('hmm')
+                }, 2);
+            }
+        },
         hmm: {
             text: 'Hmmmm',
             font: 'SMALL',
             brightness: 3,
-            next: 'letsGetOut'
+            next: 'letsGetOut',
+            execute: function() {
+                this.updateFunc = function() { 
+                    if (this.player.position.y >= 258) {
+                        this.player.getComponent('Player').startIdleAnim();
+                        return false; 
+                    };
+                }
+            }
         },
         letsGetOut: {
             text: 'Lets get outta here',
@@ -156,6 +216,11 @@ var TutorialLevel = Level.extend({
         weNeedDoor: {
             text: 'Grab that part!',
             execute: function() {
+                this.updateFunc = false;
+
+                this.piece.position.x = this.player.position.x + 140;
+                this.piece.position.y = 288 - 60;
+
                 this.objects.push(this.piece);
                 this.player.target = this.piece;
             }
@@ -227,7 +292,7 @@ var TutorialLevel = Level.extend({
         this.updateFunc = function(dt, game) {
             if (this.player.getComponent('Physics').dy < -20) {
                 this.updateFunc = false;
-                this.speech.nice.next = 'hmm';
+                this.speech.nice.next = 'watchFuel';
                 this.say('nice');
             }
         }

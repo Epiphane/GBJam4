@@ -29,6 +29,7 @@
             this.objects = [];
             this.speechTime = options.speechTime || 2;
             this.timeouts = [];
+            this.showEnergy = true;
 
             // Create Tile Manager
             this.tile_manager = new Juicy.Components.TileManager(this.game_width);
@@ -45,8 +46,10 @@
             player.target = false;
 
             // Create Background
-            this.backdrop = new Juicy.Entity(this, ['ColoredSprite']);
-            this.backdrop.getComponent('ColoredSprite').setSheet('img/backdrop.png', 160, 144);
+            if (options.backdrop !== false) {
+                this.backdrop = new Juicy.Entity(this, ['ColoredSprite']);
+                this.backdrop.getComponent('ColoredSprite').setSheet('img/backdrop.png', 160, 144);
+            }
 
             // Particle Manager
             this.particles = new Juicy.Entity(this, ['ParticleManager']);
@@ -152,16 +155,18 @@
 
 
             if (dialog.next) {
+                var self = this;
                 var next = dialog.next;
                 if (next && typeof(next) === 'string') {
                     var nextDialog = next;
-                    var self = this;
                     next = function() {
                         self.say(nextDialog);
                     };
                 }
 
-                this.timeout(next, dialog.time || this.speechTime);
+                this.timeout(function() {
+                    next.call(self);
+                }, dialog.time || this.speechTime);
             }
             else if (dialog.nextKey) {
                 var next = dialog.nextKey;
@@ -204,7 +209,6 @@
                 timeout -= dt;
                 if (timeout < 0) {
                     this.complete = true;
-                    this.player.getComponent('Digger').energy = this.player.getComponent('Digger').max_energy;
                     this.game.setState(new CityLevel());
                 }
             };
@@ -327,7 +331,12 @@
 
         render: function(context) {
             context.save();
-            this.backdrop.render(context);
+            if (this.backdrop) {
+                // context.save();
+                // context.translate(-Math.round(this.camera.x / 200), 0);
+                this.backdrop.render(context);
+                // context.restore();
+            }
             context.translate(-Math.round(this.camera.x + 2 * Math.sin(this.shake * 100)), -Math.round(this.camera.y));
 
             this.tiles.render(context, this.camera.x, this.camera.y, this.game.width, this.game.height);
@@ -341,16 +350,19 @@
 
             context.restore();
 
-            var pEnergy = this.player.getComponent('Digger').energy;
-            var pMaxEnergy = this.player.getComponent('Digger').max_energy;
-            context.fillStyle = Palette.getStyle('LOW');
-            context.fillRect(0, 0, 160, 17);
-            context.fillStyle = Palette.getStyle('DARK');
-            context.fillRect(72, 1, 90, 15);
-            context.fillRect(1, 1, 68, 15);
-            context.drawImage(this.energy, 74, 3);
-            for (var i = 0; i < pEnergy * 9 / pMaxEnergy; i ++) {
-                context.drawImage(this.healthBar, 87 + i * 8, 3);
+            if (this.showEnergy) {
+                var pEnergy = this.player.getComponent('Digger').energy;
+                var pMaxEnergy = this.player.getComponent('Digger').max_energy;
+                context.fillStyle = Palette.getStyle('LOW');
+                context.fillRect(0, 0, 160, 17);
+
+                context.fillStyle = Palette.getStyle('DARK');
+                context.fillRect(1, 1, 68, 15);
+                context.fillRect(72, 1, 90, 15);
+                context.drawImage(this.energy, 74, 3);
+                for (var i = 0; i < pEnergy * 9 / pMaxEnergy; i ++) {
+                    context.drawImage(this.healthBar, 87 + i * 8, 3);
+                }
             }
 
             // Draw UI independent of Camera

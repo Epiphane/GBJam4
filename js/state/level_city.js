@@ -156,8 +156,10 @@
         },
 
         update: function(dt, game) {
+            this.player.getComponent('Digger').energy = this.player.getComponent('Digger').max_energy;
             if (this.playingCutScene) {
                 this.player.getComponent('Digger').controlPause = 0.5;
+                this.player.getComponent('Physics').dx = 0;
             }
 
             Level.prototype.update.apply(this, arguments);
@@ -181,7 +183,7 @@
         initCutScene: function() {
             var self = this;
 
-            this.camera.x = this.player.position.x = 484;
+            this.camera.x = this.player.position.x = 490;
             this.camera.y = this.player.position.y = 288 - 80;
 
             var nBadDudes = 0;
@@ -374,6 +376,10 @@
             }
         },
     });
+
+    window.nextArtifact = function() {
+
+    };
 
     window.addAltarPiece = function() {
         if (altarState < 3 && altarState >= 0) {

@@ -12,8 +12,6 @@ Juicy.Component.create('Player', {
 
         this.health = 8;
         this.baseDmg = 20;
-
-        this.controlPause = 0;
     },
     
     loseLife: function() {
@@ -38,11 +36,15 @@ Juicy.Component.create('Player', {
     },
 
     startIdleAnim: function() {
-        this.entity.getComponent('ColoredSprite').runAnimation(8, 19, 0.16, true);
+        this.entity.getComponent('ColoredSprite').runAnimation(12, 23, 0.16, true);
     },
 
     updateAnim: function(newDirection) {
         if (this.direction == newDirection) {
+            return;
+        }
+
+        if (this.entity.getComponent('Digger').controlPause) {
             return;
         }
 

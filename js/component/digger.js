@@ -3,7 +3,8 @@ Juicy.Component.create('Digger', {
         this.speed = 100;
 
         this.controlPause = 0;
-        this.energy = this.max_energy = 2000;
+        this.max_energy = 2000;
+        this.energy = 1600;
         this.badDig = false;
     },
     destroyObject: function(type) {
@@ -98,7 +99,7 @@ Juicy.Component.create('Digger', {
         if (!this.badDig) {
             // Slow down and shoot upwards
             var MAX_UP = 0;
-            var upward = blocksRekt * 2 + (this._up && physics.onGround ? 160 : 0);
+            var upward = blocksRekt * 2 + (!this.controlPause && this._up && physics.onGround ? 160 : 0);
             if (this._up || (physics.dy - upward > MAX_UP)) {
                 physics.dy -= upward;
             }
