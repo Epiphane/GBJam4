@@ -62,6 +62,8 @@ var TutorialLevel = Level.extend({
             self.shake = 2;
             self.updateFunc = self.endLevel;
         };
+
+        this.started = false;
     },
 
     endLevel: function(dt, game) {
@@ -92,8 +94,12 @@ var TutorialLevel = Level.extend({
 
             this.tile_manager.persistTiles(40, 288, this.game_width * this.tile_manager.chunk_width, 8);
 
-            this.say('hello');
-            this.updateFunc = function() { return null; };
+            if (!this.started) {
+                this.say('hello');
+                this.updateFunc = function() { return null; };
+
+                this.started = true;
+            }
         }
     },
 
