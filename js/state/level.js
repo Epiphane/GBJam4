@@ -204,6 +204,7 @@
                 timeout -= dt;
                 if (timeout < 0) {
                     this.complete = true;
+                    this.player.getComponent('Digger').energy = this.player.getComponent('Digger').max_energy;
                     this.game.setState(new CityLevel());
                 }
             };

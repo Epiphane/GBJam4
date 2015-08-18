@@ -346,7 +346,7 @@
                 y: chunk_y
             };
 
-            if (special !== 'empty') {
+            if (chunk_y >= 2) {
                 chunk.context.fillStyle = Palette.getStyle('DARK');
                 chunk.context.fillRect(0, 0, this.chunk_width, this.chunk_height);
             }
