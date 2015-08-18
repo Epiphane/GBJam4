@@ -47,7 +47,7 @@ var TitleScreen = Juicy.State.extend({
             Juicy.Game.setState(new TutorialLevel()).run();
         }
         else {
-            Juicy.Game.setState(new BossLevel()).run();
+            Juicy.Game.setState(new CityLevel()).run();
         }     
     },
 });
