@@ -75,6 +75,15 @@ var Level = Juicy.State.extend({
 
         if (this.camera.x < 0) 
             this.camera.x = 0;
+
+        this.roomTitle = this.ui.addText({
+            text: '',
+            font: TEXT.FONTS.BIG,
+            position: Juicy.Point.create(5, 5),
+            brightness: 2,
+            animate: 'DRAMATIC',
+            delayPerCharacter: 8,
+        });
     },
 
     cleanup: function() {
@@ -168,6 +177,32 @@ var Level = Juicy.State.extend({
         setTimeout(function() {
             callback.call(self);
         }, time * 1000);
+    },
+
+    gameOver: function() {
+        var timeout = 2;
+
+        this.update = function(dt, game) {
+            this.ui_entity.update(dt);
+
+            if (timeout > 1.8 && timeout - dt <= 1.8) {
+                this.ui.addText({
+                    text: 'OUT OF FUEL!',
+                    font: 'BIG',
+                    animate: 'DRAMATIC',
+                    position: Juicy.Point.create(80, 40),
+                    center: true,
+                    brightness: 3,
+                    showBackground: true
+                });
+            }
+
+            timeout -= dt;
+            if (timeout < 0) {
+                this.complete = true;
+                this.game.setState(new CityLevel());
+            }
+        };
     },
 
     key_ESC: function() {
@@ -290,8 +325,8 @@ var Level = Juicy.State.extend({
 
         context.restore();
 
-        var pEnergy = this.player.getComponent('Player').energy;
-        var pMaxEnergy = this.player.getComponent('Player').max_energy;
+        var pEnergy = this.player.getComponent('Digger').energy;
+        var pMaxEnergy = this.player.getComponent('Digger').max_energy;
         context.fillStyle = Palette.getStyle('LOW');
         context.fillRect(0, 0, 160, 17);
         context.fillStyle = Palette.getStyle('DARK');

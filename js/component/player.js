@@ -11,7 +11,6 @@ Juicy.Component.create('Player', {
         this.arrow_context = this.arrow.getContext('2d');
 
         this.health = 8;
-        this.energy = this.max_energy = 100;
         this.baseDmg = 20;
 
         this.controlPause = 0;
@@ -33,6 +32,7 @@ Juicy.Component.create('Player', {
     },
 
     RIP: function() {
+        this.entity.state.gameOver();
         // probably call some game.setState(gameover) or something
         // idfk i have no idea what im doing
     },
@@ -40,6 +40,7 @@ Juicy.Component.create('Player', {
     startIdleAnim: function() {
         this.entity.getComponent('ColoredSprite').runAnimation(8, 19, 0.16, true);
     },
+
     updateAnim: function(newDirection) {
         if (this.direction == newDirection) {
             return;
@@ -71,6 +72,10 @@ Juicy.Component.create('Player', {
     update: function(dt, game) {
         var digger = this.entity.getComponent('Digger');
         var newDirection = 'IDLE';
+
+        if (digger.energy < 0) {
+            this.RIP();
+        }
 
         var self = this;
 

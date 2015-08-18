@@ -413,19 +413,19 @@
             }
         },
 
-        removeObj: function(tile) {
+        removeObj: function(tile, digger) {
             if (!tile) return;
 
             var obj = tile.obj;
             if (obj !== false) {
                 this.objects[obj].count --;
-                if (this.objects[obj].count === 0) {
-                    // console.log('Removed object ' + obj + ': ' + this.objects[obj].type);
+                if (digger && this.objects[obj].count === 0) {
+                    digger.destroyObject(this.objects[obj].type);
                 }
             }
         },  
 
-        removeCell: function(x, y) {
+        removeCell: function(x, y, digger) {
             x = Math.floor(x / TILE_SIZE);
             y = Math.floor(y / TILE_SIZE);
 
@@ -450,7 +450,7 @@
             if (this.tiles[y][x] === false) {
                 return 0;
             }
-            this.removeObj(this.tiles[y][x]);
+            this.removeObj(this.tiles[y][x], digger);
             this.tiles[y][x] = false;
 
             var self = this;

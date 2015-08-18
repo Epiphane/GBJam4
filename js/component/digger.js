@@ -3,6 +3,13 @@ Juicy.Component.create('Digger', {
         this.speed = 100;
 
         this.controlPause = 0;
+        this.energy = this.max_energy = 4000;
+    },
+    destroyObject: function(type) {
+        if (type === 'BLOCK') {
+            this.energy += 20;
+            sfx.play('fuel');
+        }
     },
     left: function() {
         this._left = true;
@@ -54,7 +61,27 @@ Juicy.Component.create('Digger', {
                 physics.weight_modifier = 4;
             }
             if (this._up) {
-                physics.weight_modifier = 0.75;
+                physics.weight_modifier = 0.4;
+
+                this.energy --;
+                this.entity.state.particles.getComponent('ParticleManager').spawnParticles({
+                    color: "MID", 
+                    size: 3, 
+                    howMany: 5, 
+                    timeToLive: function(particle, ndx) {
+                        return 0;
+                    },
+                    initParticle: function(particle) {
+                        particle.x = self.entity.position.x + self.entity.width*(Math.random()*0.5+0.25);
+                        particle.y = self.entity.position.y + self.entity.height;
+                        
+                        particle.startLife = 5 + Math.random() * 15;
+                        particle.life = particle.startLife;
+                    },
+                    updateParticle: function(particle) {
+                        particle.y += 1;
+                    }
+                });
             }
         }
 
@@ -64,7 +91,7 @@ Juicy.Component.create('Digger', {
         var self = this;
         this.forCollisionBox(function(x, y) {
             var pos = self.entity.position.add(x, y)._floor().free();
-            blocksRekt += tile_manager.removeCell(pos.x, pos.y);
+            blocksRekt += tile_manager.removeCell(pos.x, pos.y, self);
         });
 
         // Slow down and shoot upwards
@@ -78,6 +105,10 @@ Juicy.Component.create('Digger', {
         }
 
         this._up = this._down = this._left = this._right = false;
+
+        if (this.energy > this.max_energy) {
+            this.energy = this.max_energy;
+        }
     },
     // render: function(context) {
     //     context.fillStyle = 'rgba(0, 255, 0, 0.5)';

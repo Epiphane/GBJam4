@@ -89,6 +89,8 @@
         
             this.levelLoaded = 0;
             this.loaded = 0;
+
+            this.roomTitle.setText('Hometown');
         },
 
         load: function(part) {

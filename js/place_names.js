@@ -16,7 +16,7 @@ function randFromArray(array) {
 function COOL_NAME() {
     var result = "";
     
-    while (result.length < Math.random() * 4 + 5) {
+    while (result.length < Math.random() * 4 + 4) {
         switch(randomRange(0, 4)) {
         case 0:
             result += randFromArray(LONE_CONSONANTS);

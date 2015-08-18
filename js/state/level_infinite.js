@@ -62,19 +62,7 @@ var InfiniteLevel = Level.extend({
             });
         }
 
-        if (this.roomTitle) {
-            this.roomTitle.setText(this.placeName());
-        }
-        else {
-            this.roomTitle = this.ui.addText({
-                text: this.placeName(),
-                font: TEXT.FONTS.BIG,
-                position: Juicy.Point.create(5, 5),
-                brightness: 2,
-                animate: 'DRAMATIC',
-                delayPerCharacter: 8,
-            });
-        }
+        this.roomTitle.setText(this.placeName());
     },
 
     completeLevel: function() {

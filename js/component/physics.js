@@ -17,7 +17,9 @@ Juicy.Component.create('Physics', {
         weight *= this.weight_modifier;
 
         this.dy += weight * dt;
-        if (this.dy > 200) this.dy = 200;
+        var max_dy = 200;
+        if (this.weight_modifier < 1) max_dy *= this.weight_modifier;
+        if (this.dy > max_dy) this.dy = max_dy;
         else if (this.dy < -300) this.dy = -300;
 
         var movement = (new Juicy.Point(this.dx, this.dy)).mult(dt);
