@@ -15,6 +15,7 @@
             });
 
             this.pieces = JSON.parse(localStorage.getItem('altar'));
+            console.log(this.pieces);
             if (this.pieces) {
                 playedCutScene = true;
                 var self = this;
@@ -193,6 +194,7 @@
 
         update: function() {
             if (!playedCutScene) {
+                console.log('ay');
                 if (this.player.position.x > this.altar.position.x - 20) {
                     this.initCutScene();
                     playedCutScene = true;
@@ -210,7 +212,7 @@
 
             var self = this;
 
-            var badDudes = 0;
+            var nBadDudes = 0;
             var destroyShrine = Juicy.Component.extend({
                 constructor: function(i, j) {
                     this.toDelete_i = i;
@@ -228,9 +230,9 @@
 
                     if (this.entity.position.y < 0) {
                         this.entity.remove = true;
-                        badDudes --;
+                        nBadDudes --;
 
-                        if (badDudes === 0) {
+                        if (nBadDudes === 0) {
                             self.say('weNeedHelp');
                         }
                     }
@@ -238,6 +240,7 @@
             });
 
             // Create Saw enemies
+            this.badDudes = [];
             for (var i = 0; i < 86; i ++) {
                 var xval = 44 * ((i / 11) % 1);
                 var yToDelete = Math.floor(i / 11);
@@ -245,17 +248,45 @@
                 badDude.position = new Juicy.Point(this.altar.position.x + 8 + xval, 988 + 10 * (i / 8) * (i % 3));        
                 badDude.getComponent('ColoredSprite').setSheet('img/sawman-all.png', 20, 20);
                 badDude.getComponent('ColoredSprite').runAnimation(4, 7, 0.016, true);
-                this.objects.push(badDude);
+                this.badDudes.push(badDude);
 
-                badDudes ++;
+                nBadDudes ++;
             }
 
-            this.shake = 3;
-
-            this.ivan_message.setText('OH NO!!');
+            this.say('theAltar');
         },
 
         speech: {
+            theAltar: {
+                font: 'SMALL',
+                text: 'This is our Altar',
+                next: 'itsImportant',
+            },
+            itsImportant: {
+                text: 'It protects our world',
+                next: 'ofOurWorld'
+            },
+            ofOurWorld: {
+                text: 'and maintains balance',
+                next: 'whatsThat'
+            },
+            whatsThat: {
+                text: 'Whats that?',
+                execute: function() {
+                    this.shake = 3;
+                },
+                next: 'ohNo'
+            },
+            ohNo: {
+                font: 'BIG',
+                text: 'OH NO!!!',
+                execute: function() {
+                    this.shake = 5;
+                    while (this.badDudes.length > 0) {
+                        this.objects.push(this.badDudes.shift());
+                    }
+                }
+            },
             weNeedHelp: {
                 font: 'SMALL',
                 text: 'The altar!!!',
