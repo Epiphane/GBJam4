@@ -42,6 +42,41 @@ var InfiniteLevel = Level.extend({
         this.initPlaceName();
     },
 
+    key_SPACE: function() {
+        this.initPlaceName();
+    },
+
+    initPlaceName: function() {
+        if (this.subTitle) {
+            this.subTitle.setText(this.subtitle());
+        }
+        else {
+            this.subTitle = this.ui.addText({
+                text: this.subtitle(),
+                font: TEXT.FONTS.SMALL,
+                position: Juicy.Point.create(10, 20),
+                brightness: 1,
+                animate: 'SLIDE',
+                delayPerCharacter: 0,
+                initialDelay: 80,
+            });
+        }
+
+        if (this.roomTitle) {
+            this.roomTitle.setText(this.placeName());
+        }
+        else {
+            this.roomTitle = this.ui.addText({
+                text: this.placeName(),
+                font: TEXT.FONTS.BIG,
+                position: Juicy.Point.create(10, 10),
+                brightness: 2,
+                animate: 'DRAMATIC',
+                delayPerCharacter: 8,
+            });
+        }
+    },
+
     completeLevel: function() {
         this.complete = true;
         this.game.setState(new InfiniteLevel({

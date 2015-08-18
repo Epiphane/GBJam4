@@ -191,9 +191,10 @@ Juicy.Component.create('Player', {
             vert.free();
         }
 
+        var color = Palette.get('MID');
         for (var i = -arrow_width; i <= arrow_width; i ++) {
             for (var j = -arrow_width; j <= arrow_width; j ++) {
-                castPixels(center.add(i, j), Palette.get('MID'));
+                castPixels(center.add(i, j), color);
             }
         }
         step.free();
