@@ -42,6 +42,7 @@
             this.player = player;
             player.position = new Juicy.Point(16, 240);
             player.state = this;
+            player.target = false;
 
             // Create Background
             this.backdrop = new Juicy.Entity(this, ['ColoredSprite']);

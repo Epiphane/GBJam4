@@ -126,6 +126,7 @@
                     this.objects.push(this.gate);
 
                     if (playedCutScene) {
+                        var self = this;
                         this.gate.getComponent('Gate').onplayertouch = function() {
                             self.shake = 2;
                             self.updateFunc = self.endLevel;
