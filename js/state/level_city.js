@@ -1,78 +1,38 @@
 (function() {
-    var playedCutScene = false;
-
     window.resetAltar = function() {
-        localStorage.removeItem('altar');
-
-        var altarComponent = new AltarComponent();
+        localStorage.setItem('altarState', -1);
+        animateAltar();
     }
 
-    var altar = Palette.loadImage('img/altar.png');
-    var altar_context = altar.getContext('2d');
-    var AltarComponent = Juicy.Component.extend({
-        constructor: function() {
-            var self = this;
-            Palette.onchange.push(function() {
-                self.onupdateimage();
-            });
+    var altar = new Juicy.Entity({}, ['ColoredSprite']);
+        altar.position.x = 400;
+        altar.position.y = 288-80;
+        altar.scale = Juicy.Point.create(2, 2);
+    var altarSprite = altar.getComponent('ColoredSprite').setSheet('img/altar.png', 40, 40);
 
-            this.pieces = JSON.parse(localStorage.getItem('altar'));
-            if (this.pieces) {
-                playedCutScene = true;
-                var self = this;
-                altar.onload = function() {
-                    self.onupdateimage();
-                }
-            }
-            else {
-                playedCutScene = false;
-                this.pieces = [];
-                for (var i = 0; i < 11; i ++) {
-                    var row = [];    
-                    for (var j = 0; j < 10; j ++) {
-                        row.push(true);
-                    }
-                    this.pieces.push(row);
-                }
-            }
-        },
-        onupdateimage: function() {
-            for (var i = 0; i < this.pieces.length; i ++) {
-                for (var j = 0; j < this.pieces[0].length; j ++) {
-                    if (!this.pieces[i][j]) {
-                        altar_context.clearRect(129 + i * 2, j * 4, 2, 4);
-                    }
-                }
-            }
-
-            this.save();
-        },
-        removePiece: function(i, j) {
-            this.pieces[i][j] = false;
-
-            altar_context.clearRect(129 + i * 2, j * 4, 2, 4);
-
-            this.save();
-        },
-        addPiece: function(i, j) {
-            if (i > 11 || j > 10) {
-                // ALTAR IS REBUIL (?)
-            }
-            else {
-                this.pieces[i][j] = true;
-            }
-
-            Palette.set(Palette.current);
-        },
-        save: function() {
-            localStorage.setItem('altar', JSON.stringify(this.pieces));
-        },
-        render: function(context) {
-            context.drawImage(altar, 120, 0, 40, 40, 0, 0, 40, 40);
+    var altarState = parseInt(localStorage.getItem('altarState'));
+    function animateAltar() {
+        if (!altarState && altarState !== 0) {
+            altarState = -1;
+            localStorage.setItem('altarState', -1);
         }
-    });
+        
+        if (altarState === 3 || altarState === -1) {
+            altarSprite.runAnimation(0, 3, 0.5, true);
+        }
+        else {
+            console.log(altarState);
+            altarSprite.runAnimation(4 + altarState, 4 + altarState, -1, true);
+        }
 
-    var altarComponent = new AltarComponent();
+        saveAltar();
+    }
+
+    function saveAltar() {
+        localStorage.setItem('altarState', altarState);
+    }
+
+    animateAltar();
 
     window.CityLevel = Level.extend({
         constructor: function(options) {
@@ -113,10 +73,8 @@
                 }
                 else if (this.loaded === 1) {
                     // Create tha altar
-                    this.altar = new Juicy.Entity(this, [altarComponent]);
-                    this.altar.position.x = 400;
-                    this.altar.position.y = 288-80;
-                    this.altar.scale = Juicy.Point.create(2, 2);
+                    this.altar = altar;
+                    this.altar.state = this;
                     this.objects.push(this.altar);
                 }
                 else if (this.loaded === 2) {
@@ -125,7 +83,7 @@
                     this.gate.position = new Juicy.Point(640, 288-48);
                     this.objects.push(this.gate);
 
-                    if (playedCutScene) {
+                    if (altarState === -1) {
                         var self = this;
                         this.gate.getComponent('Gate').onplayertouch = function() {
                             self.shake = 2;
@@ -183,10 +141,11 @@
                     self.ivan_message.setText('');
                 }, 3000);
 
-                if (!playedCutScene) {
+                if (altarState === -1) {
                     this.initCutScene();
                     this.playingCutScene = true;
-                    playedCutScene = true;
+                    altarState = 3;
+                    animateAltar();
                 }
             }
         },
@@ -232,7 +191,16 @@
                     this.entity.position.y -= 250 * dt;
 
                     if (!this.destroyedAltar && this.entity.position.y < self.altar.position.y + this.toDelete_j * 4) {
-                        altarComponent.removePiece(this.toDelete_i, this.toDelete_j);
+                        if (nBadDudes % 33 === 0) {
+                            altarState --;
+                            animateAltar();
+                        }
+
+                        nBadDudes --;
+
+                        if (nBadDudes === 0) {
+                            self.say('weNeedHelp');
+                        }
 
                         if (!playedSound) {
                             playedSound = true;
@@ -245,21 +213,16 @@
 
                     if (this.entity.position.y < 0) {
                         this.entity.remove = true;
-                        nBadDudes --;
-
-                        if (nBadDudes === 0) {
-                            self.say('weNeedHelp');
-                        }
                     }
                 }
             });
 
             // Create Saw enemies
             this.badDudes = [];
-            for (var i = 0; i < 86; i ++) {
-                var xval = 44 * ((i / 11) % 1);
-                var yToDelete = Math.floor(i / 11);
-                badDude = new Juicy.Entity(this, ['ColoredSprite', new destroyShrine(i % 11, yToDelete)]);
+            for (var i = 0; i < 99; i ++) {
+                var xval = 44 * ((i / 10) % 1);
+                var yToDelete = Math.floor(i / 10);
+                badDude = new Juicy.Entity(this, ['ColoredSprite', new destroyShrine(i % 10, yToDelete)]);
                 badDude.position = new Juicy.Point(this.altar.position.x + 8 + xval, 988 + 10 * (i / 8) * (i % 3));        
                 badDude.getComponent('ColoredSprite').setSheet('img/sawman-all.png', 20, 20);
                 badDude.getComponent('ColoredSprite').runAnimation(4, 7, 0.016, true);
@@ -406,20 +369,12 @@
             }
         },
     });
+
     window.addAltarPiece = function() {
-        var broken = false;
-        for (var i = 0; i < 11; i ++) {    
-            for (var j = 0; j < 10; j ++) {
-                if (!altarComponent.pieces[i][j]) {
-                    broken = true;
-                    break;
-                }
-            }
-            if (broken) {
-                break;
-            }
+        if (altarState < 3 && altarState >= 0) {
+            altarState ++;
         }
 
-        altarComponent.addPiece(i,j);
+        animateAltar();
     };
 })();
