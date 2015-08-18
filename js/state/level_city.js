@@ -89,6 +89,7 @@
         
             this.levelLoaded = 0;
             this.loaded = 0;
+            this.playingCutScene = false;
 
             this.roomTitle.setText('Hometown');
         },
@@ -156,14 +157,18 @@
                     this.tile_manager.blockTiles  (0, 288, 56, 16);
                     this.tile_manager.blockTiles  (104, 288, 312, 16);
                     this.tile_manager.blockTiles  (464, 288, 496, 16);
+                    this.tile_manager.blockTiles  (480, 248, 64, 16);
                 }
                 else if (this.loaded === 6) {
+                    this.tile_manager.illuminate  (450, 288, 500);
+                }
+                else if (this.loaded === 7) {
                     var gateSprite = this.gate.getComponent('ColoredSprite');
                     gateSprite.setSheet('img/gate.png', 52, 48);
                     gateSprite.runAnimation(8, 10, 0.2, true);
                 }
 
-                var objectsToLoad = 7;
+                var objectsToLoad = 8;
                 return (++this.loaded) / objectsToLoad;
             }
         },
@@ -176,7 +181,21 @@
                 setTimeout(function() {
                     self.ivan_message.setText('');
                 }, 3000);
+
+                if (!playedCutScene) {
+                    this.initCutScene();
+                    this.playingCutScene = true;
+                    playedCutScene = true;
+                }
             }
+        },
+
+        update: function(dt, game) {
+            if (this.playingCutScene) {
+                this.player.getComponent('Digger').controlPause = 0.5;
+            }
+
+            Level.prototype.update.apply(this, arguments);
         },
 
         getTarget: function() {}, // Ignore
@@ -194,21 +213,11 @@
             return false; // Do NOT update physics
         },
 
-        update: function() {
-            if (!playedCutScene) {
-                if (this.player.position.x > this.altar.position.x - 20) {
-                    this.initCutScene();
-                    playedCutScene = true;
-                    localStorage.setItem('cutscene', true);
-                }
-            }
-
-            Level.prototype.update.apply(this, arguments);
-        },
-
         initCutScene: function() {
-
             var self = this;
+
+            this.camera.x = this.player.position.x = 484;
+            this.camera.y = this.player.position.y = 288 - 80;
 
             var nBadDudes = 0;
             var destroyShrine = Juicy.Component.extend({
@@ -254,6 +263,38 @@
             this.say('theAltar');
         },
 
+        distress: function() {
+            sfx.play('quack');
+            var startLoc = this.ivan.position.clone();
+
+            this.particles.getComponent('ParticleManager').spawnParticles({
+                color: "MID", 
+                size: 4, 
+                howMany: 60, 
+                timeToLive: function(particle, ndx) {
+                    return Math.random() * 10;
+                },
+                initParticle: function(particle) {
+                    particle.x = startLoc.x;
+                    particle.y = startLoc.y;
+
+                    particle.dx = Math.random() * 6 - 3;
+                    particle.dy = Math.random() * 5 - 4;
+
+                    particle.startLife = Math.random() * 46;
+                    particle.life = particle.startLife;
+                },
+                updateParticle: function(particle) {
+                    particle.x += particle.dx;
+                    particle.y += particle.dy;
+
+                    particle.dx *= 0.99;
+                    particle.dy *= 0.99;
+                    particle.dy += 0.14;
+                }
+            });  
+        },
+
         speech: {
             theAltar: {
                 font: 'SMALL',
@@ -276,7 +317,13 @@
                     music.stop(this.song);
                     this.song = 'quake';
                     music.play(this.song);
+
+                    this.distress();
                 },
+                next: 'somethingsUp'
+            },
+            somethingsUp: {
+                text: 'Something feels wrong',
                 next: 'ohNo'
             },
             ohNo: {
@@ -288,6 +335,13 @@
                     while (this.badDudes.length > 0) {
                         this.objects.push(this.badDudes.shift());
                     }
+
+                    this.distress();
+
+                    var self = this;
+                    for (var i = 0.2; i < 4.2; i += 0.2) {
+                        this.timeout(function() { self.distress(); }, i);
+                    }
                 }
             },
             weNeedHelp: {
@@ -297,6 +351,13 @@
                 time: 3,
                 execute: function() {
                     this.ivan.getComponent('Follower').follow(this.altar, Juicy.Point.create(20, 44), true);
+
+                    this.distress();
+
+                    var self = this;
+                    for (var i = 0.2; i < 1.2; i += 0.2) {
+                        this.timeout(function() { self.distress(); }, i);
+                    }
                 }
             },
             helpRestore: {
@@ -304,6 +365,8 @@
                 text: 'We must restore it!',
                 execute: function() {
                     this.ivan.getComponent('Follower').follow(this.altar, Juicy.Point.create(30, 40), true);
+                    
+                    this.distress();
                 },
                 next: 'pleaseHelp'
             },
@@ -329,6 +392,8 @@
                         self.shake = 2;
                         self.updateFunc = self.endLevel;
                     };
+
+                    this.playingCutScene = false;
                 }
             }
         },

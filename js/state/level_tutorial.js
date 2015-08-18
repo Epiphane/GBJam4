@@ -149,6 +149,7 @@ var TutorialLevel = Level.extend({
             execute: function() {
                 this.objects.push(this.gate);
                 this.player.target = this.gate;
+                this.getTarget = function() {};
             }
         }
     },
