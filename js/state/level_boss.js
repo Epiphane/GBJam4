@@ -26,6 +26,8 @@ var BossLevel = Level.extend({
         this.asplosionsLeft = 200;
 
         this.player.position.x = 180;
+
+        this.drones = [];
     },
 
     init: function() {
@@ -50,6 +52,12 @@ var BossLevel = Level.extend({
         this.particles.update(dt);
 
         if (this.boss.remove) {
+
+            for (var ndx = 0; ndx < this.drones.length; ndx++) {
+                var drone = this.drones[ndx];
+                drone.remove = true;
+            }
+
             if (this.asplosionsLeft > 0) {
                 dt /= 4;
                 sfx.play('textBonk');
@@ -67,10 +75,45 @@ var BossLevel = Level.extend({
         }
 
         Level.prototype.update.call(this, dt, game);
+
+        for (var ndx = 0; ndx < this.drones.length; ndx++) {
+            var drone = this.drones[ndx];
+
+            var diff = this.player.position.sub(drone.position);
+            var normalDiff = diff.mult(1/diff.length());
+
+            var dronePhysics = drone.getComponent('Physics');
+
+            dronePhysics.dx += normalDiff.x * 150 - 75;
+            dronePhysics.dy += normalDiff.y * 150 - 75;
+
+            if (this.player.testCollision(drone) && !this.boss.remove) {
+                var physics = this.player.getComponent('Physics');
+                var directionToPlayer = drone.center().sub(this.player.center());
+
+                physics.dx = Math.random() * 120 - 60;
+                physics.dy = Math.random() * 120 - 60;
+                if (directionToPlayer.x > 0)
+                    physics.dx *= -1;
+                if (directionToPlayer.y > 0)
+                    physics.dy *= -1;
+
+                this.player.getComponent('Digger').energy -= 5;
+            }
+        }
     },
 
     render: function(context) {
         Level.prototype.render.call(this, context);
         this.particles.render(context);
     },
+
+    newDrone: function() {
+        var newDrone = new Juicy.Entity(this, ['ColoredSprite', 'Digger', 'Physics']);
+        newDrone.getComponent('ColoredSprite').setSheet('img/helper.png', 12, 16);
+        newDrone.position = this.boss.position.clone();
+
+        this.objects.push(newDrone);
+        this.drones.push(newDrone);
+    }
 });

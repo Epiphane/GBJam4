@@ -133,6 +133,7 @@ Juicy.Component.create('Enemy', {
             // }
 
                 sfx.play('ouch_boss');
+                this.spawnDrone();
 
                 this.entity.state.particles.getComponent('ParticleManager').spawnParticles({
                     color: "MID", 
@@ -168,5 +169,9 @@ Juicy.Component.create('Enemy', {
             physics.dx *= 0.2;
             physics.dy *= 0.2; // Slow down the player so they see the pretty fireworks :3
         }
-    }
+    },
+
+    spawnDrone: function() {
+        this.entity.state.newDrone();
+    },
 });
