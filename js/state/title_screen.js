@@ -9,14 +9,14 @@ var TitleScreen = Juicy.State.extend({
         this.ui_entity = new Juicy.Entity(this, ['UI']);
         this.ui = this.ui_entity.getComponent('UI');
 
-        this.roomTitle = this.ui.addText({
-            text: "HEY PRESS SPACE DUMMY",
+        this.ui.addText({
+            text: "PRESS SPACE",
             font: TEXT.FONTS.BIG,
             position: Juicy.Point.create(80, 100),
             center: true,
             brightness: 2,
             animate: 'DRAMATIC',
-            delayPerCharacter: 6,
+            delayPerCharacter: 2,
         });
 
         music.play('title');

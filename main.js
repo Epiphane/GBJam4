@@ -28,6 +28,7 @@ music.load('title', 'audio/music_quicksilver');
 
 var sfx = new Juicy.SFX();
 sfx.load('goal', 'audio/fx_collectable');
+sfx.load('jump', 'audio/fx_jump');
 sfx.load('quack', 'audio/fx_creature');
 sfx.load('textBonk', 'audio/text-impact');
 sfx.load('textBeep', 'audio/text-beep');

@@ -46,13 +46,13 @@ var Level = Juicy.State.extend({
         if (options.countdown !== false) {
             this._countdown = options.countdown - 0.01;
             this.countdownText = this.ui.addText({
-                text: Math.ceil(this._countdown) + '',
-                font: TEXT.FONTS.BIG,
-                position: Juicy.Point.create(80, 10),
+                text: '' + Math.floor(options.countdown),
+                font: 'BIG',
+                position: Juicy.Point.create(80, 40),
                 center: true,
                 brightness: 3,
-                noBG: true,
-                animate: TEXT.ANIMATIONS.DRAMATIC
+                animate: 'SLIDE',
+                delayPerCharacter: 0
             });
         }
         else {
@@ -194,13 +194,20 @@ var Level = Juicy.State.extend({
                 }
 
                 this._countdown = nextCountdown;
+                if (this._countdown <= 0) {
+                    this.countdownText.set({
+                        delayPerCharacter: 0,
+                        text: 'GO',
+                        center: true,
+                        animate: 'NONE'
+                    });
+                    sfx.play('jump');
+                }
 
                 shouldUpdate = false; // Don't update game yet
             }
             else if (this._countdown > -0.5) {
                 this._countdown -= dt;
-
-                this.countdownText.setText('GO');
 
                 if (this._countdown <= -0.5) {
                     this.countdownText.remove = true;
