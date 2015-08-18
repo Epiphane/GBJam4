@@ -32,6 +32,15 @@ var TutorialLevel = Level.extend({
             position: Juicy.Point.create(1, 18)
         });
 
+        this.ui.addText({
+            text: 'PRESS SPACE TO CONTINUE',
+            animate: 'SLIDE',
+            showBackground: true,
+            brightness: 2,
+            initialDelay: 50,
+            position: Juicy.Point.create(1, 24)
+        });
+
         this.objects.push(this.ivan);
 
         this._blink = 2;
@@ -99,6 +108,8 @@ var TutorialLevel = Level.extend({
                 this.updateFunc = function() { return null; };
 
                 this.started = true;
+
+                this.roomTitle.setText('Tutorial');
             }
         }
     },
