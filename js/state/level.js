@@ -165,7 +165,7 @@ var Level = Juicy.State.extend({
             this.updateFunc = function() { return false; };
             var self = this;
             this.game.on('key', dialog.keys || ['SPACE'], function() {
-                self.key_DOWN = false;
+                self.key_SPACE = false;
 
                 next.call(self);
             });
