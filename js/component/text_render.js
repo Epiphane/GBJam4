@@ -43,7 +43,7 @@
             this.center = false;
             this.brightness = 0;
             this.showBackground = false;
-            this.offset = Juicy.Point.create();
+            this.offset = Juicy.Point.create(0, 0);
             this.animate = TEXT.ANIMATIONS.NONE;
             this.text = '';
         },

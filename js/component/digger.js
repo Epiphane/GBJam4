@@ -3,7 +3,7 @@ Juicy.Component.create('Digger', {
         this.speed = 100;
 
         this.controlPause = 0;
-        this.energy = this.max_energy = 4000;
+        this.energy = this.max_energy = 200;
     },
     destroyObject: function(type) {
         if (type === 'BLOCK') {

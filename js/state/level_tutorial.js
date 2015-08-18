@@ -29,7 +29,7 @@ var TutorialLevel = Level.extend({
             animate: 'SLIDE',
             showBackground: true,
             brightness: 2,
-            position: Juicy.Point.create(1)
+            position: Juicy.Point.create(1, 18)
         });
 
         this.objects.push(this.ivan);
