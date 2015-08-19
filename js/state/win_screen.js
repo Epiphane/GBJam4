@@ -29,7 +29,8 @@ var WinScreen = Juicy.State.extend({
     update: function(dt) {
         this.timeToTitle -= dt;
         if (this.timeToTitle < 0) {
-            this.game.setState(new TitleScreen());
+            location.reload();
+            Juicy.Game.pause();
         }
 
         this.totalTime += dt;
@@ -93,7 +94,7 @@ var WinScreen = Juicy.State.extend({
             this.ui.addText({
                text: randFromArray(congrats),
                font: TEXT.FONTS.BIG,
-               position: Juicy.Point.create(Math.random() * 100 - 20, Math.random() * 144),
+               position: Juicy.Point.create(Math.random() * 100, Math.random() * 144),
                center: false,
                brightness: Math.floor(Math.random() * 3) + 1,
                animate: 'DRAMATIC',
