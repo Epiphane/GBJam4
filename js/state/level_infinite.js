@@ -75,10 +75,10 @@ var InfiniteLevel = Level.extend({
 
     moveGoal: function() {
         if (this.shouldbuild) {
-            this.target.getComponent('ColoredSprite').setSheet('img/spinningpiece2.png', 24, 24);
+            this.target.getComponent('ColoredSprite').setSheet('img/spinningpiece2.png', 24, 24).runAnimation(0, 7, 0.18, true);
         }
         else {
-            this.target.getComponent('ColoredSprite').setSheet('img/spinningpiece1.png', 20, 20);
+            this.target.getComponent('ColoredSprite').setSheet('img/spinningpiece1.png', 20, 20).runAnimation(0, 7, 0.18, true);
         }
         this.target.position = new Juicy.Point(Juicy.rand(this.tile_manager.width - 100), 288-Juicy.rand(10, 80));
     },
@@ -122,7 +122,7 @@ var InfiniteLevel = Level.extend({
         this.camera.dx = 1;
         this.camera.dy = 1.5;
 
-        if (!this.gateOpen && this.gate.center()._sub(Juicy.Point.temp(this.camera.x + game.width / 2, this.camera.y + game.height / 2))._length() < 30) {
+        if (!this.gateOpen && this.gate.center().sub(new Juicy.Point(this.camera.x + game.width / 2, this.camera.y + game.height / 2)).length() < 30) {
             this.gateOpen = true;
             this.camera.dx = 0.5;
             this.camera.dy = 1;
@@ -131,7 +131,7 @@ var InfiniteLevel = Level.extend({
                 gateSprite.oncompleteanimation = null;
         }
 
-        if (this.gate.center()._sub(Juicy.Point.temp(this.camera.x + game.width / 2, this.camera.y + game.height / 2))._length() < 10) {
+        if (this.gate.center().sub(new Juicy.Point(this.camera.x + game.width / 2, this.camera.y + game.height / 2)).length() < 10) {
             this.updateFunc = null;
 
             this.watching = this.player;

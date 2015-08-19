@@ -28,6 +28,7 @@
     var z = 'z'.charCodeAt(0);
     var _0 = '0'.charCodeAt(0);
     var _9 = '9'.charCodeAt(0);
+    var period = '.'.charCodeAt(0);
     var exclaim = '!'.charCodeAt(0);
     var question = '?'.charCodeAt(0);
 
@@ -304,6 +305,9 @@
             }
             else if (charCode === question) {
                 charCode = 37;
+            }
+            else if (charCode === period) {
+                charCode = 38;
             }
 
             var clip = slideAmount || 0;
