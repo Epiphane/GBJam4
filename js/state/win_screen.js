@@ -43,7 +43,7 @@ var WinScreen = Juicy.State.extend({
         var self = this;
 
         var newSpaceJunk = new Juicy.Entity(this, ['ColoredSprite']);
-        newSpaceJunk.getComponent('ColoredSprite').setSheet('img/space-junk' + Math.ceil(Math.random() * 9) + '.png', 37, 37);
+        newSpaceJunk.getComponent('ColoredSprite').setSheet('img/space-junk' + Math.ceil(Math.random() * 8) + '.png', 37, 37);
         newSpaceJunk.position.x = 200;
         newSpaceJunk.position.y = Math.random() * 144;
         newSpaceJunk.dx = Math.random() * -5 - 1;
@@ -93,7 +93,7 @@ var WinScreen = Juicy.State.extend({
             this.ui.addText({
                text: randFromArray(congrats),
                font: TEXT.FONTS.BIG,
-               position: Juicy.Point.create(Math.random() * 160 - 60, Math.random() * 144),
+               position: Juicy.Point.create(Math.random() * 100 - 20, Math.random() * 144),
                center: false,
                brightness: Math.floor(Math.random() * 3) + 1,
                animate: 'DRAMATIC',
@@ -101,7 +101,7 @@ var WinScreen = Juicy.State.extend({
                timeTillDeath: 200,
             });
 
-            this.timeToNext = 300;
+            this.timeToNext = 150;
         }
 
         for (var ndx = 0; ndx < this.tiles.length; ndx++) {
@@ -131,9 +131,9 @@ var WinScreen = Juicy.State.extend({
         }
         context.restore();
 
-        this.ui_entity.render(context);
         this.particles.render(context);
         this.winMan.render(context);
+        this.ui_entity.render(context);
     },
 
     
