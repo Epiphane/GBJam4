@@ -464,6 +464,8 @@
         animateAltar();
     };
 
+    window.getAltarState = function() { return altarState; };
+
     window.nextArtifact = function(entity) {
         var artifact = new Juicy.Entity(entity.state, ['ColoredSprite']);
         var sprite   = artifact.getComponent('ColoredSprite');
