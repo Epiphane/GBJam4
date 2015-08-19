@@ -60,7 +60,15 @@ var TitleScreen = Juicy.State.extend({
                 var newTile = new Juicy.Entity(this, ['ColoredSprite']);
                 newTile.getComponent('ColoredSprite').setSheet('img/dirt.png', 160, 144);
                 newTile.position.x = x * 160;
-                newTile.dx = -5;
+                newTile.dx = -4;
+                this.tiles.push(newTile);
+        }
+
+        for (var x = 0; x < 3; x++) {
+                var newTile = new Juicy.Entity(this, ['ColoredSprite']);
+                newTile.getComponent('ColoredSprite').setSheet('img/dark.png', 160, 144);
+                newTile.position.x = x * 160;
+                newTile.dx = -9;
                 this.tiles.push(newTile);
         }
 
