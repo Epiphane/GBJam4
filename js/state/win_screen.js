@@ -1,5 +1,7 @@
 var WinScreen = Juicy.State.extend({
     constructor: function(state) {
+        music.play('city');
+
         this.winMan = new Juicy.Entity(this, ['ColoredSprite']);
         this.winMan.getComponent('ColoredSprite').setSheet('img/win-screen.png', 160, 144);
 

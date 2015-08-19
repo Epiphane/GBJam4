@@ -4,6 +4,7 @@ var BossLevel = Level.extend({
 
         options.width = 4;
         options.height = 1;
+        options.music = 'boss';
 
         var self = this;
 
