@@ -485,13 +485,19 @@
     window.nextArtifact = function(entity) {
         var artifact = new Juicy.Entity(entity.state, ['ColoredSprite']);
         var sprite   = artifact.getComponent('ColoredSprite');
-        if (altarState === 0) {
+
+        var state =  altarState;
+        if (state >= 3) {
+            state = Juicy.rand(3);
+        }
+
+        if (state === 0) {
             sprite.setSheet('img/zen_artifact.png', 27, 12);
         }
-        else if (altarState === 1) {
+        else if (state === 1) {
             sprite.setSheet('img/moon_artifact.png', 13, 19);
         }
-        else if (altarState === 2) {
+        else if (state === 2) {
             sprite.setSheet('img/sun_artifact.png', 24, 24);
         }
 
