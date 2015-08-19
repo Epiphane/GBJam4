@@ -26,7 +26,7 @@ var TitleScreen = Juicy.State.extend({
         this.particles.getComponent('ParticleManager').spawnParticles({
             color: "LOW", 
             size: 1, 
-            howMany: 100, 
+            howMany: 500, 
             timeToLive: function(particle, ndx) {
                 return 0;
             },
@@ -34,7 +34,7 @@ var TitleScreen = Juicy.State.extend({
                 particle.x = Math.random() * 160;
                 particle.y = Math.random() * 150;
                 
-                particle.dx = -Math.random() * 0.5 - 0.25;
+                particle.dx = -Math.random() * 0.5 - 0.15;
                 particle.dy = 0;
 
                 particle.startLife = 500;
@@ -101,13 +101,13 @@ var TitleScreen = Juicy.State.extend({
                 return 0;
             },
             initParticle: function(particle) {
-                particle.x = 200;
+                particle.x = 160;
                 particle.y = 20 + Math.random() * 100;
                 
-                particle.dx = -Math.random() * 0.5 - 0.25;
+                particle.dx = -Math.random() * 0.5 - 0.15;
                 particle.dy = 0;
 
-                particle.startLife = 500;
+                particle.startLife = 900;
                 particle.life = particle.startLife;
             },
             updateParticle: function(particle) {
