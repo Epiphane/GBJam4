@@ -122,7 +122,7 @@ var InfiniteLevel = Level.extend({
         this.camera.dx = 1;
         this.camera.dy = 1.5;
 
-        if (!this.gateOpen && this.gate.center()._sub(Juicy.Point.temp(this.camera.x + game.width / 2, this.camera.y + game.height / 2))._length() < 30) {
+        if (!this.gateOpen && this.gate.center().sub(new Juicy.Point(this.camera.x + game.width / 2, this.camera.y + game.height / 2)).length() < 30) {
             this.gateOpen = true;
             this.camera.dx = 0.5;
             this.camera.dy = 1;
@@ -131,7 +131,7 @@ var InfiniteLevel = Level.extend({
                 gateSprite.oncompleteanimation = null;
         }
 
-        if (this.gate.center()._sub(Juicy.Point.temp(this.camera.x + game.width / 2, this.camera.y + game.height / 2))._length() < 10) {
+        if (this.gate.center().sub(new Juicy.Point(this.camera.x + game.width / 2, this.camera.y + game.height / 2)).length() < 10) {
             this.updateFunc = null;
 
             this.watching = this.player;
