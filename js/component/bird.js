@@ -17,6 +17,7 @@ Juicy.Component.create('BirdManager', {
 
                 sfx.play('quack');
                 var startLoc = burd.position.clone();
+                this.entity.state.player.getComponent('Physics').dy = -200;
 
                 this.entity.state.particles.getComponent('ParticleManager').spawnParticles({
                     color: "MID", 

@@ -4,12 +4,22 @@ var InfiniteLevel = Level.extend({
 
         var self = this;
 
-        this.gateOpen = false;
-
         options.countdown = 3;
 
         // Level.apply(this, arguments);
         Level.call(this, options);
+
+        this.score = 0;
+        this.scoreText = this.ui.addText({
+            font: 'BIG',
+            text: 'SCORE 0',
+            brightness: 3,
+            animate: 'SLIDE',
+            delayPerCharacter: 0,
+            showBackground: true,
+            initialDelay: 80,
+            position: new Juicy.Point(110, 20)
+        })
 
         // Create coins!
         this.target = new Juicy.Entity(this, ['ColoredSprite', 'Goal']);
@@ -21,23 +31,6 @@ var InfiniteLevel = Level.extend({
 
         // Create tha birds
         this.objects.push(new Juicy.Entity(this, ['BirdManager']));
-
-        // Create gate to next level
-        this.gate = new Juicy.Entity(this, ['ColoredSprite']);
-        this.gate.position = new Juicy.Point((this.game_width - 52) / 2, 288-48);
-        this.objects.push(this.gate);
-
-        var gateSprite = this.gate.getComponent('ColoredSprite');
-        gateSprite.setSheet('img/gate.png', 52, 48);
-        gateSprite.runAnimation(0, 7, -1, false);
-        gateSprite.oncompleteanimation = function() {
-                self.updateFunc = self.panToGate;
-
-                self.player.target = self.gate;
-                self.target.remove = true;
-            };
-
-        this.shouldbuild = true;
 
         this.initPlaceName();
     },
@@ -65,17 +58,14 @@ var InfiniteLevel = Level.extend({
         this.roomTitle.setText(this.placeName());
     },
 
-    completeLevel: function() {
-        this.complete = true;
-        this.game.setState(new InfiniteLevel({
-            width: 4, 
-            height: 30
-        }));
-    },
-
     moveGoal: function() {
-        if (this.shouldbuild) {
+        var type = Juicy.rand(3);
+
+        if (type === 0) {
             this.target.getComponent('ColoredSprite').setSheet('img/spinningpiece2.png', 24, 24).runAnimation(0, 7, 0.18, true);
+        }
+        else if (type === 1) {
+            this.target.getComponent('ColoredSprite').setSheet('img/doge-coin.png', 32, 32).runAnimation(0, 7, 0.18, true);
         }
         else {
             this.target.getComponent('ColoredSprite').setSheet('img/spinningpiece1.png', 20, 20).runAnimation(0, 7, 0.18, true);
@@ -84,70 +74,14 @@ var InfiniteLevel = Level.extend({
     },
 
     getTarget: function() {
-        if (!this.gateOpen) {
-            this.target.getComponent('Goal').asplode();
-            this.moveGoal();
+        this.target.getComponent('Goal').asplode();
+        this.moveGoal();
 
-            if (this.shouldbuild) {
-                this.gate.getComponent('ColoredSprite').goNextFrame();
-            }
-            this.shouldbuild = !this.shouldbuild;
-
-            this.shake = 0.4
-        }
-        else if (this.updateFunc !== this.checkGate) {
-            this.updateFunc = this.checkGate;
-
-            this.shake = 3.0;
-        }
+        this.shake = 0.4;
+        this.score ++;
+        this.scoreText.setText('Score: ' + this.score);
 
         sfx.play('goal');
-    },
-
-    endLevel: function(dt, game) {
-        var dist = this.gate.center().sub(this.player.center());
-        this.player.position = this.player.position.add(dist.mult(1/8).free());
-
-        if (this.shake <= 0.5) {
-            this.completeLevel();
-        }
-
-        this.gate.update(dt);
-
-        return false; // Do NOT update physics
-    },
-
-    panToGate: function(dt, game) {
-        this.watching = this.gate;
-        this.camera.dx = 1;
-        this.camera.dy = 1.5;
-
-        if (!this.gateOpen && this.gate.center().sub(new Juicy.Point(this.camera.x + game.width / 2, this.camera.y + game.height / 2)).length() < 30) {
-            this.gateOpen = true;
-            this.camera.dx = 0.5;
-            this.camera.dy = 1;
-            var gateSprite = this.gate.getComponent('ColoredSprite');
-                gateSprite.runAnimation(8, 10, 0.2, true);
-                gateSprite.oncompleteanimation = null;
-        }
-
-        if (this.gate.center().sub(new Juicy.Point(this.camera.x + game.width / 2, this.camera.y + game.height / 2)).length() < 10) {
-            this.updateFunc = null;
-
-            this.watching = this.player;
-        }
-
-        return false; // Do NOT update physics
-    },
-
-    checkGate: function(dt, game) {
-        if (this.gate.center().sub(this.player.center()).length() < 30) {
-            this.updateFunc = this.endLevel;
-
-            return false; // Do NOT update physics
-        }
-
-        return true;
     }
 });
 
