@@ -17,11 +17,10 @@
             localStorage.setItem('altarState', -1);
         }
         
-        if (altarState === 3 || altarState === -1) {
+        if (altarState >= 3 || altarState === -1) {
             altarSprite.runAnimation(0, 3, 0.5, true);
         }
         else {
-            console.log(altarState);
             altarSprite.runAnimation(4 + altarState, 4 + altarState, -1, true);
         }
 
@@ -141,16 +140,32 @@
             Level.prototype.init.apply(this, arguments);
 
             if (this.loaded && !this.playingCutScene) {
-                var self = this;         
-                setTimeout(function() {
-                    self.ivan_message.setText('');
-                }, 3000);
+                var self = this;
 
                 if (altarState === -1) {
                     this.initCutScene();
                     this.playingCutScene = true;
-                    // altarState = 3;
                     animateAltar();
+                }
+                else if (altarState === 3) {
+                    altarState = 4;
+                    saveAltar();
+                    this.ivan_message.set({
+                        text: 'YOU DID IT!!!!!',
+                        font: 'BIG'
+                    });
+
+                    this.updateFunc = function() { return false; };
+
+                    setTimeout(function() {
+                        self.complete = true;
+                        self.game.setState(new WinScreen())
+                    }, 3000);
+                }
+                else {
+                    setTimeout(function() {
+                        self.ivan_message.setText('');
+                    }, 3000);
                 }
 
                 this.camera.x = this.player.position.x = 490;

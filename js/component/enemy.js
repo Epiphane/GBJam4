@@ -56,7 +56,6 @@ Juicy.Component.create('Enemy', {
 
     die: function() {
         // TODO: WRITE ME!!!
-        console.log('oh noes, da enemi is ded');
         sfx.play('textBonk');
 
         this.entity.remove = true;
@@ -94,11 +93,19 @@ Juicy.Component.create('Enemy', {
     update: function(dt, game) {
         var newDirection = 'IDLE';
 
-        if (this.movePattern === 'HOVER') {
+        if (this.movePattern === 'HOVER' || this.movePattern === 'FLY') {
             this.hovertime = (this.hovertime || 0) + dt;
-            this.dy = 0.1 * Math.sin(this.hovertime * 2);
+            this.dy = 0.15 * Math.sin(this.hovertime * 2);
         
             this.entity.position.y += this.dy;
+        }
+        if (this.movePattern === 'WALK' || this.movePattern === 'FLY') {
+            this.walktime = (this.walktime || 0) + dt;
+            if (this.walktime > 10) {
+                this.walktime -= 10;
+            }
+
+            this.entity.position.x += (this.walktime > 5 ? 1 : -1) * 50 * dt;
         }
 
         var self = this;
@@ -108,7 +115,12 @@ Juicy.Component.create('Enemy', {
         var player = this.entity.state.player;
         var physics = player.getComponent('Physics');
 
-        if (player.testCollision(this.entity)) {
+        if (this.invincible) {
+            this.invincible -= dt;
+            if (this.invincible < 0) this.invincible = 0;
+        }
+
+        if (player.testCollision(this.entity) && !this.invincible) {
             // In here, test further for this.weakPoint
             var directionToPlayer = this.entity.center().sub(player.center());
 
@@ -131,6 +143,7 @@ Juicy.Component.create('Enemy', {
 
             sfx.play('ouch_boss');
             this.spawnDrone();
+            this.invincible = 0.3;
 
             this.entity.state.particles.getComponent('ParticleManager').spawnParticles({
                 color: "MID", 
@@ -160,7 +173,7 @@ Juicy.Component.create('Enemy', {
             });
         }
 
-        if (this.entity.getComponent('ColoredSprite').sectionsRemaining() <= 20) {
+        if (this.entity.getComponent('ColoredSprite').sectionsRemaining() <= 5) {
             this.die(); // TODO: WRITE ME!!!
             physics.dx *= 0.2;
             physics.dy *= 0.2; // Slow down the player so they see the pretty fireworks :3

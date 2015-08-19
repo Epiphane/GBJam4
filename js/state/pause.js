@@ -27,6 +27,12 @@ var PauseState = Juicy.State.extend({
                 }
             },
             {
+                text: 'Change Palette',
+                oncomplete: function() {
+                    this.game.setState(new PaletteSelector(this));
+                }
+            },
+            {
                 text: 'Options',
                 oncomplete: function() {
                     this.game.setState(new OptionsState(this));
@@ -40,13 +46,6 @@ var PauseState = Juicy.State.extend({
                 }
             },
             {
-                text: 'Back to town',
-                oncomplete: function() {
-                    this.prevState.cleanup();
-                    this.game.setState(new CityLevel());
-                }
-            },
-            {
                 text: 'Free Play',
                 oncomplete: function() {
                     this.prevState.cleanup();
@@ -54,6 +53,16 @@ var PauseState = Juicy.State.extend({
                 }
             }
         ];
+
+        if (getAltarState() >= 3 && menu_items[0].text === 'Continue') {
+            menu_items.splice(1, 0, {
+                text: 'Credits',
+                oncomplete: function() {
+                    this.prevState.cleanup();
+                    this.game.setState(new WinScreen(this));
+                }
+            })
+        }
         
         this.menu_items = [];
         for (var i = 0; i < menu_items.length; i ++) {

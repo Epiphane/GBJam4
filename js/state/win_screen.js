@@ -7,11 +7,14 @@ var WinScreen = Juicy.State.extend({
         this.ui = this.ui_entity.getComponent('UI');
 
         this.timeToNext = 10;
+        this.timeToTitle = 8;
     },
 
-
     update: function(dt) {
-//         Level.prototype.update.apply(this, arguments);
+        this.timeToTitle -= dt;
+        if (this.timeToTitle < 0) {
+            this.game.setState(new TitleScreen());
+        }
 
         this.winMan.position.x = Math.random() * 4 - 2;
         this.winMan.position.y = Math.random() * 4 - 2;
@@ -24,6 +27,8 @@ var WinScreen = Juicy.State.extend({
             "NICE", "GOOD JOB", "YOU DID IT", "WOW", "HOW DID YOU DO THAT", "I AM IMPRESSED", "UTTERLY AMAZING", "UNBELIEVABLE",
             "HAVE A NICE DAY", "WHAT IN THE NAME OF HEAVENS DID YOU DO TO MY FACE YOU PSYCOPATH", "WHAT", "CONGRATS", "COOL", "YOU ARE A GOOD PERSON",
             "WHAT IS FOR DINNER", "GREAT WORK", "I AM PROUD", "GOOD JOB SON",
+            "BY ELLIOT FISKE", "BY THOMAS STEINKE", "BY MAX LINSENBARD", "SPECIAL THANKS TO BARACK OBAMA",
+            "FREE COOKIES ON AISLE THREE", "CONGRATS", "WHEEEEEEEE", "I LOVE YOU" 
         ]
 
         this.timeToNext--
@@ -31,9 +36,9 @@ var WinScreen = Juicy.State.extend({
             this.ui.addText({
                text: randFromArray(congrats),
                font: TEXT.FONTS.BIG,
-               position: Juicy.Point.create(Math.random() * 160, Math.random() * 144),
+               position: Juicy.Point.create(Juicy.rand(-40, 120), Juicy.rand(144)),
                center: false,
-               brightness: Math.floor(Math.random() * 4),
+               brightness: Juicy.rand(1, 4),
                animate: 'DRAMATIC',
                delayPerCharacter: 2,
                timeTillDeath: 200,

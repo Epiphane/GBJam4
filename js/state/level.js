@@ -39,6 +39,14 @@
             this.ui_entity = new Juicy.Entity(this, ['UI']);
             this.ui = this.ui_entity.getComponent('UI');
 
+            this.esc = this.ui.addText({
+                text: 'PRESS ESCAPE TO PAUSE',
+                animate: 'SLIDE',
+                showBackground: true,
+                brightness: 2,
+                position: Juicy.Point.create(1, 18)
+            });
+
             // Create Player
             this.player = player;
             player.position = new Juicy.Point(16, 240);
@@ -136,6 +144,11 @@
                     // Pre-build chunks down to self.game_height!!
                     load: this.load.bind(this)
                 }));
+            }
+            else {
+                this.timeout(function() {
+                    self.esc.remove = true
+                }, 5);
             }
 
             music.play(this.song);

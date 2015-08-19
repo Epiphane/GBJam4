@@ -37,12 +37,6 @@
                         this.toggleSFX();
                     }
                 },
-                {
-                    text: 'Change Palette',
-                    oncomplete: function() {
-                        this.game.setState(new PaletteSelector(this));
-                    }
-                },
             ];
 
             this.music_ndx = 1;
