@@ -1,11 +1,6 @@
 (function() {
     var TILE_SIZE = 2;
 
-    var tiles = {
-        EMPTY: [0, 0],
-        DIRT: [1, 0]
-    };
-
     var presets = {
         EMPTY: {
             start: [0, 0], 
@@ -320,7 +315,7 @@
                                         }
                                     }
                                     else {
-                                        this.tiles[p_j + j][p_i + i] = Tile.create(1, 0, false);
+                                        this.tiles[p_j + j][p_i + i] = Tile.create(presets.DIRT.start[0], presets.DIRT.start[1], false);
                                     }
                                 }
                             }

@@ -1,7 +1,7 @@
 (function() {
     Palette.current = localStorage.getItem('palette');
     if (!Palette.current) {
-        Palette.set();
+        Palette.set(0);
         palette = Palette.current;
 
         savePaletteChoice();

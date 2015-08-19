@@ -13,13 +13,21 @@ var BossLevel = Level.extend({
         this.particles = new Juicy.Entity(this, ['ParticleManager'])
 
         this.boss = new Juicy.Entity(this, ['ColoredSprite', 'Enemy']);
-        this.boss.getComponent('ColoredSprite').setSheet('img/buzz_boss.png', 32, 24).runAnimation(0, 11, 0.1, true);
+
+        var bossType = getAltarState();
+        if (bossType === 0) {
+            this.boss.getComponent('ColoredSprite').setSheet('img/eyeboss.png', 40, 40).runAnimation(0, 9, 0.1, true);
+        }
+        else if (bossType === 1) {
+            this.boss.getComponent('ColoredSprite').setSheet('img/buzz_boss.png', 32, 24).runAnimation(0, 11, 0.1, true);
+        }
+        else { // 2
+            this.boss.getComponent('ColoredSprite').setSheet('img/buzz_boss.png', 32, 24).runAnimation(0, 11, 0.1, true);
+        }
         this.boss.position.y = 288 - 60;
         this.boss.position.x = 240;
         this.boss.getComponent('Enemy').movePattern = 'HOVER';
         this.objects.push(this.boss);
-
-        this.boss.getComponent('ColoredSprite').clearRect();
 
         this.asplosion = new Juicy.Components.ColoredSprite();
         this.asplosion.setSheet('img/explosion.png', 20, 20);

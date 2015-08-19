@@ -140,7 +140,7 @@
         init: function() {
             Level.prototype.init.apply(this, arguments);
 
-            if (this.loaded) {       
+            if (this.loaded && !this.playingCutScene) {
                 var self = this;         
                 setTimeout(function() {
                     self.ivan_message.setText('');
@@ -149,7 +149,7 @@
                 if (altarState === -1) {
                     this.initCutScene();
                     this.playingCutScene = true;
-                    altarState = 3;
+                    // altarState = 3;
                     animateAltar();
                 }
 
@@ -208,7 +208,8 @@
 
                     if (!this.destroyedAltar && this.entity.position.y < self.altar.position.y + this.toDelete_j * 4) {
                         if (nBadDudes % 33 === 0) {
-                            altarState --;
+                            if (altarState === -1) altarState = 2;
+                            else altarState --;
                             animateAltar();
                         }
 
@@ -308,7 +309,7 @@
                 next: 'sawron'
             },
             sawron: {
-                text: 'The great Sawron',
+                text: 'The great Sawman',
                 next: 'fought',
             },
             fought: {
