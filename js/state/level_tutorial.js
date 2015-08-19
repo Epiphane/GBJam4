@@ -114,9 +114,6 @@ var TutorialLevel = Level.extend({
         if (this.loaded) {
             var self = this;
 
-            this.tile_manager.persistTiles(40, 288, this.game_width * this.tile_manager.chunk_width, 8);
-            this.tile_manager.blockTiles(40, 288, 160, 8);
-
             if (!this.started) {
                 this.say('hello');
                 this.updateFunc = function() { return null; };
@@ -149,7 +146,7 @@ var TutorialLevel = Level.extend({
             nextKey: 'ropes'
         },
         ropes: {
-            text: 'HERES HOW YOU PLAY',
+            text: 'ILL SHOW YOU HOW TO PLAY',
             font: 'SMALL',
             nextKey: function() {
                 this.pressDown();
@@ -166,19 +163,17 @@ var TutorialLevel = Level.extend({
             time: 2,
             execute: function() {
                 this.updateFunc = function() { return false; };
+                this.showEnergy = true;
             },
-            next: 'watchYourFuel'
+            next: 'watchYourFuel',
         },
         watchYourFuel: {
             text: 'So be careful!',
             font: 'SMALL',
-            next: 'thisShouldHelp',
-            execute: function() {
-                this.showEnergy = true;
-            }
+            next: 'thisShouldHelp'
         },
         thisShouldHelp: {
-            text: 'These refill your tank!',
+            text: 'These refill your tank',
             execute: function() {
                 for (var i = 0; i < 4; i ++) {
                     for (var j = 0; j < 4; j ++) {
@@ -186,6 +181,10 @@ var TutorialLevel = Level.extend({
                     }
                 }
             },
+            next: 'grabSome'
+        },
+        grabSome: {
+            text: 'Grab some now!',
             next: function() {
                 this.updateFunc = false;
 
@@ -290,7 +289,7 @@ var TutorialLevel = Level.extend({
         });
 
         this.updateFunc = function(dt, game) {
-            if (this.player.getComponent('Physics').dy < -20) {
+            if (this.player.getComponent('Physics').dy < -60) {
                 this.updateFunc = false;
                 this.speech.nice.next = 'watchFuel';
                 this.say('nice');

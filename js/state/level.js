@@ -79,7 +79,9 @@
                 give_x: 4,
                 give_y: 0,
                 dx: 8,
-                dy: 20
+                dy: 20,
+                offset_x: 0,
+                offset_y: 0
             };
 
             if (this.camera.x < 0) 
@@ -315,8 +317,8 @@
         updateCamera: function(dt) {
             // Update Camera
             var center = this.watching.center();
-            var dx = (center.x - this.game.width / 2) - this.camera.x;
-            var dy = (center.y - this.game.height / 2) - this.camera.y;
+            var dx = (center.x - this.game.width / 2) - (this.camera.x + this.camera.offset_x);
+            var dy = (center.y - this.game.height / 2) - (this.camera.y + this.camera.offset_y);
 
             this.camera.x += dx * this.camera.dx * dt;
             this.camera.y += dy * this.camera.dy * dt;

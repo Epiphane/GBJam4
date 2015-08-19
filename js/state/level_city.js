@@ -107,7 +107,7 @@
                         animate: 'NONE',
                         position: Juicy.Point.create(10, 10),
                         showBackground: true,
-                        brightness: 3,
+                        brightness: 0,
                         offset: Juicy.Point.create(14, -4)
                     });
                 }
@@ -183,8 +183,14 @@
         initCutScene: function() {
             var self = this;
 
+            this.backdrop = false;
+
             this.camera.x = this.player.position.x = 490;
             this.camera.y = this.player.position.y = 288 - 80;
+            this.camera.offset_x = 30;
+
+            this.ivan_message.offset.x -= 40;
+            this.ivan_message.offset.y -= 2;
 
             var nBadDudes = 0;
             var playedSound = false;
@@ -277,14 +283,49 @@
             theAltar: {
                 font: 'SMALL',
                 text: 'This is our Altar',
-                next: 'itsImportant',
+                next: 'ages',
+                execute: function() {
+                    this.ivan_message.center = true;
+                }
+            },
+            ages: {
+                text: 'Ages ago',
+                next: 'turmoil'
+            },
+            turmoil: {
+                text: 'this world was ravaged',
+                next: 'evil'
+            },
+            evil: {
+                text: 'by evil demons',
+                next: 'earthcrushers'
+            },
+            earthcrushers: {
+                text: 'called earthcrushers',
+                next: 'sawron'
+            },
+            sawron: {
+                text: 'The great Sawron',
+                next: 'fought',
+            },
+            fought: {
+                text: 'Built this altar',
+                next: 'protect',
+            },
+            protect: {
+                text: 'to repel them and save us',
+                next: 'itsImportant'
             },
             itsImportant: {
                 text: 'It protects our world',
                 next: 'ofOurWorld'
             },
             ofOurWorld: {
-                text: 'and maintains balance',
+                text: 'without it we would be',
+                next: 'itsUseful'
+            },
+            itsUseful: {
+                text: 'in serious trouble!!',
                 next: 'whatsThat'
             },
             whatsThat: {
@@ -298,10 +339,29 @@
 
                     this.distress();
                 },
+                next: 'dot'
+            },
+            dot: {
+                text: '.',
+                font: 'BIG',
+                time: 1,
+                next: 'dotdot'
+            },
+            dotdot: {
+                text: '..',
+                font: 'BIG',
+                time: 1,
+                next: 'dotdotdot'
+            },
+            dotdotdot: {
+                text: '...',
+                font: 'BIG',
+                time: 1,
                 next: 'somethingsUp'
             },
             somethingsUp: {
                 text: 'Something feels wrong',
+                font: 'SMALL',
                 next: 'ohNo'
             },
             ohNo: {
@@ -325,6 +385,22 @@
             weNeedHelp: {
                 font: 'SMALL',
                 text: 'The altar!!!',
+                next: 'theyBack',
+                time: 3,
+                execute: function() {
+                    this.ivan.getComponent('Follower').follow(this.altar, Juicy.Point.create(20, 44), true);
+
+                    this.distress();
+
+                    var self = this;
+                    for (var i = 0.2; i < 1.2; i += 0.2) {
+                        this.timeout(function() { self.distress(); }, i);
+                    }
+                }
+            },
+            theyBack: {
+                font: 'SMALL',
+                text: 'The earthcrushers are back!!',
                 next: 'helpRestore',
                 time: 3,
                 execute: function() {
@@ -340,7 +416,7 @@
             },
             helpRestore: {
                 font: 'SMALL',
-                text: 'We must restore it!',
+                text: 'We need to rebuild it!',
                 execute: function() {
                     this.ivan.getComponent('Follower').follow(this.altar, Juicy.Point.create(30, 40), true);
                     
