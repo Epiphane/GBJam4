@@ -12,6 +12,10 @@ Juicy.Component.create('Digger', {
             this.energy += 200;
             sfx.play('fuel');
         }
+        else if (type === 'DOGE') {
+            this.energy = this.max_energy;
+            sfx.play('fuel');
+        }
     },
     left: function() {
         this._left = true;

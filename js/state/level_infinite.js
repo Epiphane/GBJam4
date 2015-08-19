@@ -18,7 +18,7 @@ var InfiniteLevel = Level.extend({
             delayPerCharacter: 0,
             showBackground: true,
             initialDelay: 80,
-            position: new Juicy.Point(110, 20)
+            position: new Juicy.Point(100, 20)
         })
 
         // Create coins!
@@ -63,12 +63,15 @@ var InfiniteLevel = Level.extend({
 
         if (type === 0) {
             this.target.getComponent('ColoredSprite').setSheet('img/spinningpiece2.png', 24, 24).runAnimation(0, 7, 0.18, true);
+            this.target.width = this.target.height = 24;
         }
         else if (type === 1) {
             this.target.getComponent('ColoredSprite').setSheet('img/doge-coin.png', 32, 32).runAnimation(0, 7, 0.18, true);
+            this.target.width = this.target.height = 32;
         }
         else {
             this.target.getComponent('ColoredSprite').setSheet('img/spinningpiece1.png', 20, 20).runAnimation(0, 7, 0.18, true);
+            this.target.width = this.target.height = 20;
         }
         this.target.position = new Juicy.Point(Juicy.rand(this.tile_manager.width - 100), 288-Juicy.rand(10, 80));
     },
