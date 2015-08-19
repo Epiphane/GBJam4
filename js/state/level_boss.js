@@ -12,7 +12,7 @@ var BossLevel = Level.extend({
 
         this.particles = new Juicy.Entity(this, ['ParticleManager'])
 
-        this.boss = new Juicy.Entity(this, ['ColoredSprite', 'Enemy', 'Boss']);
+        this.boss = new Juicy.Entity(this, ['ColoredSprite', 'Enemy']);
         this.boss.getComponent('ColoredSprite').setSheet('img/buzz_boss.png', 32, 24).runAnimation(0, 11, 0.1, true);
         this.boss.position.y = 288 - 60;
         this.boss.position.x = 240;
@@ -20,7 +20,6 @@ var BossLevel = Level.extend({
         this.objects.push(this.boss);
 
         this.boss.getComponent('ColoredSprite').clearRect();
-        this.boss.getComponent('Boss').setBoss('SUN');
 
         this.asplosion = new Juicy.Components.ColoredSprite();
         this.asplosion.setSheet('img/explosion.png', 20, 20);
@@ -52,9 +51,6 @@ var BossLevel = Level.extend({
             brightness: 3,
             showBackground: true
         });
-
-        // TODO make it inaccessible
-        addAltarPiece();
 
         this.updateFunc = function() { return false; };
 
@@ -97,12 +93,13 @@ var BossLevel = Level.extend({
                 this.asplosionsLeft --;
             }
             else if (this.asplosionsLeft === 0) {
-                var artifact = this.boss.getComponent('Boss').getArtifact();
+                var artifact = nextArtifact(this.boss);
                 this.objects.splice(0, 0, artifact);
 
                 this.player.target = artifact;
                 this.getTarget = function() {
                     this.player.target = null;
+                    artifact.collect();
                     this.beatLevel();
                 }
 

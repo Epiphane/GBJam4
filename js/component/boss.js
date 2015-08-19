@@ -1,9 +1,6 @@
 Juicy.Component.create('Boss', {
-    constructor: function() {
-        this.type = nextArtifactType();
-    },
     getArtifact: function() {
-        return nextArtifact(this.entity.state, this.type);
+        return nextArtifact(this.entity);
     }
 }, {
     SUN: 0,

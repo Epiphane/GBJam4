@@ -75,10 +75,10 @@ var InfiniteLevel = Level.extend({
 
     moveGoal: function() {
         if (this.shouldbuild) {
-            this.target.getComponent('ColoredSprite').setSheet('img/spinningpiece2.png', 24, 24);
+            this.target.getComponent('ColoredSprite').setSheet('img/spinningpiece2.png', 24, 24).runAnimation(0, 7, 0.18, true);
         }
         else {
-            this.target.getComponent('ColoredSprite').setSheet('img/spinningpiece1.png', 20, 20);
+            this.target.getComponent('ColoredSprite').setSheet('img/spinningpiece1.png', 20, 20).runAnimation(0, 7, 0.18, true);
         }
         this.target.position = new Juicy.Point(Juicy.rand(this.tile_manager.width - 100), 288-Juicy.rand(10, 80));
     },

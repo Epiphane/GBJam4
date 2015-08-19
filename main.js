@@ -38,6 +38,7 @@ sfx.load('quack', 'audio/fx_creature');
 sfx.load('textBonk', 'audio/text-impact');
 sfx.load('textBeep', 'audio/text-beep');
 sfx.load('ouch_boss', 'audio/fx_bosshurt');
+sfx.load('dead', 'audio/fx_dead');
 
 window.updateVolume(); // From state/options.js
 

@@ -206,6 +206,7 @@
                         brightness: 3,
                         showBackground: true
                     });
+                    sfx.play('dead');
                 }
 
                 timeout -= dt;

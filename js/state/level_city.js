@@ -464,26 +464,24 @@
         animateAltar();
     };
 
-    window.nextArtifactType = function() {
-        return altarState;
-    };
-
-    window.nextArtifact = function(state, type) {
-        var artifact = new Juicy.Entity(state, ['ColoredSprite']);
+    window.nextArtifact = function(entity) {
+        var artifact = new Juicy.Entity(entity.state, ['ColoredSprite']);
         var sprite   = artifact.getComponent('ColoredSprite');
-        if (type === 0) {
-            sprite.setSheet('img/sun_artifact.png', 24, 24);
+        if (altarState === 0) {
+            sprite.setSheet('img/zen_artifact.png', 27, 12);
         }
-        else if (type === 1) {
+        else if (altarState === 1) {
             sprite.setSheet('img/moon_artifact.png', 13, 19);
         }
-        else if (type === 2) {
-            sprite.setSheet('img/zen_artifact.png', 27, 12);
+        else if (altarState === 2) {
+            sprite.setSheet('img/sun_artifact.png', 24, 24);
         }
 
         artifact.scale = Juicy.Point.create(2, 2);
-        artifact.position = this.entity.position.clone();
+        artifact.position = entity.position.clone();
 
         artifact.collect = addAltarPiece;
+
+        return artifact;
     };
 })();
