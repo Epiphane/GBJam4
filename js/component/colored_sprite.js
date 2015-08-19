@@ -26,7 +26,7 @@
 
             this.clearRects = false;
             this.rectsRemaining = 0;
-            this.clearSize = 4;
+            this.clearSize = 8;
         },
 
         setImageSrc: function(url) {

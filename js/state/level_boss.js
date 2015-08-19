@@ -15,18 +15,21 @@ var BossLevel = Level.extend({
         this.boss = new Juicy.Entity(this, ['ColoredSprite', 'Enemy']);
 
         var bossType = getAltarState();
-        if (bossType === 0) {
-            this.boss.getComponent('ColoredSprite').setSheet('img/eyeboss.png', 40, 40).runAnimation(0, 9, 0.1, true);
-        }
-        else if (bossType === 1) {
-            this.boss.getComponent('ColoredSprite').setSheet('img/buzz_boss.png', 32, 24).runAnimation(0, 11, 0.1, true);
-        }
-        else { // 2
-            this.boss.getComponent('ColoredSprite').setSheet('img/buzz_boss.png', 32, 24).runAnimation(0, 11, 0.1, true);
-        }
         this.boss.position.y = 288 - 60;
         this.boss.position.x = 240;
-        this.boss.getComponent('Enemy').movePattern = 'HOVER';
+        if (bossType === 0) {
+            this.boss.getComponent('ColoredSprite').setSheet('img/buzz_boss.png', 32, 24).runAnimation(0, 11, 0.1, true);
+            this.boss.getComponent('Enemy').movePattern = 'HOVER';
+        }
+        else if (bossType === 1) {
+            this.boss.getComponent('ColoredSprite').setSheet('img/enemy.png', 50, 32).runAnimation(0, 7, 0.1, true);
+            this.boss.getComponent('Enemy').movePattern = 'WALK';
+            this.boss.position.y = 288 - 32;
+        }
+        else { // 2
+            this.boss.getComponent('ColoredSprite').setSheet('img/eyeboss.png', 40, 40).runAnimation(0, 9, 0.1, true);
+            this.boss.getComponent('Enemy').movePattern = 'FLY';
+        }
         this.objects.push(this.boss);
 
         this.asplosion = new Juicy.Components.ColoredSprite();
@@ -34,6 +37,14 @@ var BossLevel = Level.extend({
         this.asplosionsLeft = 200;
 
         this.player.position.x = 180;
+
+        this.niceHit = {
+            text: 'NICE HIT!',
+            font: 'BIG',
+            center: 'TRUE',
+            brightness: 0,
+            position: new Juicy.Point(80, 20)
+        };
 
         this.drones = [];
     },
@@ -47,6 +58,14 @@ var BossLevel = Level.extend({
         }
 
         this.player.target = this.boss;
+    },
+
+    niceHit: function() {
+        var text = this.ui.addText(this.niceHit);
+    
+        this.timeout(function() {
+            text.remove = true;
+        }, 1);
     },
 
     beatLevel: function() {

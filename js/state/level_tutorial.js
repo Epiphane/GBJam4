@@ -29,14 +29,6 @@ var TutorialLevel = Level.extend({
             offset: Juicy.Point.create(14, -4)
         });
 
-        this.esc = this.ui.addText({
-            text: 'PRESS ESCAPE TO SKIP',
-            animate: 'SLIDE',
-            showBackground: true,
-            brightness: 2,
-            position: Juicy.Point.create(1, 2)
-        });
-
         this.spc = this.ui.addText({
             text: 'PRESS SPACE TO CONTINUE',
             animate: 'SLIDE',
@@ -135,7 +127,7 @@ var TutorialLevel = Level.extend({
             nextKey: 'welcome',
             brightness: 3,
             execute: function() {
-                this.spc.remove = this.esc.remove = true;
+                this.spc.remove = true;
 
                 this.roomTitle.setText('Tutorial');
             }
