@@ -56,7 +56,7 @@ var WinScreen = Juicy.State.extend({
 
         this.particles.getComponent('ParticleManager').spawnParticles({
             color: "LIGHT", 
-            size: 10, 
+            size: 3, 
             howMany: 1, 
             timeToLive: function(particle, ndx) {
                 return 0;
