@@ -61,6 +61,7 @@
             this.delayPerCharacter = info.delayPerCharacter || 2;
             this.initialDelay   = info.initialDelay || 0;
             this.animationTicks-= this.initialDelay;
+            this.timeTillDeath = info.timeTillDeath || -100;
 
             if (typeof(info.font) !== 'undefined') this.setFont(info.font);
             this.setText(info.text || this.text);
@@ -112,6 +113,11 @@
                 if (ndx < this.animationTicks / this.delayPerCharacter) {
                     this.characterAnim[ndx]++;
                 }
+            }
+
+            this.timeTillDeath--;
+            if (this.timeTillDeath == 0) {
+                this.remove = true;
             }
         },
 
