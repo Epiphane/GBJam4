@@ -24,7 +24,9 @@ Juicy.Component.create('Sprite', {
             self.sheet_width   = this.width / self.sprite_width;
             self.sheet_height  = this.height / self.sprite_height;
 
-            entity.state.updated = true;
+            if (entity) {
+                entity.state.updated = true;
+            }
 
             if (self.onload) {
                 self.onload(this);
@@ -33,6 +35,7 @@ Juicy.Component.create('Sprite', {
     },
 
     setImageSrc: function(url) {
+        this.image.complete = false;
         this.image.src = url;
     },
 
@@ -47,13 +50,21 @@ Juicy.Component.create('Sprite', {
 
         this.sprite_width  = swidth;
         this.sprite_height = sheight;
-        if (!this.entity.width || !this.entity.height) {
+        if (this.entity && (!this.entity.width || !this.entity.height)) {
             this.entity.width  = swidth;
             this.entity.height = sheight;
         }
 
         return this;
     },
+
+    setSize: function(width, height) {
+        this.sprite_width = width;
+        this.sprite_height = height;
+        this.entity.width = width;
+        this.entity.height = height;
+    },
+
     runAnimation: function(start, end, frametime, repeat) {
         this.frametime = this.timeleft = frametime;
         this.sprite = this.first_sprite = start;
@@ -106,6 +117,8 @@ Juicy.Component.create('Sprite', {
     }, 
 
     render: function(context) {
+        context.imageSmoothingEnabled = false;
+
         context.save();
         if (this.flipped) {
             context.translate(this.entity.width, 0);
@@ -117,19 +130,19 @@ Juicy.Component.create('Sprite', {
 
         var dx = arguments[5] || arguments[1] || 0;
         var dy = arguments[6] || arguments[2] || 0;
-        var dwidth = arguments[7] || arguments[3] || this.entity.   width;
-        var dheight = arguments[8] || arguments[4] || this.entity.   height;
+        var dwidth = arguments[7] || arguments[3] || this.entity.width;
+        var dheight = arguments[8] || arguments[4] || this.entity.height;
 
         var scaleAdjustX = (dwidth * this.scale - dwidth) / 2;
         var scaleAdjustY = (dheight * this.scale - dheight) * 3;
         
         if (this.scale == 1) {
-             context.drawImage(this.image, sx, sy, this.sprite_width, this.sprite_height,
-                                      dx, dy, dwidth, dheight);
+            context.drawImage(this.image, sx, sy, this.sprite_width, this.sprite_height,
+                              dx, dy, dwidth, dheight);
         }
         else {
             context.drawImage(this.image, sx, sy, this.sprite_width, this.sprite_height,
-                                      dx - 0.5, dy - scaleAdjustY/3 + 0.125, dwidth * this.scale, dheight * this.scale);            
+                              dx - 0.5, dy - scaleAdjustY/3 + 0.125, dwidth * this.scale, dheight * this.scale);            
         }
         context.restore();
     }

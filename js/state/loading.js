@@ -1,14 +1,17 @@
 var LoadingState = Juicy.State.extend({
-    constructor: function(state, obtions) {
+    constructor: function(state, options) {
         this.nextState = state;
-        this.load = obtions.load;
+        this.load = options.load;
 
         this.progress = 0;
         this.calls = 0;
 
         this.loading = new Juicy.Entity(this, ['ColoredSprite']);
-        this.loading.getComponent('ColoredSprite').setSheet('img/loading.png', 193, 55);
+        this.loading.getComponent('ColoredSprite').setSheet('img/loading.png', 46, 12);
+        this.loading.scale = Juicy.Point.create(2, 2);
+        this.loading.position = Juicy.Point.create(30, 20);
     },
+
     resolve: function(progress) {
         if (progress === 1) {
             this.nextState.loaded = true;
@@ -17,6 +20,7 @@ var LoadingState = Juicy.State.extend({
 
         this.progress = progress;
     },
+
     update: function(dt) {
         var self = this;
         var promise = self.load(this.calls);
@@ -30,6 +34,7 @@ var LoadingState = Juicy.State.extend({
             };
         }
     },
+
     render: function(context) {
         context.strokeStyle = 'rgba(' + Palette.get('LIGHT').join(',') + ')';
         context.rect(10, this.game.height / 2 - 10, this.game.width - 20, 20);
@@ -37,8 +42,8 @@ var LoadingState = Juicy.State.extend({
         context.stroke();
 
         context.fillStyle = 'rgba(' + Palette.get('LIGHT').join(',') + ')';
-        context.fillRect(12, this.game.height / 2 - 8, (this.game.width - 24) * this.progress, 16);
+        context.fillRect(12, this.game.height / 2 - 8, Math.round((this.game.width - 24) * this.progress), 16);
     
-        this.loading.render(context, (this.game.width - 94) / 2, 20);
+        this.loading.render(context);
     }
 })

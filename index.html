@@ -3,14 +3,13 @@
 <head>
    <meta charset="utf-8">
    <title>Quicksilver</title>
-   <!-- <link rel="icon" type="image/GIF" href="res/favicon.ico"/> -->
+   <link rel="icon" type="image/GIF" href="favicon.ico"/>
    <meta name="apple-mobile-web-app-capable" content="yes"/>
    <meta name="full-screen" content="yes"/>
    <meta name="screen-orientation" content="portrait"/>
    <meta name="x5-fullscreen" content="true"/>
    <meta name="360-fullscreen" content="true"/>
 
-   <link href='http://fonts.googleapis.com/css?family=Poiret+One' rel='stylesheet' type='text/css'>
    <style>
    /* following code make sure user won't see selection in the app */
    body, canvas, div {
@@ -51,31 +50,57 @@
 
    <div class="container">
       <!-- Main stage for rendering game scenes -->
-      <canvas id="game-canvas" width="160" height="144" fixed></canvas>
-
-      <p>Left, right - move</p>
-      <p>Down - drop</p>
+      <canvas id="game-canvas" width="160" height="144" fixed></canvas><br />
    </div>
 
    <!-- Libraries -->
    <script src="lib/juicy.full.js"></script>
 
    <!-- main.js loads everything it needs -->
+   <script src="js/dynamic_palette.js"></script>
    <script src="js/palette.js"></script>
    <script src="js/component/particles.js"></script>
    <script src="js/component/sprite.js"></script>
+   <script src="js/place_names.js"></script>
+   <script src="js/component/text_render.js"></script>
+   <script src="js/component/boss.js"></script>
+   <script src="js/component/ui.js"></script>
    <script src="js/component/animations.js"></script>
+   <script src="js/component/enemy.js"></script>
    <script src="js/component/goal.js"></script>
+   <script src="js/component/cutscene.js"></script>
+   <script src="js/component/expiring.js"></script>
+   <script src="js/component/follower.js"></script>
    <script src="js/component/colored_sprite.js"></script>
    <script src="js/component/player.js"></script>
    <script src="js/component/digger.js"></script>
    <script src="js/component/physics.js"></script>
+   <script src="js/component/gate.js"></script>
+   <script src="js/component/bird.js"></script>
    <script src="js/component/tile_manager.js"></script>
+   <script src="js/state/title_screen.js"></script>
    <script src="js/state/pause.js"></script>
+   <script src="js/state/palette_selector.js"></script>
+   <script src="js/state/options.js"></script>
    <script src="js/state/loading.js"></script>
-   <script src="js/state/game.js"></script>
+   <script src="js/state/level.js"></script>
+   <script src="js/state/level_boss.js"></script>
+   <script src="js/state/level_city.js"></script>
+   <script src="js/state/level_infinite.js"></script>
+   <script src="js/state/level_preboss.js"></script>
+   <script src="js/state/win_screen.js"></script>
+   <script src="js/state/level_tutorial.js"></script>
    <script src="main.js"></script>
 
-   <script src="http://elliotfiske.com/bonald.js"></script>
+   <script src="memory-stats.js"></script>
+   <script>
+   if (location.href.indexOf('localhost') >= 0 || location.href.indexOf('file') >= 0) {
+      var stats = new MemoryStats();
+      stats.domElement.style.position  = 'fixed';
+      stats.domElement.style.right     = '0px';
+      stats.domElement.style.top    = '0px';
+      document.body.appendChild( stats.domElement );
+   }
+   </script>
 </body>
 </html>
