@@ -82,7 +82,7 @@ var TitleScreen = Juicy.State.extend({
         }
 
         this.titleGuy.render(context);
-        this.ui.render(context);
+//         this.ui.render(context);
     },
 
     update: function(dt) {
@@ -91,7 +91,7 @@ var TitleScreen = Juicy.State.extend({
         this.ui.update(dt);
 
         this.totalTime += dt;
-        this.titleGuy.position.y = Math.sin(this.totalTime*1.2) * 5 + 20;
+        this.titleGuy.position.y = Math.sin(this.totalTime*1.2) * 5 + 35;
 
         for (var ndx = 0; ndx < this.tiles.length; ndx++) {
             var currTile = this.tiles[ndx];
