@@ -23,42 +23,48 @@ var TitleScreen = Juicy.State.extend({
             delayPerCharacter: 2,
         });
 
-        this.particles.getComponent('ParticleManager').spawnParticles({
-            color: "LOW", 
-            size: 1, 
-            howMany: 500, 
-            timeToLive: function(particle, ndx) {
-                return 0;
-            },
-            initParticle: function(particle) {
-                particle.x = Math.random() * 160;
-                particle.y = Math.random() * 150;
-                
-                particle.dx = -Math.random() * 0.5 - 0.15;
-                particle.dy = 0;
-
-                particle.startLife = 500;
-                particle.life = particle.startLife;
-            },
-            updateParticle: function(particle) {
-                particle.x += particle.dx;
-                particle.y += particle.dy;
-            }
-        });
+//        this.particles.getComponent('ParticleManager').spawnParticles({
+//            color: "LOW", 
+//            size: 1, 
+//            howMany: 500, 
+//            timeToLive: function(particle, ndx) {
+//                return 0;
+//            },
+//            initParticle: function(particle) {
+//                particle.x = Math.random() * 160;
+//                particle.y = Math.random() * 150;
+//                
+//                particle.dx = -Math.random() * 0.5 - 0.15;
+//                particle.dy = 0;
+//
+//                particle.startLife = 500;
+//                particle.life = particle.startLife;
+//            },
+//            updateParticle: function(particle) {
+//                particle.x += particle.dx;
+//                particle.y += particle.dy;
+//            }
+//        });
 
         this.tiles = [];
 
+        // 2.88 sec loop time
+        // needs to travel 160 pixels
+        // 0.0167224 seconds / frame
+        // how many pixels per frame?
+        // (160 pixels / 2.88 sec) * (0.0167224 sec / 1 frame) = -0.929022 pixels / frame, or any multiple of that
+
         for (var x = 0; x < 3; x++) {
                 var newTile = new Juicy.Entity(this, ['ColoredSprite']);
-                newTile.getComponent('ColoredSprite').setSheet('img/stalac.png', 160, 144);
+                newTile.getComponent('ColoredSprite').setSheet('img/stalac-squish.png', 160, 144);
                 newTile.position.x = x * 160;
-                newTile.dx = -2;
+                newTile.dx = -0.929022;
                 this.tiles.push(newTile);
         }
 
         for (var x = 0; x < 3; x++) {
                 var newTile = new Juicy.Entity(this, ['ColoredSprite']);
-                newTile.getComponent('ColoredSprite').setSheet('img/dirt.png', 160, 144);
+                newTile.getComponent('ColoredSprite').setSheet('img/dirt-squish.png', 160, 144);
                 newTile.position.x = x * 160;
                 newTile.dx = -4;
                 this.tiles.push(newTile);
@@ -66,7 +72,7 @@ var TitleScreen = Juicy.State.extend({
 
         for (var x = 0; x < 3; x++) {
                 var newTile = new Juicy.Entity(this, ['ColoredSprite']);
-                newTile.getComponent('ColoredSprite').setSheet('img/dark.png', 160, 144);
+                newTile.getComponent('ColoredSprite').setSheet('img/dark-squish.png', 160, 144);
                 newTile.position.x = x * 160;
                 newTile.dx = -9;
                 this.tiles.push(newTile);
@@ -91,7 +97,7 @@ var TitleScreen = Juicy.State.extend({
         this.ui.update(dt);
 
         this.totalTime += dt;
-        this.titleGuy.position.y = Math.sin(this.totalTime*1.2) * 5 + 35;
+        this.titleGuy.position.y =26// Math.sin(this.totalTime*1.2) * 5 + 35;
 
         for (var ndx = 0; ndx < this.tiles.length; ndx++) {
             var currTile = this.tiles[ndx];
@@ -101,28 +107,28 @@ var TitleScreen = Juicy.State.extend({
             }
         }
 
-        this.particles.getComponent('ParticleManager').spawnParticles({
-            color: "LOW", 
-            size: 1, 
-            howMany: 1, 
-            timeToLive: function(particle, ndx) {
-                return 0;
-            },
-            initParticle: function(particle) {
-                particle.x = 160;
-                particle.y = 20 + Math.random() * 100;
-                
-                particle.dx = -Math.random() * 0.5 - 0.15;
-                particle.dy = 0;
-
-                particle.startLife = 900;
-                particle.life = particle.startLife;
-            },
-            updateParticle: function(particle) {
-                particle.x += particle.dx;
-                particle.y += particle.dy;
-            }
-        });
+//        this.particles.getComponent('ParticleManager').spawnParticles({
+//            color: "LOW", 
+//            size: 1, 
+//            howMany: 1, 
+//            timeToLive: function(particle, ndx) {
+//                return 0;
+//            },
+//            initParticle: function(particle) {
+//                particle.x = 160;
+//                particle.y = 20 + Math.random() * 100;
+//                
+//                particle.dx = -Math.random() * 0.5 - 0.15;
+//                particle.dy = 0;
+//
+//                particle.startLife = 900;
+//                particle.life = particle.startLife;
+//            },
+//            updateParticle: function(particle) {
+//                particle.x += particle.dx;
+//                particle.y += particle.dy;
+//            }
+//        });
 
     },
 
